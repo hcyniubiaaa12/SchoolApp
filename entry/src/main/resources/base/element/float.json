@@ -3,6 +3,86 @@
     {
       "name": "page_text_font_size",
       "value": "50fp"
+    },
+    {
+      "name": "font_size_large",
+      "value": "32fp"
+    },
+    {
+      "name": "font_size_medium",
+      "value": "28fp"
+    },
+    {
+      "name": "font_size_body",
+      "value": "26fp"
+    },
+    {
+      "name": "font_size_small",
+      "value": "24fp"
+    },
+    {
+      "name": "font_size_tab",
+      "value": "22fp"
+    },
+    {
+      "name": "font_size_bottom",
+      "value": "22fp"
+    },
+    {
+      "name": "spacing_element",
+      "value": "16fp"
+    },
+    {
+      "name": "spacing_module",
+      "value": "24fp"
+    },
+    {
+      "name": "padding_page",
+      "value": "20fp"
+    },
+    {
+      "name": "radius_default",
+      "value": "8fp"
+    },
+    {
+      "name": "radius_search",
+      "value": "24fp"
+    },
+    {
+      "name": "button_height",
+      "value": "48fp"
+    },
+    {
+      "name": "button_height_small",
+      "value": "36fp"
+    },
+    {
+      "name": "input_height",
+      "value": "48fp"
+    },
+    {
+      "name": "tab_icon_size",
+      "value": "28fp"
+    },
+    {
+      "name": "grid_icon_size",
+      "value": "32fp"
+    },
+    {
+      "name": "list_icon_size",
+      "value": "24fp"
+    },
+    {
+      "name": "music_control_size",
+      "value": "40fp"
+    },
+    {
+      "name": "thumbnail_size",
+      "value": "80fp"
+    },
+    {
+      "name": "thumbnail_size_small",
+      "value": "64fp"
     }
   ]
 }

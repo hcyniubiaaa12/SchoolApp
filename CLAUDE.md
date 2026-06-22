@@ -95,6 +95,49 @@
 - `ic_book.png` 可复用于图书馆/学习资料入口。
 - `ic_star.png` 可复用于美食评分。
 
+## ArkTS 编译约束
+
+ArkTS 是 TypeScript 的严格子集，新增代码必须遵守以下约束，否则编译报错：
+
+### 禁止语法（会导致 ERROR）
+
+| 违反行为 | 错误码 | ❌ 错误写法 | ✅ 正确写法 |
+|---|---|---|---|
+| **对象字面量作类型** | `arkts-no-obj-literals-as-types` | `Array<{name: string}>` | 先定义命名 `interface Item { name: string }`，再 `Item[]` |
+| **builder 内声明变量** | `Only UI component syntax` | `const x = arr[i]` 写在 `build()` 里 | 抽为 `private getX(i:number)` 辅助方法 |
+| **Object/any/unknown 类型** | `arkts-no-any-unknown` | `param: Object`、`val: any` | `param: Record<string, string>` 等具体类型 |
+| **数组推断失败** | `arkts-no-noninferrable-arr-literals` | `[0,1,2]` 作 ForEach 源 | `[0,1,2] as number[]` |
+| **未对应显式类型的对象字面量** | `arkts-no-untyped-obj-literals` | 数组内 `{a:1,b:2}` 无类型上下文 | 数组变量声明命名接口类型 |
+
+### ForEach 必须补全 keyGenerator
+
+`ForEach` 每次调用都必须传**三个参数**，第三个是 keyGenerator 回调：
+
+```typescript
+// ❌ 错 — 只传 2 个参数，缺少 key generator
+ForEach(this.list, (item: ItemType, index: number) => { ... })
+
+// ✅ 对 — 第三个参数返回唯一 key（字符串）
+ForEach(this.list, (item: ItemType, index: number) => { ... },
+        (item: ItemType, index: number) => item.name + index.toString())
+```
+
+### build() / @Builder 内的合法语法
+
+在 `build()` 和 `@Builder` 方法体内，只允许写：
+- ArkUI 组件声明（`Column`、`Row`、`Text`、`Image` 等）
+- 控制流：`if / else`（条件渲染）、`ForEach` / `LazyForEach`
+- 事件绑定：`.onClick(() => { 这里可以放逻辑 })`
+- `@BuilderParam` / 其他 `@Builder` 引用
+
+**不**允许出现：`const` / `let` 声明、函数调用（事件回调内除外）、`console.log`。
+
+### 导入规范
+
+- 删掉未被使用的 `import`，否则报 warning
+- 优先使用 `@kit.*` API（`@kit.AbilityKit` / `@kit.ArkData` 等）
+- `@ohos.*` 旧风格仅在现有文件中沿用，新文件尽量写 `@kit.*`
+
 ## 修改前后检查
 
 每次改动后至少检查：

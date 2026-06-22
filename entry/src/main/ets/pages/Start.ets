@@ -79,7 +79,10 @@ struct Start {
             .width(120)
             .height(120)
             .borderRadius(24)
-            .backgroundColor('#007DFF')
+            .linearGradient({
+              direction: GradientDirection.Bottom,
+              colors: [['#1677FF', 0], ['#4096FF', 1]]
+            })
 
           Image($r('app.media.logo'))
             .width(72)
@@ -89,15 +92,19 @@ struct Start {
         }
 
         // APP名称
-        Text('校通Plus')
-          .fontSize(28)
-          .fontWeight(FontWeight.Medium)
-          .fontColor('#1F2937')
+        Text('高校校园助手')
+          .fontSize(36)
+          .fontWeight(700)
+          .fontColor('#FFFFFF')
 
         // Slogan
+        Text('HarmonyOS NEXT 版')
+          .fontSize(24)
+          .fontColor('#FFFFFFCC')
+
         Text('智慧校园 · 悦享生活')
-          .fontSize(18)
-          .fontColor('#6B7280')
+          .fontSize(24)
+          .fontColor('#FFFFFFCC')
       }
       .justifyContent(FlexAlign.Center)
       .alignItems(HorizontalAlign.Center)
@@ -106,42 +113,39 @@ struct Start {
       Column()
         .layoutWeight(1)
 
-      // 底部：3个蓝色圆点加载指示器 + 版本号
+      // 底部：加载指示器 + 开发团队
       Column({ space: 16 }) {
-        Text(`首次启动状态：${this.isFirstLaunch ? '是' : '否'}`)
-          .fontSize(12)
-          .fontColor('#6B7280')
-
-        Button('重置首次启动标记')
-          .width(180)
-          .height(32)
-          .fontSize(12)
-          .fontColor('#007DFF')
-          .backgroundColor('#EAF3FF')
-          .borderRadius(16)
-          .onClick(() => {
-            this.resetFirstLaunch();
-          })
-
-        // 3个圆点循环指示
+        // 3个白色圆点循环指示
         Row({ space: 8 }) {
           Circle()
             .width(8)
             .height(8)
-            .fill(this.dotIndex === 0 ? '#1677FF' : '#E5E6EB')
+            .fill(this.dotIndex === 0 ? '#FFFFFF' : '#FFFFFF66')
           Circle()
             .width(8)
             .height(8)
-            .fill(this.dotIndex === 1 ? '#1677FF' : '#E5E6EB')
+            .fill(this.dotIndex === 1 ? '#FFFFFF' : '#FFFFFF66')
           Circle()
             .width(8)
             .height(8)
-            .fill(this.dotIndex === 2 ? '#1677FF' : '#E5E6EB')
+            .fill(this.dotIndex === 2 ? '#FFFFFF' : '#FFFFFF66')
         }
 
-        Text('VER 2025.04.01')
-          .fontSize(14)
-          .fontColor('#9CA3AF')
+        Text('校园助手开发团队')
+          .fontSize(22)
+          .fontColor('#FFFFFFCC')
+
+        // 调试按钮（仅开发用）
+        Button('重置首次启动标记')
+          .width(180)
+          .height(32)
+          .fontSize(12)
+          .fontColor('#FFFFFFCC')
+          .backgroundColor('#FFFFFF26')
+          .borderRadius(16)
+          .onClick(() => {
+            this.resetFirstLaunch();
+          })
       }
       .width('100%')
       .alignItems(HorizontalAlign.Center)
@@ -149,7 +153,10 @@ struct Start {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#FFFFFF')
+    .linearGradient({
+      direction: GradientDirection.Top,
+      colors: [['#1677FF', 0], ['#4096FF', 1]]
+    })
     .onClick(() => {
       if (this.timer !== -1) {
         clearInterval(this.timer);

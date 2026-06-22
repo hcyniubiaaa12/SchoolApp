@@ -99,7 +99,7 @@ struct Login {
             .margin({ left: 8 })
         }
 
-        Text('请登录您的校通Plus账号')
+        Text('请登录您的高校校园助手账号')
           .fontSize(14)
           .fontColor('#666666')
       }
@@ -151,7 +151,7 @@ struct Login {
 
             Text('忘记密码？')
               .fontSize(14)
-              .fontColor('#007DFF')
+              .fontColor('#1677FF')
               .onClick(() => {
                 promptAction.showToast({ message: '忘记密码功能开发中' });
               })
@@ -178,7 +178,7 @@ struct Login {
             Image($r('app.media.ic_code'))
               .width(20)
               .height(20)
-              .fillColor(this.showPassword ? '#007DFF' : '#999999')
+              .fillColor(this.showPassword ? '#1677FF' : '#999999')
               .onClick(() => { this.showPassword = !this.showPassword; })
           }
           .height(48)
@@ -196,8 +196,8 @@ struct Login {
           .height(48)
           .fontSize(16)
           .fontWeight(FontWeight.Medium)
-          .fontColor(this.isLoginActive() ? '#FFFFFF' : '#999999')
-          .backgroundColor(this.isLoginActive() ? '#007DFF' : '#CCCCCC')
+          .fontColor(this.isLoginActive() ? Color.White : '#86909C')
+          .backgroundColor(this.isLoginActive() ? '#1677FF' : '#C6E2FF')
           .borderRadius(8)
           .margin({ top: 8 })
           .onClick(() => { this.doLogin(); })
@@ -247,7 +247,7 @@ struct Login {
           .fontColor('#666666')
         Text('立即注册')
           .fontSize(14)
-          .fontColor('#007DFF')
+          .fontColor('#1677FF')
           .fontWeight(FontWeight.Medium)
           .onClick(() => {
             this.navigateToRegist();
@@ -257,7 +257,7 @@ struct Login {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#FFFFFF')
+    .backgroundColor('#F5F7FA')
     .alignItems(HorizontalAlign.Center)
   }
 }

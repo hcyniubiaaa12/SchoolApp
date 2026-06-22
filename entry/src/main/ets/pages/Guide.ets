@@ -9,20 +9,26 @@ struct Guide {
   private swiperController: SwiperController = new SwiperController();
   private context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
 
-  // 三页主题内容
+  // 三页主题内容（按规范）
   private guidePages: GuidePageItemData[] = [
     {
       icon: $r('app.media.ic_book'),
-      title: '学在云端',
-      desc: '课表管理、成绩查询、空教室预约，你的学习生活助手。'
-    },
-    {
-      icon: $r('app.media.ic_book'),
+      circleColor: '#E8F3FF',
+      iconColor: '#1677FF',
       title: '校园信息，实时掌握',
       desc: '校园公告、资讯、地图，一手了解校园动态。'
     },
     {
       icon: $r('app.media.ic_book'),
+      circleColor: '#FFF3E0',
+      iconColor: '#FF7D00',
+      title: '学习助手，高效备考',
+      desc: '课程表、成绩查询、图书馆检索，学业好帮手。'
+    },
+    {
+      icon: $r('app.media.ic_book'),
+      circleColor: '#E6FFE6',
+      iconColor: '#00B42A',
       title: '生活服务，贴心相伴',
       desc: '失物招领、校园美食、音乐播放，丰富校园生活。'
     }
@@ -113,42 +119,42 @@ struct Guide {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#FFFFFF')
+    .backgroundColor('#F5F7FA')
   }
 
   // 构建单页引导页Item
   @Builder
   buildGuidePageItem(page: GuidePageItemData) {
     Column() {
-      // 引导图（浅蓝色圆形背景+书本图标）
+      // 引导图（彩色圆形背景+书本图标，每页不同色）
       Stack() {
         Circle()
           .width(220)
           .height(220)
-          .fill('#E8F3FF')
+          .fill(page.circleColor ?? '#E8F3FF')
 
         Image(page.icon)
           .width(100)
           .height(100)
           .objectFit(ImageFit.Contain)
-          .fillColor('#1677FF')
+          .fillColor(page.iconColor ?? '#1677FF')
       }
       .margin({ top: 120 })
 
-      // 标题 - 深黑粗体
+      // 标题 - 32sp 鸿蒙蓝 700
       Text(page.title)
         .fontSize(32)
         .fontWeight(700)
-        .fontColor('#1D2129')
+        .fontColor('#1677FF')
         .textAlign(TextAlign.Center)
         .margin({ top: 48 })
 
-      // 描述 - 浅灰色
+      // 描述 - 26sp 主色
       Text(page.desc)
-        .fontSize(24)
-        .fontColor('#86909C')
+        .fontSize(26)
+        .fontColor('#1D2129')
         .textAlign(TextAlign.Center)
-        .lineHeight(36)
+        .lineHeight(39)
         .maxLines(2)
         .margin({ top: 16 })
         .padding({ left: 40, right: 40 })
@@ -161,6 +167,8 @@ struct Guide {
 // 引导页数据类型
 interface GuidePageItemData {
   icon: Resource;
+  circleColor?: string;
+  iconColor?: string;
   title: string;
   desc: string;
 }

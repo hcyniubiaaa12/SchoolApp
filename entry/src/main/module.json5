@@ -16,6 +16,7 @@
         "reason": "$string:permission_bg_running_reason",
         "usedScene": {
           "abilities": [
+            "StartAbility",
             "MainAbility"
           ],
           "when": "always"
@@ -26,6 +27,7 @@
         "reason": "$string:permission_reminder_reason",
         "usedScene": {
           "abilities": [
+            "StartAbility",
             "MainAbility"
           ],
           "when": "always"
@@ -36,6 +38,7 @@
         "reason": "$string:permission_internet_reason",
         "usedScene": {
           "abilities": [
+            "StartAbility",
             "MainAbility"
           ],
           "when": "always"
