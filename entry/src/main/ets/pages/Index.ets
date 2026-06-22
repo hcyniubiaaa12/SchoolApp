@@ -34,15 +34,6 @@ struct Index {
 
   private context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
 
-  // 底部 5 Tab 数据（emoji 占位，P2 替换为图标资源）
-  private tabs: TabItem[] = [
-    { name: '首页', icon: '🏠' },
-    { name: '校园信息', icon: '🏫' },
-    { name: '学习助手', icon: '📚' },
-    { name: '生活服务', icon: '🎯' },
-    { name: '我的', icon: '👤' }
-  ];
-
   aboutToAppear() {
     // 从 AppStorage 获取 MainAbility 传入的参数
     console.log('>>> [Index] aboutToAppear 被调用');
@@ -103,9 +94,9 @@ struct Index {
 
   build() {
     Navigation(this.navPathStack) {
-      Column() {
-        // Tab 内容区
-        if (this.currentTab === 0) {
+      // 使用官方 Tabs 组件实现底部导航（替代手工 Row + Column，解决内容溢出遮挡 Tab 问题）
+      Tabs({ barPosition: BarPosition.End, index: this.currentTab }) {
+        TabContent() {
           HomeTab({
             username: this.username,
             onSearchClick: () => {
@@ -120,13 +111,25 @@ struct Index {
               this.handleQuickEntryClick(entry);
             }
           })
-        } else if (this.currentTab === 1) {
+        }
+        .tabBar(this.buildTabBar('首页', 0, $r('sys.symbol.house')))
+
+        TabContent() {
           CampusInfoTab()
-        } else if (this.currentTab === 2) {
+        }
+        .tabBar(this.buildTabBar('校园信息', 1, $r('sys.symbol.building')))
+
+        TabContent() {
           StudyTab()
-        } else if (this.currentTab === 3) {
+        }
+        .tabBar(this.buildTabBar('学习助手', 2, $r('sys.symbol.book')))
+
+        TabContent() {
           LifeServiceTab()
-        } else if (this.currentTab === 4) {
+        }
+        .tabBar(this.buildTabBar('生活服务', 3, $r('sys.symbol.bag')))
+
+        TabContent() {
           MineTab({
             username: this.username,
             userId: this.userId,
@@ -140,42 +143,43 @@ struct Index {
             }
           })
         }
-
-        // 底部 5 Tab 导航
-        Row() {
-          ForEach(this.tabs, (tab: TabItem, index: number) => {
-            Column({ space: 2 }) {
-              Text(tab.icon)
-                .fontSize(28)
-                .fontColor(this.currentTab === index ? '#1677FF' : '#86909C')
-              Text(tab.name)
-                .fontSize(22)
-                .fontColor(this.currentTab === index ? '#1677FF' : '#86909C')
-            }
-            .layoutWeight(1)
-            .alignItems(HorizontalAlign.Center)
-            .padding({ top: 4, bottom: 6 })
-            .onClick(() => {
-              if (index !== undefined) {
-                this.currentTab = index;
-              }
-            })
-          }, (tab: TabItem, index: number) => tab.name + index.toString())
-        }
-        .width('100%')
-        .height(56)
-        .backgroundColor('#FFFFFF')
-        .border({ width: { top: 1 }, color: '#E5E6EB' })
+        .tabBar(this.buildTabBar('我的', 4, $r('sys.symbol.person')))
       }
-      .width('100%')
-      .height('100%')
-      .backgroundColor('#F5F7FA')
+      .onChange((index: number) => {
+        this.currentTab = index;
+      })
+      .scrollable(false)
+      .barMode(BarMode.Fixed)
+      .barHeight(56)
+      .backgroundColor('#FFFFFF')
+      .border({ width: { top: 1 }, color: '#E5E6EB' })
     }
     .navDestination(this.buildNavDestination)
     .mode(NavigationMode.Auto)
     .hideTitleBar(true)
     .hideToolBar(true)
     .navBarWidth('100%')
+  }
+
+  // Tabs 自定义 tabBar builder：系统 Symbol 图标 + 文字
+  @Builder
+  buildTabBar(title: string, index: number, symbol: Resource) {
+    Column({ space: 2 }) {
+      SymbolGlyph(symbol)
+        .fontSize(24)
+        .fontColor(this.currentTab === index ? ['#1677FF'] : ['#86909C'])
+      Text(title)
+        .fontSize(20)
+        .fontColor(this.currentTab === index ? '#1677FF' : '#86909C')
+        .maxLines(1)
+        .textOverflow({ overflow: TextOverflow.Clip })
+        .width('100%')
+        .textAlign(TextAlign.Center)
+    }
+    .width('100%')
+    .height('100%')
+    .justifyContent(FlexAlign.Center)
+    .alignItems(HorizontalAlign.Center)
   }
 
   // NavDestination 构建器（保留 ProfilePage / SettingPage 兼容）
@@ -468,11 +472,6 @@ struct SettingPage {
 }
 
 // ============ 数据类型定义 ============
-
-interface TabItem {
-  name: string;
-  icon: string;
-}
 
 interface FunctionItemData {
   name: string;

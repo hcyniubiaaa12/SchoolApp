@@ -61,19 +61,15 @@ export struct HomeTab {
   build() {
     Scroll() {
       Column({ space: 16 }) {
-        // 1. 导航栏
+        // 1. 导航栏（规范：标题「校园助手」30sp 鸿蒙蓝 600 + 右侧消息铃铛）
         Row() {
-          Column({ space: 4 }) {
-            Text(`你好，${this.username}`)
-              .fontSize(28)
-              .fontWeight(600)
-              .fontColor('#1D2129')
-            Text('今天也要加油哦')
-              .fontSize(24)
-              .fontColor('#86909C')
-          }
-          .alignItems(HorizontalAlign.Start)
-          .layoutWeight(1)
+          Text('校园助手')
+            .fontSize(30)
+            .fontWeight(600)
+            .fontColor('#1677FF')
+            .layoutWeight(1)
+            .maxLines(1)
+            .textOverflow({ overflow: TextOverflow.Ellipsis })
 
           // 铃铛图标 + 红点
           Stack() {
@@ -96,6 +92,7 @@ export struct HomeTab {
         .width('100%')
         .height(56)
         .padding({ left: 20, right: 20 })
+        .alignItems(VerticalAlign.Center)
 
         // 2. 搜索栏
         Row() {
@@ -106,6 +103,8 @@ export struct HomeTab {
             .fontSize(24)
             .fontColor('#86909C')
             .layoutWeight(1)
+            .maxLines(1)
+            .textOverflow({ overflow: TextOverflow.Ellipsis })
           Text('🎤')
             .fontSize(22)
             .margin({ left: 8 })
@@ -316,9 +315,13 @@ export struct HomeTab {
                 .fontSize(26)
                 .fontWeight(500)
                 .fontColor('#1D2129')
+                .maxLines(1)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
               Text('信软楼302（数字多媒体教室）')
                 .fontSize(24)
                 .fontColor('#86909C')
+                .maxLines(1)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
             }
             .alignItems(HorizontalAlign.Start)
             .layoutWeight(1)
@@ -355,9 +358,13 @@ export struct HomeTab {
                 .fontSize(26)
                 .fontWeight(500)
                 .fontColor('#1D2129')
+                .maxLines(1)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
               Text('公教楼508')
                 .fontSize(24)
                 .fontColor('#86909C')
+                .maxLines(1)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
             }
             .alignItems(HorizontalAlign.Start)
             .layoutWeight(1)
@@ -389,9 +396,13 @@ export struct HomeTab {
               .fontSize(32)
               .fontWeight(600)
               .fontColor('#1D2129')
+              .maxLines(1)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
             Text('深圳 · 紫外线较强')
               .fontSize(24)
               .fontColor('#86909C')
+              .maxLines(1)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
           }
           .alignItems(HorizontalAlign.Start)
           .layoutWeight(1)
