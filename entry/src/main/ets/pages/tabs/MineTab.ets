@@ -1,5 +1,7 @@
 // MineTab.ets - 我的 Tab 页（P0 骨架，P1 将补充收藏/待办/设置完整功能）
 // 个人信息卡片 + 功能列表 + 设置模块
+import { router } from '@kit.ArkUI';
+import { preferences } from '@kit.ArkData';
 
 interface FunctionItem {
   name: string;
@@ -32,6 +34,25 @@ export struct MineTab {
     { name: '通知设置', icon: '🔔' },
     { name: '清理缓存', icon: '🗑️' }
   ];
+
+  // 退出登录：清除本地登录态，跳转登录页
+  private doLogout(): void {
+    try {
+      const pref = preferences.getPreferencesSync(getContext(this), { name: 'school_app_prefs' });
+      pref.putSync('is_logged_in', false);
+      pref.putSync('saved_user_id', '');
+      pref.putSync('saved_username', '');
+      pref.flushSync();
+    } catch (err) {
+      console.error('>>> [MineTab] 清除登录态失败: ' + JSON.stringify(err));
+    }
+    try {
+      router.clear();
+      router.pushUrl({ url: 'pages/Login' });
+    } catch (err) {
+      console.error('>>> [MineTab] 跳转登录页失败: ' + JSON.stringify(err));
+    }
+  }
 
   build() {
     Column() {
@@ -179,6 +200,19 @@ export struct MineTab {
           .backgroundColor('#FFFFFF')
           .borderRadius(8)
           .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
+
+          // 退出登录按钮
+          Button('退出登录')
+            .width('100%')
+            .height(48)
+            .fontSize(26)
+            .fontColor('#FF7D00')
+            .backgroundColor('#FFFFFF')
+            .borderRadius(8)
+            .border({ width: 1, color: '#FF7D00' })
+            .onClick(() => {
+              this.doLogout();
+            })
 
           // 底部关于区
           Column({ space: 4 }) {

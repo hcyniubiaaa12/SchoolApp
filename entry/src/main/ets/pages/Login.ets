@@ -1,6 +1,7 @@
 // Login.ets - 登录页（StartAbility内）
 import { common, Want } from '@kit.AbilityKit';
 import { preferences } from '@kit.ArkData';
+import { router } from '@kit.ArkUI';
 import promptAction from '@ohos.promptAction';
 
 @Entry
@@ -53,29 +54,22 @@ struct Login {
       console.error('>>> [Login] 保存用户信息失败: ' + JSON.stringify(err));
     }
 
-    // 标记登录状态
+    // 标记登录状态（兼容 StartAbility eventHub）
     this.context.eventHub.emit('markLoginStatus', true);
 
-    // 使用startAbilityForResult跳转到MainAbility，携带用户参数（为结果启动）
-    const want: Want = {
-      bundleName: 'com.example.schoolapp',
-      abilityName: 'MainAbility',
-      parameters: {
-        userId: this.studentId,
-        username: username
-      }
-    };
+    // 设置 AppStorage 供 Index 页面读取
+    AppStorage.setOrCreate('userId', this.studentId);
+    AppStorage.setOrCreate('username', username);
 
-    this.context.startAbilityForResult(want)
-      .then((result) => {
-        promptAction.showToast({ message: '登录成功，MainAbility返回结果: ' + JSON.stringify(result) });
-        console.log('===== [Login] startAbilityForResult 成功，返回结果: ' + JSON.stringify(result) + ' =====');
-        // 登录成功后关闭StartAbility
-        this.context.terminateSelf();
-      })
-      .catch((err: Error) => {
-        promptAction.showToast({ message: '跳转失败: ' + err.message });
-      });
+    // 直接跳转首页（清空路由栈，避免 Navigation 嵌套冲突）
+    try {
+      router.clear();
+      router.pushUrl({ url: 'pages/Index' });
+      promptAction.showToast({ message: '登录成功' });
+    } catch (err) {
+      console.error('>>> [Login] 跳转首页失败: ' + JSON.stringify(err));
+      promptAction.showToast({ message: '跳转失败，请重试' });
+    }
   }
 
   // 跳转到注册页（Ability内页面跳转）

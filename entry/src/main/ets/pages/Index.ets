@@ -89,7 +89,13 @@ struct Index {
     } else if (entry.name === '后台服务实验') {
       this.navigateToBackgroundTaskLab();
     }
-    // P1 将补充其余 9 入口对应的页面跳转
+    // 学习助手首发：课程表入口直接切换到学习助手 Tab
+    else if (entry.name === '课程表' || entry.name === '成绩查询' || entry.name === '图书馆') {
+      this.currentTab = 2;
+      if (entry.name !== '课程表') {
+        promptAction.showToast({ message: entry.name + '功能后续开放，已为你打开课程表' });
+      }
+    }
   }
 
   build() {

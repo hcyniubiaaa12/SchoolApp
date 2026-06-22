@@ -2,6 +2,7 @@
 // P0 改造：手机号 + 本地验证码(B方案) + 密码 + 确认密码
 import { common, Want } from '@kit.AbilityKit';
 import { preferences } from '@kit.ArkData';
+import { router } from '@kit.ArkUI';
 import promptAction from '@ohos.promptAction';
 
 @Entry
@@ -117,26 +118,19 @@ struct Regist {
     // 标记登录状态
     this.context.eventHub.emit('markLoginStatus', true);
 
-    // 跳转到 MainAbility
-    const want: Want = {
-      bundleName: 'com.example.schoolapp',
-      abilityName: 'MainAbility',
-      parameters: {
-        userId: this.phone,
-        username: username
-      }
-    };
+    // 设置 AppStorage 供 Index 读取
+    AppStorage.setOrCreate('userId', this.phone);
+    AppStorage.setOrCreate('username', username);
 
-    this.context.startAbilityForResult(want)
-      .then((result) => {
-        promptAction.showToast({ message: '注册成功' });
-        console.log('===== [Regist] startAbilityForResult 成功: ' + JSON.stringify(result) + ' =====');
-        this.context.terminateSelf();
-      })
-      .catch((err: Error) => {
-        promptAction.showToast({ message: '跳转失败: ' + err.message });
-        console.error('Start MainAbility failed: ' + JSON.stringify(err));
-      });
+    // 跳转首页
+    try {
+      router.clear();
+      router.pushUrl({ url: 'pages/Index' });
+      promptAction.showToast({ message: '注册成功' });
+    } catch (err) {
+      console.error('>>> [Regist] 跳转首页失败: ' + JSON.stringify(err));
+      promptAction.showToast({ message: '跳转失败，请重试' });
+    }
   }
 
   // 返回登录页
