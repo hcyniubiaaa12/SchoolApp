@@ -1,0 +1,12 @@
+{
+  "src": [
+    "pages/Start",
+    "pages/Guide",
+    "pages/Login",
+    "pages/Regist",
+    "pages/Index",
+    "pages/Profile",
+    "pages/DataStorageLab",
+    "pages/BackgroundTaskLab"
+  ]
+}

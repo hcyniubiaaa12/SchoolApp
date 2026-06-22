@@ -1,0 +1,44 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "module description"
+    },
+    {
+      "name": "StartAbility_desc",
+      "value": "启动Ability，管理引导页、登录页、注册页"
+    },
+    {
+      "name": "StartAbility_label",
+      "value": "校通Plus"
+    },
+    {
+      "name": "MainAbility_desc",
+      "value": "主Ability，管理首页"
+    },
+    {
+      "name": "MainAbility_label",
+      "value": "校通Plus首页"
+    },
+    {
+      "name": "ProfileAbility_desc",
+      "value": "个人中心Ability，管理个人中心页"
+    },
+    {
+      "name": "ProfileAbility_label",
+      "value": "校通Plus个人中心"
+    },
+    {
+      "name": "permission_bg_running_reason",
+      "value": "应用在后台需要持续运行以完成音乐播放、状态保存等任务"
+    },
+    {
+      "name": "permission_reminder_reason",
+      "value": "应用退出后需要系统代理发布倒计时提醒通知"
+    },
+    {
+      "name": "permission_internet_reason",
+      "value": "后台音乐播放需要联网获取音频资源"
+    }
+  ]
+}

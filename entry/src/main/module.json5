@@ -1,0 +1,131 @@
+{
+  "module": {
+    "name": "entry",
+    "type": "entry",
+    "description": "$string:module_desc",
+    "mainElement": "StartAbility",
+    "deviceTypes": [
+      "phone"
+    ],
+    "deliveryWithInstall": true,
+    "installationFree": false,
+    "pages": "$profile:main_pages",
+    "requestPermissions": [
+      {
+        "name": "ohos.permission.KEEP_BACKGROUND_RUNNING",
+        "reason": "$string:permission_bg_running_reason",
+        "usedScene": {
+          "abilities": [
+            "MainAbility"
+          ],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.PUBLISH_AGENT_REMINDER",
+        "reason": "$string:permission_reminder_reason",
+        "usedScene": {
+          "abilities": [
+            "MainAbility"
+          ],
+          "when": "always"
+        }
+      },
+      {
+        "name": "ohos.permission.INTERNET",
+        "reason": "$string:permission_internet_reason",
+        "usedScene": {
+          "abilities": [
+            "MainAbility"
+          ],
+          "when": "always"
+        }
+      }
+    ],
+    "abilities": [
+      {
+        "name": "StartAbility",
+        "srcEntry": "./ets/entryability/StartAbility.ets",
+        "description": "$string:StartAbility_desc",
+        "icon": "$media:layered_image",
+        "label": "$string:StartAbility_label",
+        "startWindowIcon": "$media:startIcon",
+        "startWindowBackground": "$color:start_window_background",
+        "exported": true,
+        "launchType": "singleton",
+        "backgroundModes": [
+          "audioPlayback"
+        ],
+        "skills": [
+          {
+            "entities": [
+              "entity.system.home"
+            ],
+            "actions": [
+              "ohos.want.action.home"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "MainAbility",
+        "srcEntry": "./ets/entryability/MainAbility.ets",
+        "description": "$string:MainAbility_desc",
+        "icon": "$media:layered_image",
+        "label": "$string:MainAbility_label",
+        "startWindowIcon": "$media:startIcon",
+        "startWindowBackground": "$color:start_window_background",
+        "exported": false,
+        "launchType": "singleton",
+        "backgroundModes": [
+          "audioPlayback"
+        ],
+        "skills": [
+          {
+            "actions": [
+              "ohos.want.action.startMain"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "ProfileAbility",
+        "srcEntry": "./ets/entryability/ProfileAbility.ets",
+        "description": "$string:ProfileAbility_desc",
+        "icon": "$media:layered_image",
+        "label": "$string:ProfileAbility_label",
+        "startWindowIcon": "$media:startIcon",
+        "startWindowBackground": "$color:start_window_background",
+        "exported": false,
+        "launchType": "singleton",
+        "skills": [
+          {
+            "actions": [
+              "ohos.want.action.startProfile"
+            ]
+          }
+        ]
+      }
+    ],
+    "extensionAbilities": [
+      {
+        "name": "EntryBackupAbility",
+        "srcEntry": "./ets/entrybackupability/EntryBackupAbility.ets",
+        "type": "backup",
+        "exported": false,
+        "metadata": [
+          {
+            "name": "ohos.extension.backup",
+            "resource": "$profile:backup_config"
+          }
+        ]
+      },
+      {
+        "name": "DataSyncExtensionAbility",
+        "srcEntry": "./ets/common/extensions/DataSyncExtensionAbility.ets",
+        "type": "workScheduler",
+        "exported": false
+      }
+    ]
+  }
+}
