@@ -35,13 +35,11 @@ export struct MineTab {
     { name: '清理缓存', icon: '🗑️' }
   ];
 
-  // 退出登录：清除本地登录态，跳转登录页
+  // 退出登录：仅清除登录态，保留注册数据供下次登录
   private doLogout(): void {
     try {
       const pref = preferences.getPreferencesSync(getContext(this), { name: 'school_app_prefs' });
       pref.putSync('is_logged_in', false);
-      pref.putSync('saved_user_id', '');
-      pref.putSync('saved_username', '');
       pref.flushSync();
     } catch (err) {
       console.error('>>> [MineTab] 清除登录态失败: ' + JSON.stringify(err));
