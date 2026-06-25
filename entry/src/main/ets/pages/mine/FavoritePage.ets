@@ -123,7 +123,6 @@ struct FavoritePage {
   }
 
   private getTypeIcon(type: string): string {
-    if (type === '图书') return '📚';
     if (type === '美食') return '🍽️';
     return '❤️';
   }
@@ -197,8 +196,14 @@ struct FavoritePage {
                     Circle()
                       .width(44).height(44)
                       .fill('#E8F3FF')
-                    Text(this.getTypeIcon(item.type))
-                      .fontSize(24)
+                    if (item.type === '图书') {
+                      Image($r('app.media.ic_book'))
+                        .width(24)
+                        .height(24)
+                    } else {
+                      Text(this.getTypeIcon(item.type))
+                        .fontSize(24)
+                    }
                   }
 
                   Column({ space: 4 }) {

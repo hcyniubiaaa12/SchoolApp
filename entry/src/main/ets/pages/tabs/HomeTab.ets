@@ -5,6 +5,7 @@
 export interface QuickEntryItem {
   name: string;
   icon: string;
+  image?: Resource;
   color: string;
   targetPage?: string;
 }
@@ -41,7 +42,7 @@ export struct HomeTab {
     { name: '成绩查询', icon: '📊', color: '#00B42A' },
     { name: '失物招领', icon: '🔍', color: '#FF7D00' },
     { name: '校园地图', icon: '🗺️', color: '#1677FF' },
-    { name: '图书馆', icon: '📚', color: '#00B42A' },
+    { name: '图书馆', icon: '', image: $r('app.media.ic_book'), color: '#00B42A' },
     { name: '校园美食', icon: '🍽️', color: '#FF7D00' },
     { name: '音乐播放', icon: '🎵', color: '#1677FF' },
     { name: '待办提醒', icon: '📝', color: '#00B42A' }
@@ -66,6 +67,10 @@ export struct HomeTab {
 
   private getEntryColor(index: number): string {
     return this.quickEntries[index].color;
+  }
+
+  private getEntryImage(index: number): Resource | undefined {
+    return this.quickEntries[index].image;
   }
 
   build() {
@@ -202,8 +207,14 @@ export struct HomeTab {
                       .width(64)
                       .height(64)
                       .fill(this.getEntryColor(rowIdx * 3 + colIdx) + '1A')
-                    Text(this.getEntryIcon(rowIdx * 3 + colIdx))
-                      .fontSize(32)
+                    if (this.getEntryImage(rowIdx * 3 + colIdx)) {
+                      Image(this.getEntryImage(rowIdx * 3 + colIdx)!)
+                        .width(32)
+                        .height(32)
+                    } else {
+                      Text(this.getEntryIcon(rowIdx * 3 + colIdx))
+                        .fontSize(32)
+                    }
                   }
                   Text(this.getEntryName(rowIdx * 3 + colIdx))
                     .fontSize(24)

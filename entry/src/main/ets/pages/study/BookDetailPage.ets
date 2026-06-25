@@ -89,7 +89,9 @@ struct BookDetailPage {
               // 封面占位
               Stack() {
                 Circle().width(120).height(120).fill('#E8F3FF')
-                Text('📚').fontSize(48)
+                Image($r('app.media.ic_book'))
+                  .width(48)
+                  .height(48)
               }
               .width('100%').height(140)
 

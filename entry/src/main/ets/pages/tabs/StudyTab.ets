@@ -670,8 +670,9 @@ export struct StudyTab {
           .width(72)
           .height(72)
           .fill('#E8F3FF')
-        Text('📖')
-          .fontSize(32)
+        Image($r('app.media.ic_book'))
+          .width(32)
+          .height(32)
       }
 
       Column({ space: 4 }) {

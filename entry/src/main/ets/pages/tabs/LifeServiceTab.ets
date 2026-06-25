@@ -111,12 +111,21 @@ export struct LifeServiceTab {
   }
 
   // —— 美食 ——
-  private getStars(rating: number): string {
-    let stars: string = '';
-    for (let i = 0; i < 5; i++) {
-      stars += i < rating ? '★' : '☆';
+  @Builder
+  buildStarRow(rating: number) {
+    Row({ space: 2 }) {
+      ForEach([0, 1, 2, 3, 4] as number[], (i: number) => {
+        if (i < rating) {
+          Image($r('app.media.ic_star'))
+            .width(18)
+            .height(18)
+        } else {
+          Text('☆')
+            .fontSize(18)
+            .fontColor('#86909C')
+        }
+      }, (i: number) => i.toString())
     }
-    return stars;
   }
 
   private toggleFoodFavorite(foodId: string): void {
@@ -423,9 +432,7 @@ export struct LifeServiceTab {
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
 
               Row({ space: 8 }) {
-                Text(this.getStars(food.rating))
-                  .fontSize(22)
-                  .fontColor('#FF7D00')
+                this.buildStarRow(food.rating)
 
                 Text(food.signatureDish)
                   .fontSize(22)
