@@ -10,6 +10,8 @@ import { AppDbHelper } from './AppDbHelper';
 import { CourseDao, CourseRow } from './CourseDao';
 import { LostFoundDao, LostFoundRow } from './LostFoundDao';
 
+type JsonRecord = Record<string, string | number | boolean | string[]>;
+
 export class DataInitializer {
   static async seedIfEmpty(context: Context): Promise<void> {
     try {
@@ -41,12 +43,12 @@ export class DataInitializer {
   }
 
   private static async importScores(context: Context): Promise<void> {
-    const data: Record<string, Object>[] | null =
-      await JsonStoreUtil.readFromRaw<Record<string, Object>[]>('score.json');
+    const data: JsonRecord[] | null =
+      await JsonStoreUtil.readFromRaw<JsonRecord[]>('score.json');
     if (data) {
       const store = await AppDbHelper.getStore(context);
       for (let i = 0; i < data.length; i++) {
-        const item: Record<string, Object> = data[i];
+        const item: JsonRecord = data[i];
         const bucket: relationalStore.ValuesBucket = {
           id: item['id'] as string,
           course_name: item['courseName'] as string,
@@ -62,12 +64,12 @@ export class DataInitializer {
   }
 
   private static async importBooks(context: Context): Promise<void> {
-    const data: Record<string, Object>[] | null =
-      await JsonStoreUtil.readFromRaw<Record<string, Object>[]>('books.json');
+    const data: JsonRecord[] | null =
+      await JsonStoreUtil.readFromRaw<JsonRecord[]>('books.json');
     if (data) {
       const store = await AppDbHelper.getStore(context);
       for (let i = 0; i < data.length; i++) {
-        const item: Record<string, Object> = data[i];
+        const item: JsonRecord = data[i];
         const bucket: relationalStore.ValuesBucket = {
           id: item['id'] as string,
           title: item['title'] as string,
@@ -97,12 +99,12 @@ export class DataInitializer {
   }
 
   private static async importFood(context: Context): Promise<void> {
-    const data: Record<string, Object>[] | null =
-      await JsonStoreUtil.readFromRaw<Record<string, Object>[]>('food.json');
+    const data: JsonRecord[] | null =
+      await JsonStoreUtil.readFromRaw<JsonRecord[]>('food.json');
     if (data) {
       const store = await AppDbHelper.getStore(context);
       for (let i = 0; i < data.length; i++) {
-        const item: Record<string, Object> = data[i];
+        const item: JsonRecord = data[i];
         const bucket: relationalStore.ValuesBucket = {
           id: item['id'] as string,
           name: item['name'] as string,
@@ -119,12 +121,12 @@ export class DataInitializer {
   }
 
   private static async importWeather(context: Context): Promise<void> {
-    const data: Record<string, Object>[] | null =
-      await JsonStoreUtil.readFromRaw<Record<string, Object>[]>('weather.json');
+    const data: JsonRecord[] | null =
+      await JsonStoreUtil.readFromRaw<JsonRecord[]>('weather.json');
     if (data) {
       const store = await AppDbHelper.getStore(context);
       for (let i = 0; i < data.length; i++) {
-        const item: Record<string, Object> = data[i];
+        const item: JsonRecord = data[i];
         const bucket: relationalStore.ValuesBucket = {
           id: item['id'] as string,
           date_text: item['dateText'] as string,

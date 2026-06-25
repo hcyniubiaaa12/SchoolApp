@@ -5,37 +5,13 @@
  */
 import promptAction from '@ohos.promptAction';
 import { JsonStoreUtil } from '../../common/utils/JsonStoreUtil';
+import { LostFoundDao, LostFoundRow } from '../../common/database/LostFoundDao';
+import { FoodDao, FoodRow } from '../../common/database/FoodDao';
 
 interface LifeEntryItem {
   name: string;
   icon: string;
   color: string;
-}
-
-interface LostFoundItem {
-  id: string;
-  type: string;
-  category: string;
-  itemName: string;
-  location: string;
-  time: string;
-  description: string;
-  contactPhone: string;
-  imagePath: string;
-  publisherId: string;
-  publishTime: string;
-  status: string;
-}
-
-interface FoodItem {
-  id: string;
-  name: string;
-  canteen: string;
-  imagePath: string;
-  rating: number;
-  signatureDish: string;
-  tags: string[];
-  isFavorited: boolean;
 }
 
 interface SongItem {
@@ -50,10 +26,10 @@ interface SongItem {
 
 @Component
 export struct LifeServiceTab {
-  @State currentEntry: number = 0;  // 0: 失物招领 1: 校园美食 2: 音乐播放 3: 校园工具
-  @State lostFoundList: LostFoundItem[] = [];
-  @State lfFilterIndex: number = 0;  // 失物招领筛选标签
-  @State foodList: FoodItem[] = [];
+  @State currentEntry: number = 0;
+  @State lostFoundList: LostFoundRow[] = [];
+  @State lfFilterIndex: number = 0;
+  @State foodList: FoodRow[] = [];
   @State songList: SongItem[] = [];
   @State currentSongIndex: number = 0;
   @State isPlaying: boolean = false;
@@ -75,7 +51,8 @@ export struct LifeServiceTab {
   }
 
   private loadLostFound(): void {
-    JsonStoreUtil.read<LostFoundItem[]>('lostfound.json').then((data: LostFoundItem[] | null) => {
+    const ctx: Context = getContext(this);
+    LostFoundDao.queryAll(ctx).then((data: LostFoundRow[] | null) => {
       if (data) {
         this.lostFoundList = data;
       }
@@ -83,7 +60,8 @@ export struct LifeServiceTab {
   }
 
   private loadFood(): void {
-    JsonStoreUtil.read<FoodItem[]>('food.json').then((data: FoodItem[] | null) => {
+    const ctx: Context = getContext(this);
+    FoodDao.queryAll(ctx).then((data: FoodRow[] | null) => {
       if (data) {
         this.foodList = data;
       }
@@ -99,14 +77,14 @@ export struct LifeServiceTab {
   }
 
   // —— 失物招领筛选 ——
-  private getFilteredLostFound(): LostFoundItem[] {
+  private getFilteredLostFound(): LostFoundRow[] {
     if (this.lfFilterIndex === 0) {
       return this.lostFoundList;
     }
     const filterText: string = this.lfFilters[this.lfFilterIndex];
-    const result: LostFoundItem[] = [];
+    const result: LostFoundRow[] = [];
     for (let i = 0; i < this.lostFoundList.length; i++) {
-      const item: LostFoundItem = this.lostFoundList[i];
+      const item: LostFoundRow = this.lostFoundList[i];
       if (filterText === '失物' && item.type === 'lost') {
         result.push(item);
       } else if (filterText === '拾物' && item.type === 'found') {
@@ -128,12 +106,10 @@ export struct LifeServiceTab {
   }
 
   private toggleFoodFavorite(foodId: string): void {
-    for (let i = 0; i < this.foodList.length; i++) {
-      if (this.foodList[i].id === foodId) {
-        this.foodList[i].isFavorited = !this.foodList[i].isFavorited;
-        return;
-      }
-    }
+    const ctx: Context = getContext(this);
+    FoodDao.toggleFavorite(ctx, foodId).then(() => {
+      this.loadFood();
+    });
   }
 
   // —— 音乐播放 ——
@@ -324,7 +300,7 @@ export struct LifeServiceTab {
         .justifyContent(FlexAlign.Center)
         .alignItems(VerticalAlign.Center)
       } else {
-        ForEach(this.getFilteredLostFound(), (item: LostFoundItem) => {
+        ForEach(this.getFilteredLostFound(), (item: LostFoundRow) => {
           Row() {
             // 缩略图 64x64
             Stack() {
@@ -370,7 +346,7 @@ export struct LifeServiceTab {
           .borderRadius(8)
           .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
           .alignItems(VerticalAlign.Center)
-        }, (item: LostFoundItem) => item.id)
+        }, (item: LostFoundRow) => item.id)
       }
     }
     .width('100%')
@@ -391,7 +367,7 @@ export struct LifeServiceTab {
         .height(100)
         .justifyContent(FlexAlign.Center)
       } else {
-        ForEach(this.foodList, (food: FoodItem) => {
+        ForEach(this.foodList, (food: FoodRow) => {
           Row() {
             // 美食图占位
             Stack() {
@@ -450,7 +426,7 @@ export struct LifeServiceTab {
           .borderRadius(8)
           .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
           .alignItems(VerticalAlign.Center)
-        }, (food: FoodItem) => food.id)
+        }, (food: FoodRow) => food.id)
       }
     }
     .width('100%')

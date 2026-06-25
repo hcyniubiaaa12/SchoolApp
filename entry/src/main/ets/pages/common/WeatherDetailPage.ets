@@ -3,27 +3,17 @@
  * 点击首页天气卡片进入，展示未来3天天气（静态模拟数据）
  */
 import { router } from '@kit.ArkUI';
-import { JsonStoreUtil } from '../../common/utils/JsonStoreUtil';
-
-interface DayWeather {
-  date: string;
-  weekDay: string;
-  weather: string;
-  tempHigh: number;
-  tempLow: number;
-  icon: string;
-}
+import { WeatherDao, WeatherRow } from '../../common/database/WeatherDao';
 
 @Entry
 @Component
 struct WeatherDetailPage {
-  @State forecast: DayWeather[] = [];
+  @State forecast: WeatherRow[] = [];
 
   aboutToAppear(): void {
-    JsonStoreUtil.read<DayWeather[]>('weather.json').then((data: DayWeather[] | null) => {
-      if (data) {
-        this.forecast = data;
-      }
+    const ctx: Context = getContext(this);
+    WeatherDao.queryAll(ctx).then((data: WeatherRow[]) => {
+      this.forecast = data;
     });
   }
 
@@ -129,14 +119,14 @@ struct WeatherDetailPage {
             .fontColor('#1D2129')
             .width('100%')
 
-          ForEach(this.forecast, (day: DayWeather) => {
+          ForEach(this.forecast, (day: WeatherRow) => {
             Row() {
               Column({ space: 4 }) {
                 Text(day.weekDay)
                   .fontSize(26)
                   .fontWeight(600)
                   .fontColor('#1D2129')
-                Text(day.date.substring(5))
+                Text(day.dateText.substring(5))
                   .fontSize(22)
                   .fontColor('#86909C')
               }
@@ -167,7 +157,7 @@ struct WeatherDetailPage {
             .borderRadius(8)
             .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
             .alignItems(VerticalAlign.Center)
-          }, (day: DayWeather) => day.date)
+          }, (day: DayWeather) => day.dateText)
         }
         .width('100%')
         .padding({ left: 20, right: 20, top: 16, bottom: 24 })

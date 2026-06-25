@@ -2,13 +2,16 @@
  * StudyTab.ets - 学习助手 Tab
  * 4 个标签：课程表 / 成绩查询 / 图书馆检索 / 学习资料
  *
- * 数据来源：优先沙箱 JSON → rawfile 回退 (JsonStoreUtil)
- * P1 首发：所有标签均填充真实业务内容
+ * 数据来源：
+ *   - 课程表/成绩/图书 → RelationalStore (CourseDao/ScoreDao/BookDao)
+ *   - 学习资料 → rawfile JSON (JsonStoreUtil)
  */
 import promptAction from '@ohos.promptAction';
 import { JsonStoreUtil } from '../../common/utils/JsonStoreUtil';
+import { CourseDao, CourseRow } from '../../common/database/CourseDao';
+import { ScoreDao, ScoreRow } from '../../common/database/ScoreDao';
+import { BookDao, BookRow } from '../../common/database/BookDao';
 
-// ArkTS 约束：interface 不可 inline 在 Array<>
 interface TagItem {
   name: string;
 }
@@ -17,45 +20,6 @@ interface WeekDayItem {
   name: string;
   shortName: string;
   dayIndex: number;
-}
-
-interface CourseItem {
-  id: string;
-  name: string;
-  teacher: string;
-  location: string;
-  dayIndex: number;
-  startTime: string;
-  endTime: string;
-  startWeek: number;
-  endWeek: number;
-  courseType: string;
-  color: string;
-  credit: string;
-}
-
-interface ScoreItem {
-  id: string;
-  courseName: string;
-  score: number;
-  gpa: number;
-  credit: string;
-  examTime: string;
-  semester: string;
-}
-
-interface BookItem {
-  id: string;
-  title: string;
-  author: string;
-  publisher: string;
-  isbn: string;
-  cover: string;
-  location: string;
-  totalCount: number;
-  availableCount: number;
-  summary: string;
-  isFavorited: boolean;
 }
 
 interface MaterialFolder {
@@ -76,10 +40,10 @@ export struct StudyTab {
   @State currentWeek: number = 6;
   @State selectedCourseId: string = '';
   @State showCourseDetail: boolean = false;
-  @State courses: CourseItem[] = [];
-  @State scores: ScoreItem[] = [];
-  @State books: BookItem[] = [];
-  @State filteredBooks: BookItem[] = [];
+  @State courses: CourseRow[] = [];
+  @State scores: ScoreRow[] = [];
+  @State books: BookRow[] = [];
+  @State filteredBooks: BookRow[] = [];
   @State materials: MaterialFolder[] = [];
   @State bookSearchText: string = '';
   @State expandedMaterialId: string = '';
@@ -107,27 +71,24 @@ export struct StudyTab {
   }
 
   private loadCourses(): void {
-    JsonStoreUtil.read<CourseItem[]>('schedule.json').then((data: CourseItem[] | null) => {
-      if (data) {
-        this.courses = data;
-      }
+    const ctx: Context = getContext(this);
+    CourseDao.queryAll(ctx).then((data: CourseRow[]) => {
+      this.courses = data;
     });
   }
 
   private loadScores(): void {
-    JsonStoreUtil.read<ScoreItem[]>('score.json').then((data: ScoreItem[] | null) => {
-      if (data) {
-        this.scores = data;
-      }
+    const ctx: Context = getContext(this);
+    ScoreDao.queryAll(ctx).then((data: ScoreRow[]) => {
+      this.scores = data;
     });
   }
 
   private loadBooks(): void {
-    JsonStoreUtil.read<BookItem[]>('books.json').then((data: BookItem[] | null) => {
-      if (data) {
-        this.books = data;
-        this.filteredBooks = data;
-      }
+    const ctx: Context = getContext(this);
+    BookDao.queryAll(ctx).then((data: BookRow[]) => {
+      this.books = data;
+      this.filteredBooks = data;
     });
   }
 
@@ -155,10 +116,10 @@ export struct StudyTab {
     }
   }
 
-  private getCoursesByDay(dayIndex: number): CourseItem[] {
-    const result: CourseItem[] = [];
+  private getCoursesByDay(dayIndex: number): CourseRow[] {
+    const result: CourseRow[] = [];
     for (let i = 0; i < this.courses.length; i++) {
-      const c: CourseItem = this.courses[i];
+      const c: CourseRow = this.courses[i];
       if (c.dayIndex === dayIndex && this.currentWeek >= c.startWeek && this.currentWeek <= c.endWeek) {
         result.push(c);
       }
@@ -170,7 +131,7 @@ export struct StudyTab {
     return this.getCoursesByDay(dayIndex).length;
   }
 
-  private showCourse(course: CourseItem): void {
+  private showCourse(course: CourseRow): void {
     this.selectedCourseId = course.id;
     this.showCourseDetail = true;
   }
@@ -179,7 +140,7 @@ export struct StudyTab {
     this.showCourseDetail = false;
   }
 
-  private getSelectedCourse(): CourseItem {
+  private getSelectedCourse(): CourseRow {
     for (let i = 0; i < this.courses.length; i++) {
       if (this.courses[i].id === this.selectedCourseId) {
         return this.courses[i];
@@ -188,22 +149,22 @@ export struct StudyTab {
     return this.courses.length > 0 ? this.courses[0] : {
       id: '', name: '', teacher: '', location: '', dayIndex: 1,
       startTime: '', endTime: '', startWeek: 0, endWeek: 0,
-      courseType: '', color: '', credit: ''
+      courseType: '', color: '', credit: '', remark: ''
     };
   }
 
   private getSelectedCourseTime(): string {
-    const c: CourseItem = this.getSelectedCourse();
+    const c: CourseRow = this.getSelectedCourse();
     return c.startTime + ' - ' + c.endTime;
   }
 
   private getSelectedCourseWeekRange(): string {
-    const c: CourseItem = this.getSelectedCourse();
+    const c: CourseRow = this.getSelectedCourse();
     return '第' + c.startWeek.toString() + '-' + c.endWeek.toString() + '周';
   }
 
   private getSelectedCourseDayName(): string {
-    const c: CourseItem = this.getSelectedCourse();
+    const c: CourseRow = this.getSelectedCourse();
     for (let i = 0; i < this.weekDays.length; i++) {
       if (this.weekDays[i].dayIndex === c.dayIndex) {
         return this.weekDays[i].name;
@@ -214,8 +175,8 @@ export struct StudyTab {
 
   // —— 成绩查询 ——
 
-  private getSortedScores(): ScoreItem[] {
-    return this.scores.sort((a: ScoreItem, b: ScoreItem) => b.gpa - a.gpa);
+  private getSortedScores(): ScoreRow[] {
+    return this.scores.sort((a: ScoreRow, b: ScoreRow) => b.gpa - a.gpa);
   }
 
   private getAverageGpa(): string {
@@ -237,13 +198,13 @@ export struct StudyTab {
       return;
     }
     const keyword: string = this.bookSearchText.trim().toLowerCase();
-    const result: BookItem[] = [];
+    const result: BookRow[] = [];
     for (let i = 0; i < this.books.length; i++) {
-      const b: BookItem = this.books[i];
+      const b: BookRow = this.books[i];
       if (b.title.toLowerCase().includes(keyword) ||
           b.author.toLowerCase().includes(keyword) ||
           b.publisher.toLowerCase().includes(keyword) ||
-          b.isbn.includes(keyword)) {
+          b.isbn.toLowerCase().includes(keyword)) {
         result.push(b);
       }
     }
@@ -251,18 +212,17 @@ export struct StudyTab {
   }
 
   private toggleBookFavorite(bookId: string): void {
-    for (let i = 0; i < this.books.length; i++) {
-      if (this.books[i].id === bookId) {
-        this.books[i].isFavorited = !this.books[i].isFavorited;
-        return;
-      }
-    }
+    const ctx: Context = getContext(this);
+    BookDao.toggleFavorite(ctx, bookId).then(() => {
+      // 重新加载图书列表以刷新状态
+      this.loadBooks();
+    });
   }
 
   private isBookFavorited(bookId: string): boolean {
     for (let i = 0; i < this.books.length; i++) {
       if (this.books[i].id === bookId) {
-        return this.books[i].isFavorited;
+        return this.books[i].isFavorited === 1;
       }
     }
     return false;
@@ -433,9 +393,9 @@ export struct StudyTab {
             .alignItems(VerticalAlign.Center)
 
             if (this.getDayCourseCount(day.dayIndex) > 0) {
-              ForEach(this.getCoursesByDay(day.dayIndex), (course: CourseItem) => {
+              ForEach(this.getCoursesByDay(day.dayIndex), (course: CourseRow) => {
                 this.buildCourseCard(course)
-              }, (course: CourseItem) => course.id + this.currentWeek.toString())
+              }, (course: CourseRow) => course.id + this.currentWeek.toString())
             } else {
               Row() {
                 Text('今日无课程，好好休息吧～')
@@ -478,7 +438,7 @@ export struct StudyTab {
   }
 
   @Builder
-  buildCourseCard(course: CourseItem) {
+  buildCourseCard(course: CourseRow) {
     Row({ space: 12 }) {
       Column({ space: 4 }) {
         Text(course.startTime)
@@ -579,7 +539,7 @@ export struct StudyTab {
         .alignItems(VerticalAlign.Center)
 
         // 成绩列表（按绩点排序）
-        ForEach(this.getSortedScores(), (score: ScoreItem) => {
+        ForEach(this.getSortedScores(), (score: ScoreRow) => {
           Row() {
             Column({ space: 4 }) {
               Text(score.courseName)
@@ -617,7 +577,7 @@ export struct StudyTab {
           .backgroundColor('#FFFFFF')
           .borderRadius(8)
           .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
-        }, (score: ScoreItem) => score.id)
+        }, (score: ScoreRow) => score.id)
       }
       .width('100%')
       .padding({ left: 20, right: 20, top: 16, bottom: 24 })
@@ -672,9 +632,9 @@ export struct StudyTab {
             .justifyContent(FlexAlign.Center)
             .alignItems(VerticalAlign.Center)
           } else {
-            ForEach(this.filteredBooks, (book: BookItem) => {
+            ForEach(this.filteredBooks, (book: BookRow) => {
               this.buildBookCard(book)
-            }, (book: BookItem) => book.id)
+            }, (book: BookRow) => book.id)
           }
         }
         .width('100%')
@@ -687,7 +647,7 @@ export struct StudyTab {
   }
 
   @Builder
-  buildBookCard(book: BookItem) {
+  buildBookCard(book: BookRow) {
     Row({ space: 12 }) {
       // 封面占位
       Stack() {
