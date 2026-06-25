@@ -427,20 +427,7 @@ export struct StudyTab {
           .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
         }, (day: WeekDayItem) => day.name + day.dayIndex.toString())
 
-        // 编辑课程表按钮
-        Button('编辑课程表')
-          .width('100%')
-          .height(48)
-          .fontSize(26)
-          .fontColor('#FFFFFF')
-          .backgroundColor('#1677FF')
-          .borderRadius(8)
-          .onClick(() => {
-            router.pushUrl({ url: 'pages/study/ScheduleEditPage' })
-              .catch(() => {
-                promptAction.showToast({ message: '打开编辑页失败' });
-              });
-          })
+        // 编辑课程：点课程卡片→详情弹窗→编辑课程入口
       }
       .width('100%')
       .padding({ left: 20, right: 20, top: 16, bottom: 24 })

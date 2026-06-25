@@ -1,8 +1,6 @@
 /**
- * ScheduleEditPage.ets - 课程表编辑页
- * 添加/修改/删除课程，数据通过 CourseDao 持久化到 RDB
- *
- * 接收参数：courseId（编辑已有课程时传入）
+ * ScheduleEditPage.ets - 课程编辑页（仅编辑已有课程）
+ * 接收 courseId 参数，从 RDB 加载数据回显，用户修改后手动保存
  */
 import { router } from '@kit.ArkUI';
 import promptAction from '@ohos.promptAction';
@@ -19,8 +17,6 @@ interface TypeOption {
 
 const COURSE_COLORS: string[] = ['#1677FF', '#FF7D00', '#00B42A', '#722ED1', '#EB2F96'];
 
-let _idCounter: number = 0;
-
 @Entry
 @Component
 struct ScheduleEditPage {
@@ -36,7 +32,6 @@ struct ScheduleEditPage {
   @State courseType: string = '必修';
   @State credit: string = '';
   @State color: string = COURSE_COLORS[0];
-  @State isEditing: boolean = false;
   @State isLoading: boolean = true;
 
   private dayOptions: DayOption[] = [
@@ -51,17 +46,19 @@ struct ScheduleEditPage {
   ];
 
   aboutToAppear(): void {
-    // 安全获取路由参数
     try {
       const params: Record<string, string> = router.getParams() as Record<string, string>;
-      if (params && params['courseId']) {
-        this.courseId = params['courseId'];
-        this.isEditing = true;
+      if (!params || !params['courseId']) {
+        promptAction.showToast({ message: '缺少课程参数' });
+        router.back();
+        return;
       }
+      this.courseId = params['courseId'];
+      this.loadCourse(this.courseId);
     } catch (_e) {
-      // 无参数时正常进入新建模式
+      promptAction.showToast({ message: '加载课程失败' });
+      router.back();
     }
-    this.isLoading = false;
   }
 
   private loadCourse(id: string): void {
@@ -82,12 +79,16 @@ struct ScheduleEditPage {
             this.courseType = c.courseType;
             this.credit = c.credit;
             this.color = c.color;
+            this.isLoading = false;
             return;
           }
         }
+        promptAction.showToast({ message: '未找到该课程' });
+        router.back();
       });
     } catch (_e) {
-      promptAction.showToast({ message: '加载课程失败' });
+      promptAction.showToast({ message: '加载失败' });
+      router.back();
     }
   }
 
@@ -107,10 +108,8 @@ struct ScheduleEditPage {
 
     try {
       const ctx: Context = getContext(this);
-      _idCounter++;
-      const id: string = this.isEditing ? this.courseId : 'c_' + _idCounter.toString();
       const row: CourseRow = {
-        id: id,
+        id: this.courseId,
         name: this.courseName.trim(),
         teacher: this.teacher.trim(),
         location: this.location.trim(),
@@ -125,26 +124,16 @@ struct ScheduleEditPage {
         remark: ''
       };
 
-      if (this.isEditing) {
-        CourseDao.update(ctx, row).then(() => {
-          promptAction.showToast({ message: '课程已更新' });
-          router.back();
-        });
-      } else {
-        CourseDao.insert(ctx, row).then(() => {
-          promptAction.showToast({ message: '课程已添加' });
-          router.back();
-        });
-      }
+      CourseDao.update(ctx, row).then(() => {
+        promptAction.showToast({ message: '课程已更新' });
+        router.back();
+      });
     } catch (_e) {
       promptAction.showToast({ message: '保存失败' });
     }
   }
 
   private deleteCourse(): void {
-    if (!this.isEditing) {
-      return;
-    }
     try {
       const ctx: Context = getContext(this);
       CourseDao.deleteById(ctx, this.courseId).then(() => {
@@ -164,7 +153,7 @@ struct ScheduleEditPage {
           .width(24).height(24).fillColor('#1D2129')
           .onClick(() => { router.back(); })
         Blank()
-        Text(this.isEditing ? '编辑课程' : '添加课程')
+        Text('编辑课程')
           .fontSize(30).fontWeight(600).fontColor('#1D2129')
         Blank()
         Row().width(24)
@@ -172,11 +161,9 @@ struct ScheduleEditPage {
       .width('100%').height(56).padding({ left: 16, right: 20 })
       .backgroundColor('#FFFFFF').alignItems(VerticalAlign.Center)
 
-      if (this.isEditing && this.courseName === '') {
-        // 编辑模式尚未加载完成
+      if (this.isLoading) {
         Column() {
-          Text('加载中...')
-            .fontSize(26).fontColor('#86909C')
+          Text('加载中...').fontSize(26).fontColor('#86909C')
         }
         .layoutWeight(1)
         .justifyContent(FlexAlign.Center)
@@ -200,7 +187,6 @@ struct ScheduleEditPage {
             // 上课时间
             Column({ space: 16 }) {
               Text('上课时间').fontSize(28).fontWeight(700).fontColor('#1D2129')
-
               Column({ space: 8 }) {
                 Text('星期').fontSize(24).fontColor('#86909C').width('100%')
                 Row({ space: 8 }) {
@@ -211,61 +197,25 @@ struct ScheduleEditPage {
                       .padding({ left: 12, right: 12, top: 6, bottom: 6 })
                       .backgroundColor(this.dayIndex === opt.value ? '#1677FF' : '#F5F7FA')
                       .borderRadius(6)
-                      .onClick(() => {
-                        this.dayIndex = opt.value;
-                      })
+                      .onClick(() => { this.dayIndex = opt.value; })
                   }, (opt: DayOption) => opt.label)
                 }
                 .width('100%')
               }
 
               Row({ space: 16 }) {
-                Column({ space: 8 }) {
-                  Text('开始时间').fontSize(24).fontColor('#86909C').width('100%')
-                  TextInput({ placeholder: '如 08:00', text: this.startTime })
-                    .height(48).fontSize(26)
-                    .placeholderColor('#86909C')
-                    .backgroundColor('#F5F7FA').borderRadius(8)
-                    .onChange((val: string) => { this.startTime = val; })
-                }
-                .layoutWeight(1)
-
-                Column({ space: 8 }) {
-                  Text('结束时间').fontSize(24).fontColor('#86909C').width('100%')
-                  TextInput({ placeholder: '如 09:40', text: this.endTime })
-                    .height(48).fontSize(26)
-                    .placeholderColor('#86909C')
-                    .backgroundColor('#F5F7FA').borderRadius(8)
-                    .onChange((val: string) => { this.endTime = val; })
-                }
-                .layoutWeight(1)
+                this.buildTimeField('开始时间', this.startTime,
+                  (val: string) => { this.startTime = val; }, '如 08:00')
+                this.buildTimeField('结束时间', this.endTime,
+                  (val: string) => { this.endTime = val; }, '如 09:40')
               }
               .width('100%')
 
               Row({ space: 16 }) {
-                Column({ space: 8 }) {
-                  Text('起始周').fontSize(24).fontColor('#86909C').width('100%')
-                  TextInput({ placeholder: '1~20', text: this.startWeek.toString() })
-                    .height(48).fontSize(26)
-                    .placeholderColor('#86909C')
-                    .backgroundColor('#F5F7FA').borderRadius(8)
-                    .onChange((val: string) => {
-                      this.startWeek = Number(val);
-                    })
-                }
-                .layoutWeight(1)
-
-                Column({ space: 8 }) {
-                  Text('结束周').fontSize(24).fontColor('#86909C').width('100%')
-                  TextInput({ placeholder: '1~20', text: this.endWeek.toString() })
-                    .height(48).fontSize(26)
-                    .placeholderColor('#86909C')
-                    .backgroundColor('#F5F7FA').borderRadius(8)
-                    .onChange((val: string) => {
-                      this.endWeek = Number(val);
-                    })
-                }
-                .layoutWeight(1)
+                this.buildWeekField('起始周', this.startWeek,
+                  (val: number) => { this.startWeek = val; })
+                this.buildWeekField('结束周', this.endWeek,
+                  (val: number) => { this.endWeek = val; })
               }
               .width('100%')
             }
@@ -275,7 +225,6 @@ struct ScheduleEditPage {
             // 课程属性
             Column({ space: 16 }) {
               Text('课程属性').fontSize(28).fontWeight(700).fontColor('#1D2129')
-
               Column({ space: 8 }) {
                 Text('课程类型').fontSize(24).fontColor('#86909C').width('100%')
                 Row({ space: 8 }) {
@@ -286,9 +235,7 @@ struct ScheduleEditPage {
                       .padding({ left: 16, right: 16, top: 6, bottom: 6 })
                       .backgroundColor(this.courseType === opt.label ? '#1677FF' : '#F5F7FA')
                       .borderRadius(6)
-                      .onClick(() => {
-                        this.courseType = opt.label;
-                      })
+                      .onClick(() => { this.courseType = opt.label; })
                   }, (opt: TypeOption) => opt.label)
                 }
                 .width('100%')
@@ -306,9 +253,7 @@ struct ScheduleEditPage {
                       .fill(c)
                       .stroke(this.color === c ? '#1D2129' : '#00FFFFFF')
                       .strokeWidth(3)
-                      .onClick(() => {
-                        this.color = c;
-                      })
+                      .onClick(() => { this.color = c; })
                   }, (c: string, idx: number) => c + idx.toString())
                 }
                 .width('100%')
@@ -317,26 +262,19 @@ struct ScheduleEditPage {
             .width('100%').padding(16)
             .backgroundColor('#FFFFFF').borderRadius(8)
 
-            // 保存按钮
-            Button('保存课程')
+            Button('保存修改')
               .width('100%').height(48)
               .fontSize(26).fontColor('#FFFFFF')
               .backgroundColor('#1677FF').borderRadius(8)
-              .onClick(() => {
-                this.saveCourse();
-              })
+              .onClick(() => { this.saveCourse(); })
 
-            if (this.isEditing) {
-              Button('删除课程')
-                .width('100%').height(48)
-                .fontSize(26).fontColor('#FF7D00')
-                .backgroundColor('#FFFFFF')
-                .borderRadius(8)
-                .border({ width: 1, color: '#FF7D00' })
-                .onClick(() => {
-                  this.deleteCourse();
-                })
-            }
+            Button('删除课程')
+              .width('100%').height(48)
+              .fontSize(26).fontColor('#FF7D00')
+              .backgroundColor('#FFFFFF')
+              .borderRadius(8)
+              .border({ width: 1, color: '#FF7D00' })
+              .onClick(() => { this.deleteCourse(); })
           }
           .width('100%')
           .padding({ left: 20, right: 20, top: 16, bottom: 24 })
@@ -360,5 +298,38 @@ struct ScheduleEditPage {
         .onChange((val: string) => { onValChange(val); })
     }
     .width('100%').alignItems(HorizontalAlign.Start)
+  }
+
+  @Builder
+  buildTimeField(label: string, value: string, onValChange: (val: string) => void, placeholder: string) {
+    Column({ space: 8 }) {
+      Text(label).fontSize(24).fontColor('#86909C').width('100%')
+      TextInput({ placeholder: placeholder, text: value })
+        .height(48).fontSize(26)
+        .placeholderColor('#86909C')
+        .backgroundColor('#F5F7FA').borderRadius(8)
+        .onChange((val: string) => { onValChange(val); })
+    }
+    .layoutWeight(1)
+    .alignItems(HorizontalAlign.Start)
+  }
+
+  @Builder
+  buildWeekField(label: string, value: number, onValChange: (val: number) => void) {
+    Column({ space: 8 }) {
+      Text(label).fontSize(24).fontColor('#86909C').width('100%')
+      TextInput({ placeholder: '1~20', text: value.toString() })
+        .height(48).fontSize(26)
+        .placeholderColor('#86909C')
+        .backgroundColor('#F5F7FA').borderRadius(8)
+        .onChange((val: string) => {
+          const n: number = Number(val);
+          if (n >= 1 && n <= 20) {
+            onValChange(n);
+          }
+        })
+    }
+    .layoutWeight(1)
+    .alignItems(HorizontalAlign.Start)
   }
 }
