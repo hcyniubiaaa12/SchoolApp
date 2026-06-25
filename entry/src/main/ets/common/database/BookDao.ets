@@ -68,6 +68,21 @@ export class BookDao {
     return readBooks(rs);
   }
 
+  /** 按 ID 查单本图书 */
+  static async queryById(context: Context, bookId: string): Promise<BookRow | null> {
+    const store = await AppDbHelper.getStore(context);
+    const predicates = new relationalStore.RdbPredicates('book');
+    predicates.equalTo('id', bookId);
+    const rs = await store.query(predicates);
+    if (rs.goToFirstRow()) {
+      const row: BookRow = toBookRow(rs);
+      rs.close();
+      return row;
+    }
+    rs.close();
+    return null;
+  }
+
   /** 切换收藏状态 */
   static async toggleFavorite(context: Context, bookId: string): Promise<boolean> {
     const store = await AppDbHelper.getStore(context);

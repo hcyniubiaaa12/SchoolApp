@@ -3,6 +3,7 @@
  * 5 分类标签横滚（校园公告/校园资讯/社团活动/学术讲座/校园地图）
  * 默认选中校园公告，地图标签走专属布局
  */
+import { router } from '@kit.ArkUI';
 import promptAction from '@ohos.promptAction';
 import { JsonStoreUtil } from '../../common/utils/JsonStoreUtil';
 
@@ -324,7 +325,7 @@ export struct CampusInfoTab {
             .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
             .alignItems(VerticalAlign.Center)
             .onClick(() => {
-              promptAction.showToast({ message: '资讯详情页将在后续版本开放' });
+              router.pushUrl({ url: 'pages/campus/NewsDetailPage', params: { newsId: item.id } }).catch((err: Error) => { console.error('[CampusInfo] 跳转资讯详情失败: ' + err.message); });
             })
           }, (item: NewsItem) => item.id)
         }
@@ -586,7 +587,7 @@ export struct CampusInfoTab {
             .backgroundColor('#1677FF')
             .borderRadius(8)
             .onClick(() => {
-              promptAction.showToast({ message: '建筑详情页将在后续版本开放' });
+              const b = this.buildings[this.selectedBuilding]; router.pushUrl({ url: 'pages/campus/BuildingDetailPage', params: { name: b.name, description: b.description } }).catch((err: Error) => { console.error('[CampusInfo] 跳转建筑详情失败: ' + err.message); });
             })
         }
       }

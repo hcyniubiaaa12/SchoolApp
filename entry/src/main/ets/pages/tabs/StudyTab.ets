@@ -717,7 +717,7 @@ export struct StudyTab {
     .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
     .alignItems(VerticalAlign.Center)
     .onClick(() => {
-      promptAction.showToast({ message: '图书详情页将在后续版本开放' });
+      router.pushUrl({ url: 'pages/study/BookDetailPage', params: { bookId: book.id } }).catch((err: Error) => { console.error('[StudyTab] 跳转图书详情失败: ' + err.message); });
     })
   }
 

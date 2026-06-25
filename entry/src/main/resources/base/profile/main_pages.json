@@ -19,6 +19,9 @@
     "pages/life/MusicListPage",
     "pages/life/CalculatorPage",
     "pages/life/CountdownPage",
-    "pages/life/ExpressQueryPage"
+    "pages/life/ExpressQueryPage",
+    "pages/study/BookDetailPage",
+    "pages/campus/NewsDetailPage",
+    "pages/campus/BuildingDetailPage"
   ]
 }
