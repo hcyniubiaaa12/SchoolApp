@@ -1,8 +1,12 @@
 /**
  * TodoPage.ets - 待办事项管理页
- * 新增/删除/标记完成/分类查看
+ * 新增/删除/标记完成/分类查看 + Preferences 持久化（异步 API）
+ *
+ * 数据流：aboutToAppear 异步加载，每次增删改后保存。
+ * 使用 async Preferences API 避免 aboutToAppear 中 sync 调用导致闪退。
  */
 import { router } from '@kit.ArkUI';
+import { preferences } from '@kit.ArkData';
 import promptAction from '@ohos.promptAction';
 
 interface TodoItem {
@@ -14,15 +18,13 @@ interface TodoItem {
   createTime: string;
 }
 
+const TODO_PREFS_NAME: string = 'school_app_prefs';
+const KEY_TODO_DATA: string = 'todo_data_json';
+
 @Entry
 @Component
 struct TodoPage {
-  @State todos: TodoItem[] = [
-    { id: 't1', content: '提交数据结构课程设计报告', category: '学习', isCompleted: false, remindTime: '2026-06-28 23:59', createTime: '2026-06-20' },
-    { id: 't2', content: '购买实验器材', category: '生活', isCompleted: false, remindTime: '2026-06-26 18:00', createTime: '2026-06-19' },
-    { id: 't3', content: '复习高等数学期末考试', category: '学习', isCompleted: true, remindTime: '2026-07-01 08:00', createTime: '2026-06-15' },
-    { id: 't4', content: '参加社团例会', category: '其他', isCompleted: false, remindTime: '2026-06-27 19:00', createTime: '2026-06-14' },
-  ];
+  @State todos: TodoItem[] = [];
   @State currentFilter: string = '全部';
   @State showAddInput: boolean = false;
   @State newTodoContent: string = '';
@@ -33,7 +35,56 @@ struct TodoPage {
   private filters: string[] = ['全部', '学习', '生活', '其他'];
   private categories: string[] = ['学习', '生活', '其他'];
 
-  private get filteredTodos(): TodoItem[] {
+  aboutToAppear(): void {
+    this.loadTodos();
+  }
+
+  // ===== Preferences 持久化（异步 API，与 PreferencesUtil 一致） =====
+
+  /** 获取 Preferences 实例 */
+  private async getPref(context: Context): Promise<preferences.Preferences> {
+    return preferences.getPreferences(context, TODO_PREFS_NAME);
+  }
+
+  /** 从 Preferences 异步加载待办数据 */
+  private async loadTodos(): Promise<void> {
+    try {
+      const ctx: Context = getContext(this);
+      const pref = await this.getPref(ctx);
+      const json: string = await pref.get(KEY_TODO_DATA, '') as string;
+      if (json === '') {
+        // 首次：使用演示数据
+        this.todos = [
+          { id: 't1', content: '提交数据结构课程设计报告', category: '学习', isCompleted: false, remindTime: '2026-06-28 23:59', createTime: '2026-06-20' },
+          { id: 't2', content: '购买实验器材', category: '生活', isCompleted: false, remindTime: '2026-06-26 18:00', createTime: '2026-06-19' },
+          { id: 't3', content: '复习高等数学期末考试', category: '学习', isCompleted: true, remindTime: '2026-07-01 08:00', createTime: '2026-06-15' },
+          { id: 't4', content: '参加社团例会', category: '其他', isCompleted: false, remindTime: '2026-06-27 19:00', createTime: '2026-06-14' },
+        ];
+        await this.saveTodos();
+      } else {
+        this.todos = JSON.parse(json) as TodoItem[];
+      }
+    } catch (err) {
+      console.error('[TodoPage] 加载待办失败: ' + JSON.stringify(err));
+      this.todos = [];
+    }
+  }
+
+  /** 异步保存待办数据到 Preferences */
+  private async saveTodos(): Promise<void> {
+    try {
+      const ctx: Context = getContext(this);
+      const pref = await this.getPref(ctx);
+      await pref.put(KEY_TODO_DATA, JSON.stringify(this.todos));
+      await pref.flush();
+    } catch (err) {
+      console.error('[TodoPage] 保存待办失败: ' + JSON.stringify(err));
+    }
+  }
+
+  // ===== 业务逻辑 =====
+
+  private getFilteredTodos(): TodoItem[] {
     if (this.currentFilter === '全部') {
       return this.todos;
     }
@@ -46,7 +97,7 @@ struct TodoPage {
     return result;
   }
 
-  private get pendingCount(): number {
+  private getPendingCount(): number {
     let count: number = 0;
     for (let i = 0; i < this.todos.length; i++) {
       if (!this.todos[i].isCompleted) {
@@ -77,6 +128,7 @@ struct TodoPage {
     this.todos = newList;
     this.newTodoContent = '';
     this.showAddInput = false;
+    this.saveTodos();
     promptAction.showToast({ message: '已添加待办' });
   }
 
@@ -84,6 +136,7 @@ struct TodoPage {
     for (let i = 0; i < this.todos.length; i++) {
       if (this.todos[i].id === id) {
         this.todos[i].isCompleted = !this.todos[i].isCompleted;
+        this.saveTodos();
         return;
       }
     }
@@ -97,6 +150,7 @@ struct TodoPage {
       }
     }
     this.todos = newList;
+    this.saveTodos();
     promptAction.showToast({ message: '已删除待办' });
   }
 
@@ -123,6 +177,7 @@ struct TodoPage {
     this.todos = newList;
     this.selectedIds = [];
     this.batchMode = false;
+    this.saveTodos();
     promptAction.showToast({ message: '批量删除成功' });
   }
 
@@ -138,6 +193,7 @@ struct TodoPage {
     }
     this.selectedIds = [];
     this.batchMode = false;
+    this.saveTodos();
     promptAction.showToast({ message: '已标记完成' });
   }
 
@@ -173,7 +229,7 @@ struct TodoPage {
 
       // 概况
       Row() {
-        Text('待完成 ' + this.pendingCount.toString() + ' 项')
+        Text('待完成 ' + this.getPendingCount().toString() + ' 项')
           .fontSize(22).fontColor('#FF7D00')
         Blank()
         if (this.batchMode) {
@@ -246,7 +302,7 @@ struct TodoPage {
       // 待办列表
       Scroll() {
         Column({ space: 8 }) {
-          if (this.filteredTodos.length === 0) {
+          if (this.getFilteredTodos().length === 0) {
             Column({ space: 16 }) {
               Text('✅')
                 .fontSize(48)
@@ -256,7 +312,7 @@ struct TodoPage {
             .width('100%').height(200)
             .justifyContent(FlexAlign.Center).alignItems(HorizontalAlign.Center)
           } else {
-            ForEach(this.filteredTodos, (item: TodoItem) => {
+            ForEach(this.getFilteredTodos(), (item: TodoItem) => {
               Column({ space: 8 }) {
                 Row() {
                   if (this.batchMode) {

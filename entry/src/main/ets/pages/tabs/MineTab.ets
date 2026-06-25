@@ -27,7 +27,7 @@ export struct MineTab {
     { name: '我的待办', icon: '📝', target: 'pages/mine/TodoPage' },
     { name: '我的课程', icon: '📅', target: '' },
     { name: '我的成绩', icon: '📊', target: '' },
-    { name: '失物发布', icon: '📋', target: '' },
+    { name: '失物发布', icon: '📋', target: 'pages/life/LostFoundPublishPage' },
     { name: '帮助中心', icon: '❓', target: '' },
     { name: '意见反馈', icon: '💬', target: '' }
   ];

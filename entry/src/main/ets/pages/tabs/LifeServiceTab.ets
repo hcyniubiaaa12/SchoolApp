@@ -3,6 +3,7 @@
  * 2×2 功能入口(失物招领/校园美食/音乐播放/校园工具)
  * 默认显示失物招领内容，点击入口切换
  */
+import { router } from '@kit.ArkUI';
 import promptAction from '@ohos.promptAction';
 import { JsonStoreUtil } from '../../common/utils/JsonStoreUtil';
 import { LostFoundDao, LostFoundRow } from '../../common/database/LostFoundDao';
@@ -272,7 +273,10 @@ export struct LifeServiceTab {
         .backgroundColor('#FF7D00')
         .borderRadius(8)
         .onClick(() => {
-          promptAction.showToast({ message: '失物招领发布页将在后续版本开放' });
+          router.pushUrl({ url: 'pages/life/LostFoundPublishPage' })
+            .catch((err: Error) => {
+              console.error('[LifeService] 跳转发布页失败: ' + err.message);
+            });
         })
 
       // 筛选标签
@@ -565,7 +569,7 @@ export struct LifeServiceTab {
           .borderRadius(22)
           .margin({ top: 8 })
           .onClick(() => {
-            promptAction.showToast({ message: '本地音乐列表将在后续版本开放' });
+            router.pushUrl({ url: 'pages/life/MusicListPage' }).catch((err: Error) => { console.error('[LifeService] 跳转音乐列表失败: ' + err.message); });
           })
       }
     }
@@ -575,6 +579,26 @@ export struct LifeServiceTab {
     .borderRadius(8)
     .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
     .alignItems(HorizontalAlign.Center)
+  }
+
+  // ===== 校园工具导航 =====
+  private navigateToTool(name: string): void {
+    let targetUrl: string = '';
+    if (name === '计算器') {
+      targetUrl = 'pages/life/CalculatorPage';
+    } else if (name === '倒计时') {
+      targetUrl = 'pages/life/CountdownPage';
+    } else if (name === '快递查询') {
+      targetUrl = 'pages/life/ExpressQueryPage';
+    }
+    if (targetUrl !== '') {
+      router.pushUrl({ url: targetUrl })
+        .catch((err: Error) => {
+          console.error('[LifeService] 跳转工具页失败: ' + err.message);
+        });
+    } else {
+      promptAction.showToast({ message: name + '功能即将开放' });
+    }
   }
 
   // ===== 校园工具 =====
@@ -615,7 +639,7 @@ export struct LifeServiceTab {
     .borderRadius(8)
     .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
     .onClick(() => {
-      promptAction.showToast({ message: name + '功能将在后续版本开放' });
+      this.navigateToTool(name);
     })
   }
 }

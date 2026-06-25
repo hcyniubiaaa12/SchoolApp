@@ -16,6 +16,9 @@
     "pages/mine/TodoPage",
     "pages/study/ScheduleEditPage",
     "pages/life/LostFoundPublishPage",
-    "pages/life/MusicListPage"
+    "pages/life/MusicListPage",
+    "pages/life/CalculatorPage",
+    "pages/life/CountdownPage",
+    "pages/life/ExpressQueryPage"
   ]
 }

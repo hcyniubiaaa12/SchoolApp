@@ -34,3 +34,6 @@ export const FILE_FOOD: string = 'food.json';
 export const FILE_MUSIC: string = 'music.json';
 export const FILE_WEATHER: string = 'weather.json';
 export const FILE_FAVORITES: string = 'favorites.json';
+
+// 待办数据存储键（Preferences 持久化）
+export const KEY_TODO_DATA: string = 'todo_data_json';
