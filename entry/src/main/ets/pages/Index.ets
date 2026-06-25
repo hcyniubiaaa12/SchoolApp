@@ -10,6 +10,7 @@ import {
   MAX_FONT_SIZE,
   MIN_FONT_SIZE
 } from '../common/constants/StorageKeys';
+import { DataInitializer } from '../common/database/DataInitializer';
 import { HomeTab, QuickEntryItem } from './tabs/HomeTab';
 import { CampusInfoTab } from './tabs/CampusInfoTab';
 import { StudyTab } from './tabs/StudyTab';
@@ -43,6 +44,8 @@ struct Index {
     if (storedUserId) { this.userId = storedUserId; }
     if (storedUsername) { this.username = storedUsername; }
     console.log('>>> [Index] 页面显示 - userId: ' + this.userId + ', username: ' + this.username);
+    // 首次启动：导入初始数据到 RDB
+    DataInitializer.seedIfEmpty(getContext(this));
   }
 
   // 跳转到 ProfileAbility（从 TabBar「我的」点击时的备选，下个版本收敛到 MineTab）
