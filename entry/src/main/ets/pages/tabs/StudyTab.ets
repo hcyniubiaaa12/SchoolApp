@@ -38,6 +38,7 @@ interface MaterialItem {
 @Component
 export struct StudyTab {
   @Prop uiContext?: Context;
+  @Prop @Watch('onRefresh') refreshSignal: number = 0;
   @State currentTagIndex: number = 0;
   @State currentWeek: number = 6;
   @State selectedCourseId: string = '';
@@ -70,6 +71,13 @@ export struct StudyTab {
     this.loadScores();
     this.loadBooks();
     this.loadMaterials();
+  }
+
+  /** refreshSignal 变化时重新加载数据（编辑课程后返回自动刷新） */
+  private onRefresh(): void {
+    this.loadCourses();
+    this.loadScores();
+    this.loadBooks();
   }
 
   private loadCourses(): void {

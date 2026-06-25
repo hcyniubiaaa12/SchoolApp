@@ -32,6 +32,7 @@ struct Index {
   // P0: 默认加载首页 Tab (索引 0)
   @State currentTab: number = 0;
   @State swiperIndex: number = 0;
+  @State courseRefreshSignal: number = 0;
 
   private context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
 
@@ -46,6 +47,11 @@ struct Index {
     console.log('>>> [Index] 页面显示 - userId: ' + this.userId + ', username: ' + this.username);
     // 首次启动：导入初始数据到 RDB
     DataInitializer.seedIfEmpty(this.context);
+  }
+
+  onPageShow(): void {
+    // 每次页面显示时刷新学习助手数据（如编辑课程后返回）
+    this.courseRefreshSignal++;
   }
 
   // 跳转到 ProfileAbility（从 TabBar「我的」点击时的备选，下个版本收敛到 MineTab）
@@ -157,7 +163,7 @@ struct Index {
         .tabBar(this.buildTabBar('校园信息', 1, $r('sys.symbol.building')))
 
         TabContent() {
-          StudyTab({ uiContext: this.context })
+          StudyTab({ uiContext: this.context, refreshSignal: this.courseRefreshSignal })
         }
         .tabBar(this.buildTabBar('学习助手', 2, $r('sys.symbol.book')))
 
