@@ -54,17 +54,21 @@ struct LostFoundPublishPage {
       this.category.trim() !== '';
   }
 
-  private submitPublish(): void {
+  private async submitPublish(): Promise<void> {
     if (!this.isFormValid) {
       promptAction.showToast({ message: '请填写完整信息（物品名、地点、时间、分类）' });
       return;
     }
     this.isSubmitting = true;
+    // 安全超时：10秒后无论结果如何都恢复按钮
+    const safetyTimer: number = setTimeout(() => {
+      this.isSubmitting = false;
+    }, 10000);
     try {
       const ctx: Context = getContext(this);
       const nowStr: string = new Date().toISOString().substring(0, 19).replace('T', ' ');
       const newItem: LostFoundRow = {
-        id: 'lf_' + Date.now().toString(),
+        id: 'lf_' + Date.now().toString() + '_' + Math.random().toString(36).substring(2, 6),
         type: this.publishType,
         category: this.category,
         itemName: this.itemName.trim(),
@@ -77,17 +81,16 @@ struct LostFoundPublishPage {
         publishTime: nowStr,
         status: 'pending'
       };
-      LostFoundDao.insert(ctx, newItem).then(() => {
-        promptAction.showToast({ message: '发布成功' });
-        router.back();
-      }).catch((err: Error) => {
-        promptAction.showToast({ message: '发布失败，请重试' });
-        console.error('[LostFoundPublish] 保存失败: ' + JSON.stringify(err));
-        this.isSubmitting = false;
-      });
+      console.info('[LostFoundPublish] 开始插入数据: ' + JSON.stringify(newItem));
+      await LostFoundDao.insert(ctx, newItem);
+      clearTimeout(safetyTimer);
+      promptAction.showToast({ message: '发布成功' });
+      this.isSubmitting = false;
+      router.back();
     } catch (err) {
-      promptAction.showToast({ message: '发布异常' });
-      console.error('[LostFoundPublish] 异常: ' + JSON.stringify(err));
+      clearTimeout(safetyTimer);
+      console.error('[LostFoundPublish] 保存失败: ' + JSON.stringify(err));
+      promptAction.showToast({ message: '发布失败，请检查信息后重试' });
       this.isSubmitting = false;
     }
   }
