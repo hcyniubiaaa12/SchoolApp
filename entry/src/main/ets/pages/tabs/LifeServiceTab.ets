@@ -26,6 +26,7 @@ interface SongItem {
 
 @Component
 export struct LifeServiceTab {
+  @Prop uiContext?: Context;
   @State currentEntry: number = 0;
   @State lostFoundList: LostFoundRow[] = [];
   @State lfFilterIndex: number = 0;
@@ -51,8 +52,10 @@ export struct LifeServiceTab {
   }
 
   private loadLostFound(): void {
-    const ctx: Context = getContext(this);
-    LostFoundDao.queryAll(ctx).then((data: LostFoundRow[] | null) => {
+    if (!this.uiContext) {
+      return;
+    }
+    LostFoundDao.queryAll(this.uiContext).then((data: LostFoundRow[] | null) => {
       if (data) {
         this.lostFoundList = data;
       }
@@ -60,8 +63,10 @@ export struct LifeServiceTab {
   }
 
   private loadFood(): void {
-    const ctx: Context = getContext(this);
-    FoodDao.queryAll(ctx).then((data: FoodRow[] | null) => {
+    if (!this.uiContext) {
+      return;
+    }
+    FoodDao.queryAll(this.uiContext).then((data: FoodRow[] | null) => {
       if (data) {
         this.foodList = data;
       }
@@ -106,8 +111,10 @@ export struct LifeServiceTab {
   }
 
   private toggleFoodFavorite(foodId: string): void {
-    const ctx: Context = getContext(this);
-    FoodDao.toggleFavorite(ctx, foodId).then(() => {
+    if (!this.uiContext) {
+      return;
+    }
+    FoodDao.toggleFavorite(this.uiContext, foodId).then(() => {
       this.loadFood();
     });
   }

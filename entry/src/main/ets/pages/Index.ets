@@ -45,7 +45,7 @@ struct Index {
     if (storedUsername) { this.username = storedUsername; }
     console.log('>>> [Index] 页面显示 - userId: ' + this.userId + ', username: ' + this.username);
     // 首次启动：导入初始数据到 RDB
-    DataInitializer.seedIfEmpty(getContext(this));
+    DataInitializer.seedIfEmpty(this.context);
   }
 
   // 跳转到 ProfileAbility（从 TabBar「我的」点击时的备选，下个版本收敛到 MineTab）
@@ -157,12 +157,12 @@ struct Index {
         .tabBar(this.buildTabBar('校园信息', 1, $r('sys.symbol.building')))
 
         TabContent() {
-          StudyTab()
+          StudyTab({ uiContext: this.context })
         }
         .tabBar(this.buildTabBar('学习助手', 2, $r('sys.symbol.book')))
 
         TabContent() {
-          LifeServiceTab()
+          LifeServiceTab({ uiContext: this.context })
         }
         .tabBar(this.buildTabBar('生活服务', 3, $r('sys.symbol.bag')))
 

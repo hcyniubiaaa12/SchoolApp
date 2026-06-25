@@ -37,6 +37,7 @@ interface MaterialItem {
 
 @Component
 export struct StudyTab {
+  @Prop uiContext?: Context;
   @State currentTagIndex: number = 0;
   @State currentWeek: number = 6;
   @State selectedCourseId: string = '';
@@ -72,22 +73,28 @@ export struct StudyTab {
   }
 
   private loadCourses(): void {
-    const ctx: Context = getContext(this);
-    CourseDao.queryAll(ctx).then((data: CourseRow[]) => {
+    if (!this.uiContext) {
+      return;
+    }
+    CourseDao.queryAll(this.uiContext).then((data: CourseRow[]) => {
       this.courses = data;
     });
   }
 
   private loadScores(): void {
-    const ctx: Context = getContext(this);
-    ScoreDao.queryAll(ctx).then((data: ScoreRow[]) => {
+    if (!this.uiContext) {
+      return;
+    }
+    ScoreDao.queryAll(this.uiContext).then((data: ScoreRow[]) => {
       this.scores = data;
     });
   }
 
   private loadBooks(): void {
-    const ctx: Context = getContext(this);
-    BookDao.queryAll(ctx).then((data: BookRow[]) => {
+    if (!this.uiContext) {
+      return;
+    }
+    BookDao.queryAll(this.uiContext).then((data: BookRow[]) => {
       this.books = data;
       this.filteredBooks = data;
     });
@@ -213,9 +220,10 @@ export struct StudyTab {
   }
 
   private toggleBookFavorite(bookId: string): void {
-    const ctx: Context = getContext(this);
-    BookDao.toggleFavorite(ctx, bookId).then(() => {
-      // 重新加载图书列表以刷新状态
+    if (!this.uiContext) {
+      return;
+    }
+    BookDao.toggleFavorite(this.uiContext, bookId).then(() => {
       this.loadBooks();
     });
   }
