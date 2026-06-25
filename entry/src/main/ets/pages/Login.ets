@@ -30,7 +30,6 @@ struct Login {
     return this.studentId.length > 0 && this.password.length > 0;
   }
 
-  // 登录成功后跳转到MainAbility（Ability级别跳转）
   private doLogin(): void {
     if (!this.studentId) {
       promptAction.showToast({ message: '请输入学号' });
@@ -41,7 +40,42 @@ struct Login {
       return;
     }
 
-    const username = this.getNameById(this.studentId);
+    // 1. 先查是否是预置演示账号（nameMap 中有，免密码校验）
+    let username = this.getNameById(this.studentId);
+    let isDemoAccount = this.nameMap[this.studentId] !== undefined;
+    let isValid = false;
+
+    if (!isDemoAccount) {
+      // 2. 非演示账号：从 Preferences 校验已注册用户
+      try {
+        const pref = preferences.getPreferencesSync(this.context, { name: 'school_app_prefs' });
+        const savedUserId = pref.getSync('saved_user_id', '') as string;
+        const savedPassword = pref.getSync('saved_password', '') as string;
+
+        if (savedUserId !== this.studentId) {
+          promptAction.showToast({ message: '该账号未注册，请先注册' });
+          return;
+        }
+        if (this.password !== savedPassword) {
+          promptAction.showToast({ message: '密码错误，请重试' });
+          return;
+        }
+        isValid = true;
+        // 已注册用户的 username 从上次保存的记录取
+        username = pref.getSync('saved_username', this.studentId) as string;
+      } catch (err) {
+        console.error('>>> [Login] 读取注册信息失败: ' + JSON.stringify(err));
+        promptAction.showToast({ message: '登录验证失败，请重试' });
+        return;
+      }
+    } else {
+      // 演示账号：存储用户信息到本地（兼容后续逻辑）
+      isValid = true;
+    }
+
+    if (!isValid) {
+      return;
+    }
 
     // 保存用户信息到本地存储
     try {
