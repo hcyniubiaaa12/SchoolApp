@@ -157,7 +157,7 @@ struct WeatherDetailPage {
             .borderRadius(8)
             .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
             .alignItems(VerticalAlign.Center)
-          }, (day: DayWeather) => day.dateText)
+          }, (day: WeatherRow) => day.dateText)
         }
         .width('100%')
         .padding({ left: 20, right: 20, top: 16, bottom: 24 })

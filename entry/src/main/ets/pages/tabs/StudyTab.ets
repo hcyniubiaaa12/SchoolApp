@@ -7,6 +7,7 @@
  *   - 学习资料 → rawfile JSON (JsonStoreUtil)
  */
 import promptAction from '@ohos.promptAction';
+import { router } from '@kit.ArkUI';
 import { JsonStoreUtil } from '../../common/utils/JsonStoreUtil';
 import { CourseDao, CourseRow } from '../../common/database/CourseDao';
 import { ScoreDao, ScoreRow } from '../../common/database/ScoreDao';
@@ -427,7 +428,10 @@ export struct StudyTab {
           .backgroundColor('#1677FF')
           .borderRadius(8)
           .onClick(() => {
-            promptAction.showToast({ message: '课程表编辑页将在后续版本开放' });
+            router.pushUrl({ url: 'pages/study/ScheduleEditPage' })
+              .catch(() => {
+                promptAction.showToast({ message: '打开编辑页失败' });
+              });
           })
       }
       .width('100%')
@@ -862,17 +866,37 @@ export struct StudyTab {
         this.buildDetailRow('类型', this.getSelectedCourse().courseType)
         this.buildDetailRow('学分', this.getSelectedCourse().credit)
 
-        Button('我知道了')
-          .width('100%')
-          .height(48)
-          .fontSize(26)
-          .fontColor('#FFFFFF')
-          .backgroundColor('#1677FF')
-          .borderRadius(8)
-          .margin({ top: 8 })
-          .onClick(() => {
-            this.closeCourseDetail();
-          })
+        Row({ space: 12 }) {
+          Button('编辑课程')
+            .layoutWeight(1)
+            .height(48)
+            .fontSize(26)
+            .fontColor('#1677FF')
+            .backgroundColor('#E8F3FF')
+            .borderRadius(8)
+            .onClick(() => {
+              this.closeCourseDetail();
+              router.pushUrl({
+                url: 'pages/study/ScheduleEditPage',
+                params: { courseId: this.selectedCourseId }
+              }).catch(() => {
+                promptAction.showToast({ message: '打开编辑页失败' });
+              });
+            })
+
+          Button('我知道了')
+            .layoutWeight(1)
+            .height(48)
+            .fontSize(26)
+            .fontColor('#FFFFFF')
+            .backgroundColor('#1677FF')
+            .borderRadius(8)
+            .onClick(() => {
+              this.closeCourseDetail();
+            })
+        }
+        .width('100%')
+        .margin({ top: 8 })
       }
       .width('100%')
       .padding(20)
