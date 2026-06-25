@@ -29,9 +29,9 @@ interface SongItem {
 export struct LifeServiceTab {
   @Prop isDarkMode: boolean = false;
   @Prop uiContext?: Context;
+  @Prop @Watch('onRefresh') refreshSignal: number = 0;
   @State currentEntry: number = 0;
   @State lostFoundList: LostFoundRow[] = [];
-  @State lfFilterIndex: number = 0;
   @State foodList: FoodRow[] = [];
   @State songList: SongItem[] = [];
   @State currentSongIndex: number = 0;
@@ -45,12 +45,65 @@ export struct LifeServiceTab {
     { name: '校园工具', symbol: $r('sys.symbol.calculator'), color: $r('app.color.fresh_green') }
   ];
 
-  private lfFilters: string[] = ['全部', '失物', '拾物', '校园卡', '电子产品'];
-
   aboutToAppear(): void {
     this.loadLostFound();
     this.loadFood();
     this.loadSongs();
+  }
+
+  private onRefresh(): void {
+    this.loadLostFound();
+    this.loadFood();
+  }
+
+  /** 删除确认 */
+  private deleteLostFoundItem(item: LostFoundRow): void {
+    promptAction.showDialog({
+      title: '确认删除',
+      message: '确定要删除「' + item.itemName + '」吗？',
+      buttons: [
+        { text: '取消', color: '#86909C' },
+        { text: '删除', color: '#FF7D00' }
+      ]
+    }).then((result: promptAction.ShowDialogSuccessResponse) => {
+      if (result.index === 1 && this.uiContext) {
+        LostFoundDao.deleteById(this.uiContext, item.id).then(() => {
+          promptAction.showToast({ message: '已删除' });
+          this.loadLostFound();
+        });
+      }
+    });
+  }
+
+  /** 跳转编辑页 */
+  private editLostFoundItem(itemId: string): void {
+    router.pushUrl({
+      url: 'pages/life/LostFoundPublishPage',
+      params: { editId: itemId }
+    });
+  }
+
+  /** 点击查看详情——弹窗展示完整信息 */
+  private viewDetail(item: LostFoundRow): void {
+    const typeStr: string = item.type === 'lost' ? '【失物】' : '【拾物】';
+    let msg: string = typeStr + item.itemName + '\n\n';
+    msg += '分类：' + item.category + '\n';
+    msg += '地点：' + item.location + '\n';
+    msg += '时间：' + item.time;
+    if (item.description.trim() !== '') {
+      msg += '\n\n描述：' + item.description;
+    }
+    if (item.contactPhone.trim() !== '') {
+      msg += '\n联系电话：' + item.contactPhone;
+    }
+    const buttons: promptAction.Button[] = [
+      { text: '关闭', color: '#86909C' }
+    ];
+    promptAction.showDialog({
+      title: '详情',
+      message: msg,
+      buttons: buttons
+    });
   }
 
   private loadLostFound(): void {
@@ -84,25 +137,6 @@ export struct LifeServiceTab {
   }
 
   // —— 失物招领筛选 ——
-  private getFilteredLostFound(): LostFoundRow[] {
-    if (this.lfFilterIndex === 0) {
-      return this.lostFoundList;
-    }
-    const filterText: string = this.lfFilters[this.lfFilterIndex];
-    const result: LostFoundRow[] = [];
-    for (let i = 0; i < this.lostFoundList.length; i++) {
-      const item: LostFoundRow = this.lostFoundList[i];
-      if (filterText === '失物' && item.type === 'lost') {
-        result.push(item);
-      } else if (filterText === '拾物' && item.type === 'found') {
-        result.push(item);
-      } else if (item.category === filterText) {
-        result.push(item);
-      }
-    }
-    return result;
-  }
-
   // —— 美食 ——
   @Builder
   buildStarRow(rating: number) {
@@ -289,28 +323,8 @@ export struct LifeServiceTab {
             });
         })
 
-      // 筛选标签
-      Scroll() {
-        Row({ space: 12 }) {
-          ForEach(this.lfFilters, (filter: string, index: number) => {
-            Text(filter)
-              .fontSize(22)
-              .fontColor(this.lfFilterIndex === index ? '#FFFFFF' : $r('app.color.text_primary'))
-              .padding({ left: 16, right: 16, top: 6, bottom: 6 })
-              .backgroundColor(this.lfFilterIndex === index ? $r('app.color.warm_orange') : $r('app.color.card_white'))
-              .borderRadius(20)
-              .onClick(() => {
-                this.lfFilterIndex = index;
-              })
-          }, (filter: string, index: number) => filter + index.toString())
-        }
-        .width('100%')
-      }
-      .scrollBar(BarState.Off)
-      .scrollable(ScrollDirection.Horizontal)
-
       // 列表
-      if (this.getFilteredLostFound().length === 0) {
+      if (this.lostFoundList.length === 0) {
         Row() {
           Text('暂无信息')
             .fontSize(24)
@@ -321,7 +335,7 @@ export struct LifeServiceTab {
         .justifyContent(FlexAlign.Center)
         .alignItems(VerticalAlign.Center)
       } else {
-        ForEach(this.getFilteredLostFound(), (item: LostFoundRow) => {
+        ForEach(this.lostFoundList, (item: LostFoundRow) => {
           Row() {
             // 缩略图 64x64
             Stack() {
@@ -348,12 +362,14 @@ export struct LifeServiceTab {
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
 
-                Text(item.type === 'lost' ? '失物' : '拾物')
-                  .fontSize(20)
-                  .fontColor(item.type === 'lost' ? $r('app.color.warm_orange') : $r('app.color.fresh_green'))
-                  .padding({ left: 6, right: 6, top: 2, bottom: 2 })
-                  .backgroundColor(item.type === 'lost' ? '#FFF3E0' : '#E8F8E0')
-                  .borderRadius(4)
+                if (item.category !== '') {
+                  Text(item.category)
+                    .fontSize(20)
+                    .fontColor($r('app.color.warm_orange'))
+                    .padding({ left: 6, right: 6, top: 2, bottom: 2 })
+                    .backgroundColor('#FFF3E0')
+                    .borderRadius(4)
+                }
               }
               .width('100%')
 
@@ -366,6 +382,17 @@ export struct LifeServiceTab {
             .layoutWeight(1)
             .alignItems(HorizontalAlign.Start)
             .margin({ left: 12 })
+
+            // 删除按钮（仅自己的发布）
+            if (item.publisherId === AppStorage.get('userId')) {
+              Button('删除')
+                .height(32).fontSize(20)
+                .fontColor($r('app.color.warm_orange'))
+                .backgroundColor($r('app.color.card_white'))
+                .border({ width: 1, color: $r('app.color.warm_orange'), radius: 4 })
+                .padding({ left: 10, right: 10 })
+                .onClick(() => { this.deleteLostFoundItem(item); })
+            }
           }
           .width('100%')
           .padding(12)
@@ -373,6 +400,7 @@ export struct LifeServiceTab {
           .borderRadius(8)
           .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
           .alignItems(VerticalAlign.Center)
+          .onClick(() => { this.viewDetail(item); })
         }, (item: LostFoundRow) => item.id)
       }
     }

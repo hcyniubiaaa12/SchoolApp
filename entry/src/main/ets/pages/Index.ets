@@ -33,6 +33,7 @@ struct Index {
   @State currentTab: number = 0;
   @State swiperIndex: number = 0;
   @State courseRefreshSignal: number = 0;
+  @State lfRefreshSignal: number = 0;
   @StorageLink('isDarkMode') isDarkMode: boolean = false;
 
   private context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
@@ -55,8 +56,9 @@ struct Index {
   }
 
   onPageShow(): void {
-    // 每次页面显示时刷新学习助手数据（如编辑课程后返回）
+    // 每次页面显示时刷新各 Tab 数据（如编辑课程/发布失物后返回）
     this.courseRefreshSignal++;
+    this.lfRefreshSignal++;
   }
 
   // 跳转到 ProfileAbility（从 TabBar「我的」点击时的备选，下个版本收敛到 MineTab）
@@ -174,7 +176,7 @@ struct Index {
         .tabBar(this.buildTabBar('学习助手', 2, $r('sys.symbol.book')))
 
         TabContent() {
-          LifeServiceTab({ uiContext: this.context, isDarkMode: this.isDarkMode })
+          LifeServiceTab({ uiContext: this.context, isDarkMode: this.isDarkMode, refreshSignal: this.lfRefreshSignal })
         }
         .tabBar(this.buildTabBar('生活服务', 3, $r('sys.symbol.bag')))
 

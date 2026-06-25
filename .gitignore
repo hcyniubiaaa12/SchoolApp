@@ -12,7 +12,7 @@
 /.appanalyzer
 
 # Claude Code local workspace files
-/.claude
+.claude/
 
 # Word source documents
 *.doc

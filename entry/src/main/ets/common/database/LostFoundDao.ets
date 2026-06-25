@@ -94,4 +94,54 @@ export class LostFoundDao {
     };
     await store.insert('lost_found', bucket);
   }
+
+  /** 按 id 查询 */
+  static async queryById(context: Context, id: string): Promise<LostFoundRow | null> {
+    const store = await AppDbHelper.getStore(context);
+    const predicates = new relationalStore.RdbPredicates('lost_found');
+    predicates.equalTo('id', id);
+    const rs = await store.query(predicates);
+    if (rs.goToFirstRow()) {
+      const row = toRow(rs);
+      rs.close();
+      return row;
+    }
+    rs.close();
+    return null;
+  }
+
+  /** 按 id 删除 */
+  static async deleteById(context: Context, id: string): Promise<void> {
+    const store = await AppDbHelper.getStore(context);
+    const predicates = new relationalStore.RdbPredicates('lost_found');
+    predicates.equalTo('id', id);
+    await store.delete(predicates);
+  }
+
+  /** 更新失物/拾物信息 */
+  static async update(context: Context, data: LostFoundRow): Promise<void> {
+    const store = await AppDbHelper.getStore(context);
+    const bucket: relationalStore.ValuesBucket = {
+      type: data.type,
+      category: data.category,
+      item_name: data.itemName,
+      location: data.location,
+      time: data.time,
+      description: data.description,
+      contact_phone: data.contactPhone
+    };
+    const predicates = new relationalStore.RdbPredicates('lost_found');
+    predicates.equalTo('id', data.id);
+    await store.update(bucket, predicates);
+  }
+
+  /** 按 publisherId 查询（我的发布） */
+  static async queryByPublisher(context: Context, publisherId: string): Promise<LostFoundRow[]> {
+    const store = await AppDbHelper.getStore(context);
+    const predicates = new relationalStore.RdbPredicates('lost_found');
+    predicates.equalTo('publisher_id', publisherId);
+    predicates.orderByDesc('publish_time');
+    const rs = await store.query(predicates);
+    return readList(rs);
+  }
 }

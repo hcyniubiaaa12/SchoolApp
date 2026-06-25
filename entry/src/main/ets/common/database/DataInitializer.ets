@@ -1,3 +1,4 @@
+
 /**
  * DataInitializer.ets - 首次启动数据初始化
  *
@@ -8,7 +9,6 @@ import { relationalStore } from '@kit.ArkData';
 import { JsonStoreUtil } from '../utils/JsonStoreUtil';
 import { AppDbHelper } from './AppDbHelper';
 import { CourseDao, CourseRow } from './CourseDao';
-import { LostFoundDao, LostFoundRow } from './LostFoundDao';
 
 type JsonRecord = Record<string, string | number | boolean | string[]>;
 
@@ -24,7 +24,6 @@ export class DataInitializer {
       await DataInitializer.importCourses(context);
       await DataInitializer.importScores(context);
       await DataInitializer.importBooks(context);
-      await DataInitializer.importLostFound(context);
       await DataInitializer.importFood(context);
       await DataInitializer.importWeather(context);
       console.info('[DataInitializer] 初始数据导入完成');
@@ -84,16 +83,6 @@ export class DataInitializer {
           is_favorited: (item['isFavorited'] as boolean) ? 1 : 0
         };
         await store.insert('book', bucket);
-      }
-    }
-  }
-
-  private static async importLostFound(context: Context): Promise<void> {
-    const data: LostFoundRow[] | null =
-      await JsonStoreUtil.readFromRaw<LostFoundRow[]>('lostfound.json');
-    if (data) {
-      for (let i = 0; i < data.length; i++) {
-        await LostFoundDao.insert(context, data[i]);
       }
     }
   }
