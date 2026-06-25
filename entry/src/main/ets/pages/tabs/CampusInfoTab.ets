@@ -63,6 +63,14 @@ interface MapBuilding {
 
 @Component
 export struct CampusInfoTab {
+  @Prop @Watch('onDarkChange') isDarkMode: boolean = false;
+  @State darkPrimary: string = '#1D2129';
+  @State darkSecondary: string = '#86909C';
+
+  private onDarkChange(): void {
+    this.darkPrimary = this.isDarkMode ? '#E8E8E8' : '#1D2129';
+    this.darkSecondary = this.isDarkMode ? '#A0A0A0' : '#86909C';
+  }
   @State currentTagIndex: number = 0;
   @State announcements: AnnouncementItem[] = [];
   @State news: NewsItem[] = [];
@@ -145,14 +153,14 @@ export struct CampusInfoTab {
           Text('校园信息')
             .fontSize(30)
             .fontWeight(600)
-            .fontColor('#1D2129')
+            .fontColor(this.darkPrimary)
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
         }
         .width('100%')
         .height(56)
         .padding({ left: 20, right: 20 })
-        .backgroundColor('#FFFFFF')
+        .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
 
         // 分类标签栏（横向滚动）
         Scroll() {
@@ -160,7 +168,7 @@ export struct CampusInfoTab {
             ForEach(this.tags, (tag: TagItem, index: number) => {
               Text(tag.name)
                 .fontSize(22)
-                .fontColor(this.currentTagIndex === index ? '#FFFFFF' : '#1D2129')
+                .fontColor(this.currentTagIndex === index ? '#FFFFFF' : this.darkPrimary)
                 .padding({ left: 16, right: 16, top: 6, bottom: 6 })
                 .backgroundColor(this.currentTagIndex === index ? '#1677FF' : '#F5F7FA')
                 .borderRadius(20)
@@ -174,7 +182,7 @@ export struct CampusInfoTab {
         }
         .scrollBar(BarState.Off)
         .scrollable(ScrollDirection.Horizontal)
-        .backgroundColor('#FFFFFF')
+        .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
 
         // 内容区
         if (this.currentTagIndex === 0) {
@@ -191,7 +199,7 @@ export struct CampusInfoTab {
       }
       .width('100%')
       .height('100%')
-      .backgroundColor('#F5F7FA')
+      .backgroundColor(this.isDarkMode ? '#1A1A2E' : '#F5F7FA')
 
       // 详情弹窗
       if (this.showAnnouncementDetail && this.selectedAnnouncement) {
@@ -227,7 +235,7 @@ export struct CampusInfoTab {
                   Text(item.title)
                     .fontSize(26)
                     .fontWeight(600)
-                    .fontColor('#1D2129')
+                    .fontColor(this.darkPrimary)
                     .maxLines(1)
                     .textOverflow({ overflow: TextOverflow.Ellipsis })
                     .layoutWeight(1)
@@ -242,13 +250,13 @@ export struct CampusInfoTab {
 
                 Text(item.source + ' · ' + item.publishTime)
                   .fontSize(22)
-                  .fontColor('#86909C')
+                  .fontColor(this.darkSecondary)
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
 
                 Text(item.summary)
                   .fontSize(24)
-                  .fontColor('#86909C')
+                  .fontColor(this.darkSecondary)
                   .maxLines(2)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
               }
@@ -258,7 +266,7 @@ export struct CampusInfoTab {
             }
             .width('100%')
             .padding(16)
-            .backgroundColor('#FFFFFF')
+            .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
             .borderRadius(8)
             .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
             .alignItems(VerticalAlign.Center)
@@ -298,19 +306,19 @@ export struct CampusInfoTab {
                 Text(item.title)
                   .fontSize(26)
                   .fontWeight(600)
-                  .fontColor('#1D2129')
+                  .fontColor(this.darkPrimary)
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
 
                 Text(item.source + ' · ' + item.publishTime)
                   .fontSize(22)
-                  .fontColor('#86909C')
+                  .fontColor(this.darkSecondary)
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
 
                 Text(item.summary)
                   .fontSize(24)
-                  .fontColor('#86909C')
+                  .fontColor(this.darkSecondary)
                   .maxLines(2)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
               }
@@ -320,7 +328,7 @@ export struct CampusInfoTab {
             }
             .width('100%')
             .padding(16)
-            .backgroundColor('#FFFFFF')
+            .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
             .borderRadius(8)
             .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
             .alignItems(VerticalAlign.Center)
@@ -348,7 +356,7 @@ export struct CampusInfoTab {
               Text(item.title)
                 .fontSize(26)
                 .fontWeight(600)
-                .fontColor('#1D2129')
+                .fontColor(this.darkPrimary)
                 .layoutWeight(1)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -364,7 +372,7 @@ export struct CampusInfoTab {
 
             Text(item.organizer + ' · ' + item.time)
               .fontSize(22)
-              .fontColor('#86909C')
+              .fontColor(this.darkSecondary)
               .maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
 
@@ -375,13 +383,13 @@ export struct CampusInfoTab {
 
             Text(item.summary)
               .fontSize(24)
-              .fontColor('#86909C')
+              .fontColor(this.darkSecondary)
               .maxLines(2)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
           }
           .width('100%')
           .padding(16)
-          .backgroundColor('#FFFFFF')
+          .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
           .borderRadius(8)
           .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
           .alignItems(HorizontalAlign.Start)
@@ -404,7 +412,7 @@ export struct CampusInfoTab {
             Text(item.title)
               .fontSize(26)
               .fontWeight(600)
-              .fontColor('#1D2129')
+              .fontColor(this.darkPrimary)
               .width('100%')
               .maxLines(2)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -422,22 +430,22 @@ export struct CampusInfoTab {
             Row({ space: 16 }) {
               Text('🕐 ' + item.time)
                 .fontSize(22)
-                .fontColor('#86909C')
+                .fontColor(this.darkSecondary)
               Text('📍 ' + item.location)
                 .fontSize(22)
-                .fontColor('#86909C')
+                .fontColor(this.darkSecondary)
             }
             .width('100%')
 
             Text(item.summary)
               .fontSize(24)
-              .fontColor('#86909C')
+              .fontColor(this.darkSecondary)
               .maxLines(2)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
           }
           .width('100%')
           .padding(16)
-          .backgroundColor('#FFFFFF')
+          .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
           .borderRadius(8)
           .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
           .alignItems(HorizontalAlign.Start)
@@ -478,8 +486,8 @@ export struct CampusInfoTab {
               }
               Text(b.name)
                 .fontSize(18)
-                .fontColor('#1D2129')
-                .backgroundColor('#FFFFFF')
+                .fontColor(this.darkPrimary)
+                .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
                 .padding({ left: 4, right: 4 })
                 .borderRadius(2)
             }
@@ -502,13 +510,13 @@ export struct CampusInfoTab {
               .fontColor('#1677FF')
             Text(this.buildings[this.selectedBuilding].description)
               .fontSize(24)
-              .fontColor('#86909C')
+              .fontColor(this.darkSecondary)
               .maxLines(3)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
           }
           .width('100%')
           .padding(16)
-          .backgroundColor('#FFFFFF')
+          .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
           .borderRadius(8)
           .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
           .alignItems(HorizontalAlign.Start)
@@ -521,7 +529,7 @@ export struct CampusInfoTab {
             .fontSize(24)
             .placeholderColor('#86909C')
             .borderRadius(8)
-            .backgroundColor('#F5F7FA')
+            .backgroundColor(this.isDarkMode ? '#1A1A2E' : '#F5F7FA')
             .layoutWeight(1)
             .onChange((value: string) => {
               this.mapSearchText = value;
@@ -560,11 +568,11 @@ export struct CampusInfoTab {
                     .fill(this.selectedBuilding === index ? '#E8F3FF' : '#F5F7FA')
                   Text(b.name.substring(0, 1))
                     .fontSize(22)
-                    .fontColor(this.selectedBuilding === index ? '#1677FF' : '#86909C')
+                    .fontColor(this.selectedBuilding === index ? '#1677FF' : this.darkSecondary)
                 }
                 Text(b.name)
                   .fontSize(20)
-                  .fontColor(this.selectedBuilding === index ? '#1677FF' : '#86909C')
+                  .fontColor(this.selectedBuilding === index ? '#1677FF' : this.darkSecondary)
                   .maxLines(1)
               }
               .alignItems(HorizontalAlign.Center)
@@ -620,7 +628,7 @@ export struct CampusInfoTab {
       }
       Text(message)
         .fontSize(28)
-        .fontColor('#86909C')
+        .fontColor(this.darkSecondary)
     }
     .width('100%')
     .height(300)
@@ -640,7 +648,7 @@ export struct CampusInfoTab {
             Text('公告详情')
               .fontSize(28)
               .fontWeight(700)
-              .fontColor('#1D2129')
+              .fontColor(this.darkPrimary)
               .layoutWeight(1)
             Text('关闭')
               .fontSize(24)
@@ -656,7 +664,7 @@ export struct CampusInfoTab {
           Text(this.selectedAnnouncement!.title)
             .fontSize(32)
             .fontWeight(700)
-            .fontColor('#1D2129')
+            .fontColor(this.darkPrimary)
             .width('100%')
             .maxLines(3)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -667,7 +675,7 @@ export struct CampusInfoTab {
               .fontColor('#1677FF')
             Text(this.selectedAnnouncement!.publishTime)
               .fontSize(22)
-              .fontColor('#86909C')
+              .fontColor(this.darkSecondary)
           }
           .width('100%')
 
@@ -682,7 +690,7 @@ export struct CampusInfoTab {
 
           Text(this.selectedAnnouncement!.content)
             .fontSize(26)
-            .fontColor('#1D2129')
+            .fontColor(this.darkPrimary)
             .lineHeight(22)
             .width('100%')
 
@@ -709,12 +717,12 @@ export struct CampusInfoTab {
         }
         .width('100%')
         .padding(20)
-        .backgroundColor('#FFFFFF')
+        .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
         .borderRadius({ topLeft: 16, topRight: 16 })
       }
       .width('100%')
       .height('70%')
-      .backgroundColor('#FFFFFF')
+      .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
       .borderRadius({ topLeft: 16, topRight: 16 })
     }
     .width('100%')

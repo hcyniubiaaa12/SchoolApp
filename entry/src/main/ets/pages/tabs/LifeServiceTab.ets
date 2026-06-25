@@ -27,6 +27,14 @@ interface SongItem {
 
 @Component
 export struct LifeServiceTab {
+  @Prop @Watch('onDarkChange') isDarkMode: boolean = false;
+  @State darkPrimary: string = '#1D2129';
+  @State darkSecondary: string = '#86909C';
+
+  private onDarkChange(): void {
+    this.darkPrimary = this.isDarkMode ? '#E8E8E8' : '#1D2129';
+    this.darkSecondary = this.isDarkMode ? '#A0A0A0' : '#86909C';
+  }
   @Prop uiContext?: Context;
   @State currentEntry: number = 0;
   @State lostFoundList: LostFoundRow[] = [];
@@ -163,14 +171,14 @@ export struct LifeServiceTab {
         Text('生活服务')
           .fontSize(30)
           .fontWeight(600)
-          .fontColor('#1D2129')
+          .fontColor(this.darkPrimary)
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
       }
       .width('100%')
       .height(56)
       .padding({ left: 20, right: 20 })
-      .backgroundColor('#FFFFFF')
+      .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
 
       Scroll() {
         Column({ space: 16 }) {
@@ -220,7 +228,7 @@ export struct LifeServiceTab {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#F5F7FA')
+    .backgroundColor(this.isDarkMode ? '#1A1A2E' : '#F5F7FA')
   }
 
   @Builder
@@ -236,7 +244,7 @@ export struct LifeServiceTab {
       }
       Text(entry.name)
         .fontSize(22)
-        .fontColor(this.currentEntry === this.getEntryIndex(entry.name) ? '#1677FF' : '#1D2129')
+        .fontColor(this.currentEntry === this.getEntryIndex(entry.name) ? '#1677FF' : this.darkPrimary)
         .fontWeight(this.currentEntry === this.getEntryIndex(entry.name) ? 600 : 400)
         .maxLines(1)
         .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -285,7 +293,7 @@ export struct LifeServiceTab {
           ForEach(this.lfFilters, (filter: string, index: number) => {
             Text(filter)
               .fontSize(22)
-              .fontColor(this.lfFilterIndex === index ? '#FFFFFF' : '#1D2129')
+              .fontColor(this.lfFilterIndex === index ? '#FFFFFF' : this.darkPrimary)
               .padding({ left: 16, right: 16, top: 6, bottom: 6 })
               .backgroundColor(this.lfFilterIndex === index ? '#FF7D00' : '#FFFFFF')
               .borderRadius(20)
@@ -304,7 +312,7 @@ export struct LifeServiceTab {
         Row() {
           Text('暂无信息')
             .fontSize(24)
-            .fontColor('#86909C')
+            .fontColor(this.darkSecondary)
         }
         .width('100%')
         .height(100)
@@ -328,7 +336,7 @@ export struct LifeServiceTab {
                 Text(item.itemName)
                   .fontSize(26)
                   .fontWeight(600)
-                  .fontColor('#1D2129')
+                  .fontColor(this.darkPrimary)
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
 
@@ -343,7 +351,7 @@ export struct LifeServiceTab {
 
               Text(item.location + ' · ' + item.time)
                 .fontSize(22)
-                .fontColor('#86909C')
+                .fontColor(this.darkSecondary)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
             }
@@ -353,7 +361,7 @@ export struct LifeServiceTab {
           }
           .width('100%')
           .padding(12)
-          .backgroundColor('#FFFFFF')
+          .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
           .borderRadius(8)
           .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
           .alignItems(VerticalAlign.Center)
@@ -372,7 +380,7 @@ export struct LifeServiceTab {
         Row() {
           Text('暂无美食信息')
             .fontSize(24)
-            .fontColor('#86909C')
+            .fontColor(this.darkSecondary)
         }
         .width('100%')
         .height(100)
@@ -395,7 +403,7 @@ export struct LifeServiceTab {
                 Text(food.name)
                   .fontSize(26)
                   .fontWeight(600)
-                  .fontColor('#1D2129')
+                  .fontColor(this.darkPrimary)
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
                   .layoutWeight(1)
@@ -410,7 +418,7 @@ export struct LifeServiceTab {
 
               Text(food.canteen)
                 .fontSize(22)
-                .fontColor('#86909C')
+                .fontColor(this.darkSecondary)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
 
@@ -421,7 +429,7 @@ export struct LifeServiceTab {
 
                 Text(food.signatureDish)
                   .fontSize(22)
-                  .fontColor('#86909C')
+                  .fontColor(this.darkSecondary)
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
               }
@@ -433,7 +441,7 @@ export struct LifeServiceTab {
           }
           .width('100%')
           .padding(12)
-          .backgroundColor('#FFFFFF')
+          .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
           .borderRadius(8)
           .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
           .alignItems(VerticalAlign.Center)
@@ -452,7 +460,7 @@ export struct LifeServiceTab {
         Row() {
           Text('暂无音乐，请添加本地音频文件')
             .fontSize(24)
-            .fontColor('#86909C')
+            .fontColor(this.darkSecondary)
         }
         .width('100%')
         .height(200)
@@ -475,7 +483,7 @@ export struct LifeServiceTab {
         Text(this.getCurrentSong().title)
           .fontSize(28)
           .fontWeight(700)
-          .fontColor('#1D2129')
+          .fontColor(this.darkPrimary)
           .width('100%')
           .textAlign(TextAlign.Center)
           .maxLines(1)
@@ -483,7 +491,7 @@ export struct LifeServiceTab {
 
         Text(this.getCurrentSong().artist)
           .fontSize(24)
-          .fontColor('#86909C')
+          .fontColor(this.darkSecondary)
           .width('100%')
           .textAlign(TextAlign.Center)
           .maxLines(1)
@@ -492,7 +500,7 @@ export struct LifeServiceTab {
         Row({ space: 8 }) {
           Text(this.formatDuration(this.progressValue))
             .fontSize(22)
-            .fontColor('#86909C')
+            .fontColor(this.darkSecondary)
 
           Slider({
             value: this.progressValue,
@@ -511,7 +519,7 @@ export struct LifeServiceTab {
 
           Text(this.formatDuration(this.getCurrentSong().duration))
             .fontSize(22)
-            .fontColor('#86909C')
+            .fontColor(this.darkSecondary)
         }
         .width('100%')
         .padding({ left: 20, right: 20 })
@@ -525,7 +533,7 @@ export struct LifeServiceTab {
           }
           .width(48)
           .height(48)
-          .backgroundColor('#FFFFFF')
+          .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
           .onClick(() => {
             this.prevSong();
           })
@@ -550,7 +558,7 @@ export struct LifeServiceTab {
           }
           .width(48)
           .height(48)
-          .backgroundColor('#FFFFFF')
+          .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
           .onClick(() => {
             this.nextSong();
           })
@@ -575,7 +583,7 @@ export struct LifeServiceTab {
     }
     .width('100%')
     .padding({ left: 20, right: 20, bottom: 32 })
-    .backgroundColor('#FFFFFF')
+    .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
     .borderRadius(8)
     .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
     .alignItems(HorizontalAlign.Center)
@@ -628,14 +636,14 @@ export struct LifeServiceTab {
         .fontSize(40)
       Text(name)
         .fontSize(26)
-        .fontColor('#1D2129')
+        .fontColor(this.darkPrimary)
         .maxLines(1)
         .textOverflow({ overflow: TextOverflow.Ellipsis })
     }
     .layoutWeight(1)
     .alignItems(HorizontalAlign.Center)
     .padding({ top: 32, bottom: 32 })
-    .backgroundColor('#FFFFFF')
+    .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
     .borderRadius(8)
     .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
     .onClick(() => {

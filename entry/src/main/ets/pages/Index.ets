@@ -33,6 +33,7 @@ struct Index {
   @State currentTab: number = 0;
   @State swiperIndex: number = 0;
   @State courseRefreshSignal: number = 0;
+  @StorageLink('isDarkMode') isDarkMode: boolean = false;
 
   private context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
 
@@ -47,6 +48,10 @@ struct Index {
     console.log('>>> [Index] 页面显示 - userId: ' + this.userId + ', username: ' + this.username);
     // 首次启动：导入初始数据到 RDB
     DataInitializer.seedIfEmpty(this.context);
+    // 加载深色模式偏好
+    KVStoreUtil.getThemeMode(this.context).then((mode: string) => {
+      AppStorage.Set('isDarkMode', mode === 'dark');
+    });
   }
 
   onPageShow(): void {
@@ -128,6 +133,7 @@ struct Index {
       Tabs({ barPosition: BarPosition.End, index: this.currentTab }) {
         TabContent() {
           HomeTab({
+            isDarkMode: this.isDarkMode,
             username: this.username,
             onSearchClick: () => {
               router.pushUrl({ url: 'pages/common/SearchPage' })
@@ -158,22 +164,23 @@ struct Index {
         .tabBar(this.buildTabBar('首页', 0, $r('sys.symbol.house')))
 
         TabContent() {
-          CampusInfoTab()
+          CampusInfoTab({ isDarkMode: this.isDarkMode })
         }
         .tabBar(this.buildTabBar('校园信息', 1, $r('sys.symbol.building')))
 
         TabContent() {
-          StudyTab({ uiContext: this.context, refreshSignal: this.courseRefreshSignal })
+          StudyTab({ uiContext: this.context, refreshSignal: this.courseRefreshSignal, isDarkMode: this.isDarkMode })
         }
         .tabBar(this.buildTabBar('学习助手', 2, $r('sys.symbol.book')))
 
         TabContent() {
-          LifeServiceTab({ uiContext: this.context })
+          LifeServiceTab({ uiContext: this.context, isDarkMode: this.isDarkMode })
         }
         .tabBar(this.buildTabBar('生活服务', 3, $r('sys.symbol.bag')))
 
         TabContent() {
           MineTab({
+            isDarkMode: this.isDarkMode,
             username: this.username,
             userId: this.userId,
             onProfileEditClick: () => {
@@ -197,14 +204,15 @@ struct Index {
       .scrollable(false)
       .barMode(BarMode.Fixed)
       .barHeight(56)
-      .backgroundColor('#FFFFFF')
-      .border({ width: { top: 1 }, color: '#E5E6EB' })
+      .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
+      .border({ width: { top: 1 }, color: this.isDarkMode ? '#333344' : '#E5E6EB' })
     }
     .navDestination(this.buildNavDestination)
     .mode(NavigationMode.Auto)
     .hideTitleBar(true)
     .hideToolBar(true)
     .navBarWidth('100%')
+    .backgroundColor(this.isDarkMode ? '#1A1A2E' : '#F5F7FA')
   }
 
   // Tabs 自定义 tabBar builder：系统 Symbol 图标 + 文字
@@ -213,10 +221,10 @@ struct Index {
     Column({ space: 2 }) {
       SymbolGlyph(symbol)
         .fontSize(24)
-        .fontColor(this.currentTab === index ? ['#1677FF'] : ['#86909C'])
+        .fontColor(this.currentTab === index ? ['#1677FF'] : [this.isDarkMode ? '#A0A0A0' : '#86909C'])
       Text(title)
         .fontSize(20)
-        .fontColor(this.currentTab === index ? '#1677FF' : '#86909C')
+        .fontColor(this.currentTab === index ? '#1677FF' : (this.isDarkMode ? '#A0A0A0' : '#86909C'))
         .maxLines(1)
         .textOverflow({ overflow: TextOverflow.Clip })
         .width('100%')
@@ -367,7 +375,7 @@ struct ProfilePage {
         .layoutWeight(1)
         .scrollBar(BarState.Auto)
       }
-      .width('100%').height('100%').backgroundColor('#F5F7FA')
+      .width('100%').height('100%').backgroundColor(AppStorage.Get('isDarkMode') as boolean ? '#1A1A2E' : '#F5F7FA')
     }
     .hideTitleBar(true)
     .onReady((context: NavDestinationContext) => {
@@ -418,7 +426,7 @@ struct SettingPage {
         .padding(16)
         .layoutWeight(1)
       }
-      .width('100%').height('100%').backgroundColor('#F5F7FA')
+      .width('100%').height('100%').backgroundColor(AppStorage.Get('isDarkMode') as boolean ? '#1A1A2E' : '#F5F7FA')
     }
     .hideTitleBar(true)
     .onReady((context: NavDestinationContext) => {
@@ -445,6 +453,7 @@ struct SettingPage {
               .onClick(() => {
                 this.themeMode = 'light';
                 KVStoreUtil.setThemeMode(this.context, 'light');
+			  AppStorage.Set('isDarkMode', false);
               })
             Button('深色')
               .layoutWeight(1)
@@ -455,6 +464,7 @@ struct SettingPage {
               .onClick(() => {
                 this.themeMode = 'dark';
                 KVStoreUtil.setThemeMode(this.context, 'dark');
+			  AppStorage.Set('isDarkMode', true);
               })
           }
           .width('100%')

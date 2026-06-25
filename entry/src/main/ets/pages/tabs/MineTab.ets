@@ -5,6 +5,7 @@
 import { router } from '@kit.ArkUI';
 import { preferences } from '@kit.ArkData';
 import promptAction from '@ohos.promptAction';
+import { KVStoreUtil } from '../../common/utils/KVStoreUtil';
 
 interface FunctionItem {
   name: string;
@@ -14,6 +15,14 @@ interface FunctionItem {
 
 @Component
 export struct MineTab {
+  @Prop @Watch('onDarkChange') isDarkMode: boolean = false;
+  @State darkPrimary: string = '#1D2129';
+  @State darkSecondary: string = '#86909C';
+
+  private onDarkChange(): void {
+    this.darkPrimary = this.isDarkMode ? '#E8E8E8' : '#1D2129';
+    this.darkSecondary = this.isDarkMode ? '#A0A0A0' : '#86909C';
+  }
   @Prop username: string = '用户';
   @Prop userId: string = '';
   @Prop major: string = '计算机科学与技术';
@@ -75,7 +84,7 @@ export struct MineTab {
         Text('我的')
           .fontSize(30)
           .fontWeight(600)
-          .fontColor('#1D2129')
+          .fontColor(this.darkPrimary)
           .layoutWeight(1)
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -91,7 +100,7 @@ export struct MineTab {
       .width('100%')
       .height(56)
       .padding({ left: 20, right: 20 })
-      .backgroundColor('#FFFFFF')
+      .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
 
       Scroll() {
         Column({ space: 16 }) {
@@ -119,17 +128,17 @@ export struct MineTab {
               Text(this.username)
                 .fontSize(28)
                 .fontWeight(700)
-                .fontColor('#1D2129')
+                .fontColor(this.darkPrimary)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
               Text(`学号: ${this.userId}`)
                 .fontSize(24)
-                .fontColor('#86909C')
+                .fontColor(this.darkSecondary)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
               Text(`${this.major}`)
                 .fontSize(22)
-                .fontColor('#86909C')
+                .fontColor(this.darkSecondary)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
             }
@@ -138,11 +147,11 @@ export struct MineTab {
 
             Text('>')
               .fontSize(24)
-              .fontColor('#86909C')
+              .fontColor(this.darkSecondary)
           }
           .width('100%')
           .padding(20)
-          .backgroundColor('#FFFFFF')
+          .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
           .borderRadius(8)
           .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
           .onClick(() => {
@@ -160,13 +169,13 @@ export struct MineTab {
 
                 Text(item.name)
                   .fontSize(26)
-                  .fontColor('#1D2129')
+                  .fontColor(this.darkPrimary)
                   .margin({ left: 12 })
                   .layoutWeight(1)
 
                 Text('>')
                   .fontSize(24)
-                  .fontColor('#86909C')
+                  .fontColor(this.darkSecondary)
               }
               .width('100%')
               .height(48)
@@ -182,7 +191,7 @@ export struct MineTab {
             }, (item: FunctionItem) => item.name)
           }
           .width('100%')
-          .backgroundColor('#FFFFFF')
+          .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
           .borderRadius(8)
           .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
 
@@ -197,14 +206,19 @@ export struct MineTab {
 
                 Text(item.name)
                   .fontSize(26)
-                  .fontColor('#1D2129')
+                  .fontColor(this.darkPrimary)
                   .margin({ left: 12 })
                   .layoutWeight(1)
 
                 if (item.name === '深色模式') {
-                  Toggle({ type: ToggleType.Switch, isOn: false })
+                  Toggle({ type: ToggleType.Switch, isOn: this.isDarkMode })
                     .selectedColor('#1677FF')
                     .width(48)
+                    .onChange((val: boolean) => {
+                      AppStorage.Set('isDarkMode', val);
+                      const dmCtx: Context = getContext(this);
+                      KVStoreUtil.setThemeMode(dmCtx, val ? 'dark' : 'light');
+                    })
                 } else if (item.name === '清理缓存') {
                   Text(this.cacheSize)
                     .fontSize(24)
@@ -217,7 +231,7 @@ export struct MineTab {
                 } else {
                   Text('>')
                     .fontSize(24)
-                    .fontColor('#86909C')
+                    .fontColor(this.darkSecondary)
                     .onClick(() => {
                       if (item.name === '通知设置') {
                         promptAction.showToast({ message: '通知设置页开发中' });
@@ -232,7 +246,7 @@ export struct MineTab {
             }, (item: FunctionItem) => item.name)
           }
           .width('100%')
-          .backgroundColor('#FFFFFF')
+          .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
           .borderRadius(8)
           .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
 
@@ -242,7 +256,7 @@ export struct MineTab {
             .height(48)
             .fontSize(26)
             .fontColor('#FF7D00')
-            .backgroundColor('#FFFFFF')
+            .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
             .borderRadius(8)
             .border({ width: 1, color: '#FF7D00' })
             .onClick(() => {
@@ -253,13 +267,13 @@ export struct MineTab {
           Column({ space: 4 }) {
             Text('高校校园助手 V1.0.0')
               .fontSize(24)
-              .fontColor('#86909C')
+              .fontColor(this.darkSecondary)
             Text('校园助手开发团队')
               .fontSize(22)
-              .fontColor('#86909C')
+              .fontColor(this.darkSecondary)
             Text('© 2026 All Rights Reserved')
               .fontSize(22)
-              .fontColor('#86909C')
+              .fontColor(this.darkSecondary)
           }
           .width('100%')
           .alignItems(HorizontalAlign.Center)
@@ -272,6 +286,6 @@ export struct MineTab {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#F5F7FA')
+    .backgroundColor(this.isDarkMode ? '#1A1A2E' : '#F5F7FA')
   }
 }
