@@ -1,8 +1,15 @@
-// StudyTab.ets - 学习助手 Tab
-// P1 首发：课程表 MVP（周次切换、周视图、课程详情）
+/**
+ * StudyTab.ets - 学习助手 Tab
+ * 4 个标签：课程表 / 成绩查询 / 图书馆检索 / 学习资料
+ *
+ * 数据来源：优先沙箱 JSON → rawfile 回退 (JsonStoreUtil)
+ * P1 首发：所有标签均填充真实业务内容
+ */
 import promptAction from '@ohos.promptAction';
+import { JsonStoreUtil } from '../../common/utils/JsonStoreUtil';
 
-interface StudyTagItem {
+// ArkTS 约束：interface 不可 inline 在 Array<>
+interface TagItem {
   name: string;
 }
 
@@ -27,18 +34,59 @@ interface CourseItem {
   credit: string;
 }
 
+interface ScoreItem {
+  id: string;
+  courseName: string;
+  score: number;
+  gpa: number;
+  credit: string;
+  examTime: string;
+  semester: string;
+}
+
+interface BookItem {
+  id: string;
+  title: string;
+  author: string;
+  publisher: string;
+  isbn: string;
+  cover: string;
+  location: string;
+  totalCount: number;
+  availableCount: number;
+  summary: string;
+  isFavorited: boolean;
+}
+
+interface MaterialFolder {
+  id: string;
+  folderName: string;
+  icon: string;
+  items: MaterialItem[];
+}
+
+interface MaterialItem {
+  name: string;
+  type: string;
+}
+
 @Component
 export struct StudyTab {
   @State currentTagIndex: number = 0;
   @State currentWeek: number = 6;
   @State selectedCourseId: string = '';
   @State showCourseDetail: boolean = false;
+  @State courses: CourseItem[] = [];
+  @State scores: ScoreItem[] = [];
+  @State books: BookItem[] = [];
+  @State filteredBooks: BookItem[] = [];
+  @State materials: MaterialFolder[] = [];
+  @State bookSearchText: string = '';
+  @State expandedMaterialId: string = '';
+  @State showCourseEdit: boolean = false;
 
-  private tags: StudyTagItem[] = [
-    { name: '课程表' },
-    { name: '成绩查询' },
-    { name: '图书馆检索' },
-    { name: '学习资料' }
+  private tags: TagItem[] = [
+    { name: '课程表' }, { name: '成绩查询' }, { name: '图书馆检索' }, { name: '学习资料' }
   ];
 
   private weekDays: WeekDayItem[] = [
@@ -51,93 +99,45 @@ export struct StudyTab {
     { name: '周日', shortName: '日', dayIndex: 7 }
   ];
 
-  // 首发采用页面内静态模拟数据，字段按后续 JSON 迁移预留
-  private courses: CourseItem[] = [
-    {
-      id: 'ai-001',
-      name: '高级人工智能',
-      teacher: '李明教授',
-      location: '信软楼302',
-      dayIndex: 1,
-      startTime: '10:00',
-      endTime: '11:40',
-      startWeek: 1,
-      endWeek: 16,
-      courseType: '必修',
-      color: '#1677FF',
-      credit: '3.0'
-    },
-    {
-      id: 'math-002',
-      name: '高等数学实践',
-      teacher: '王芳老师',
-      location: '公教楼205',
-      dayIndex: 2,
-      startTime: '08:00',
-      endTime: '09:40',
-      startWeek: 1,
-      endWeek: 12,
-      courseType: '必修',
-      color: '#FF7D00',
-      credit: '4.0'
-    },
-    {
-      id: 'english-003',
-      name: '学术英语写作',
-      teacher: '陈晓老师',
-      location: '外语楼108',
-      dayIndex: 3,
-      startTime: '14:00',
-      endTime: '15:40',
-      startWeek: 3,
-      endWeek: 18,
-      courseType: '公共课',
-      color: '#00B42A',
-      credit: '2.0'
-    },
-    {
-      id: 'data-004',
-      name: '数据结构课程设计',
-      teacher: '赵强老师',
-      location: '实验楼404',
-      dayIndex: 4,
-      startTime: '16:00',
-      endTime: '17:40',
-      startWeek: 5,
-      endWeek: 14,
-      courseType: '实践',
-      color: '#1677FF',
-      credit: '2.5'
-    },
-    {
-      id: 'business-005',
-      name: '创业管理学',
-      teacher: '刘洋老师',
-      location: '公教楼508',
-      dayIndex: 5,
-      startTime: '14:00',
-      endTime: '15:40',
-      startWeek: 1,
-      endWeek: 10,
-      courseType: '选修',
-      color: '#00B42A',
-      credit: '2.0'
-    },
-    {
-      id: 'sport-006',
-      name: '大学体育',
-      teacher: '周健老师',
-      location: '东区操场',
-      dayIndex: 6,
-      startTime: '09:00',
-      endTime: '10:30',
-      startWeek: 2,
-      endWeek: 16,
-      courseType: '公共课',
-      color: '#FF7D00',
-      credit: '1.0'
-    }
-  ];
+  aboutToAppear(): void {
+    this.loadCourses();
+    this.loadScores();
+    this.loadBooks();
+    this.loadMaterials();
+  }
+
+  private loadCourses(): void {
+    JsonStoreUtil.read<CourseItem[]>('schedule.json').then((data: CourseItem[] | null) => {
+      if (data) {
+        this.courses = data;
+      }
+    });
+  }
+
+  private loadScores(): void {
+    JsonStoreUtil.read<ScoreItem[]>('score.json').then((data: ScoreItem[] | null) => {
+      if (data) {
+        this.scores = data;
+      }
+    });
+  }
+
+  private loadBooks(): void {
+    JsonStoreUtil.read<BookItem[]>('books.json').then((data: BookItem[] | null) => {
+      if (data) {
+        this.books = data;
+        this.filteredBooks = data;
+      }
+    });
+  }
+
+  private loadMaterials(): void {
+    JsonStoreUtil.read<MaterialFolder[]>('study_materials.json').then((data: MaterialFolder[] | null) => {
+      if (data) {
+        this.materials = data;
+      }
+    });
+  }
 
   private previousWeek(): void {
     if (this.currentWeek > 1) {
@@ -156,9 +156,14 @@ export struct StudyTab {
   }
 
   private getCoursesByDay(dayIndex: number): CourseItem[] {
-    return this.courses.filter((course: CourseItem) => {
-      return course.dayIndex === dayIndex && this.currentWeek >= course.startWeek && this.currentWeek <= course.endWeek;
-    });
+    const result: CourseItem[] = [];
+    for (let i = 0; i < this.courses.length; i++) {
+      const c: CourseItem = this.courses[i];
+      if (c.dayIndex === dayIndex && this.currentWeek >= c.startWeek && this.currentWeek <= c.endWeek) {
+        result.push(c);
+      }
+    }
+    return result;
   }
 
   private getDayCourseCount(dayIndex: number): number {
@@ -175,24 +180,111 @@ export struct StudyTab {
   }
 
   private getSelectedCourse(): CourseItem {
-    for (let index = 0; index < this.courses.length; index++) {
-      if (this.courses[index].id === this.selectedCourseId) {
-        return this.courses[index];
+    for (let i = 0; i < this.courses.length; i++) {
+      if (this.courses[i].id === this.selectedCourseId) {
+        return this.courses[i];
       }
     }
-    return this.courses[0];
+    return this.courses.length > 0 ? this.courses[0] : {
+      id: '', name: '', teacher: '', location: '', dayIndex: 1,
+      startTime: '', endTime: '', startWeek: 0, endWeek: 0,
+      courseType: '', color: '', credit: ''
+    };
   }
 
   private getSelectedCourseTime(): string {
-    return this.getSelectedCourse().startTime + ' - ' + this.getSelectedCourse().endTime;
+    const c: CourseItem = this.getSelectedCourse();
+    return c.startTime + ' - ' + c.endTime;
   }
 
   private getSelectedCourseWeekRange(): string {
-    return '第' + this.getSelectedCourse().startWeek.toString() + '-' + this.getSelectedCourse().endWeek.toString() + '周';
+    const c: CourseItem = this.getSelectedCourse();
+    return '第' + c.startWeek.toString() + '-' + c.endWeek.toString() + '周';
   }
 
   private getSelectedCourseDayName(): string {
-    return this.weekDays[this.getSelectedCourse().dayIndex - 1].name;
+    const c: CourseItem = this.getSelectedCourse();
+    for (let i = 0; i < this.weekDays.length; i++) {
+      if (this.weekDays[i].dayIndex === c.dayIndex) {
+        return this.weekDays[i].name;
+      }
+    }
+    return '';
+  }
+
+  // —— 成绩查询 ——
+
+  private getSortedScores(): ScoreItem[] {
+    return this.scores.sort((a: ScoreItem, b: ScoreItem) => b.gpa - a.gpa);
+  }
+
+  private getAverageGpa(): string {
+    if (this.scores.length === 0) {
+      return '0.00';
+    }
+    let sum: number = 0;
+    for (let i = 0; i < this.scores.length; i++) {
+      sum += this.scores[i].gpa;
+    }
+    return (sum / this.scores.length).toFixed(2);
+  }
+
+  // —— 图书馆检索 ——
+
+  private doBookSearch(): void {
+    if (this.bookSearchText.trim() === '') {
+      this.filteredBooks = this.books;
+      return;
+    }
+    const keyword: string = this.bookSearchText.trim().toLowerCase();
+    const result: BookItem[] = [];
+    for (let i = 0; i < this.books.length; i++) {
+      const b: BookItem = this.books[i];
+      if (b.title.toLowerCase().includes(keyword) ||
+          b.author.toLowerCase().includes(keyword) ||
+          b.publisher.toLowerCase().includes(keyword) ||
+          b.isbn.includes(keyword)) {
+        result.push(b);
+      }
+    }
+    this.filteredBooks = result;
+  }
+
+  private toggleBookFavorite(bookId: string): void {
+    for (let i = 0; i < this.books.length; i++) {
+      if (this.books[i].id === bookId) {
+        this.books[i].isFavorited = !this.books[i].isFavorited;
+        return;
+      }
+    }
+  }
+
+  private isBookFavorited(bookId: string): boolean {
+    for (let i = 0; i < this.books.length; i++) {
+      if (this.books[i].id === bookId) {
+        return this.books[i].isFavorited;
+      }
+    }
+    return false;
+  }
+
+  // —— 学习资料 ——
+
+  private toggleMaterialExpand(id: string): void {
+    if (this.expandedMaterialId === id) {
+      this.expandedMaterialId = '';
+    } else {
+      this.expandedMaterialId = id;
+    }
+  }
+
+  private getMaterialItems(id: string): MaterialItem[] {
+    for (let i = 0; i < this.materials.length; i++) {
+      if (this.materials[i].id === id) {
+        return this.materials[i].items;
+      }
+    }
+    return [];
   }
 
   build() {
@@ -214,7 +306,7 @@ export struct StudyTab {
 
         // 功能标签栏
         Row() {
-          ForEach(this.tags, (tag: StudyTagItem, index: number) => {
+          ForEach(this.tags, (tag: TagItem, index: number) => {
             Column({ space: 6 }) {
               Text(tag.name)
                 .fontSize(22)
@@ -235,26 +327,28 @@ export struct StudyTab {
             .onClick(() => {
               this.currentTagIndex = index;
             })
-          }, (tag: StudyTagItem, index: number) => tag.name + index.toString())
+          }, (tag: TagItem, index: number) => tag.name + index.toString())
         }
         .width('100%')
         .backgroundColor('#FFFFFF')
         .border({ width: { bottom: 1 }, color: '#E5E6EB' })
 
+        // 标签内容区
         if (this.currentTagIndex === 0) {
           this.buildCourseTable()
         } else if (this.currentTagIndex === 1) {
-          this.buildPlaceholder('📊', '成绩查询', '成绩列表与绩点统计将在后续版本开放')
+          this.buildScoreQuery()
         } else if (this.currentTagIndex === 2) {
-          this.buildPlaceholder('📚', '图书馆检索', '图书搜索、馆藏位置与收藏功能将在后续版本开放')
+          this.buildLibrarySearch()
         } else {
-          this.buildPlaceholder('📁', '学习资料', '课件、真题与本地资料查看将在后续版本开放')
+          this.buildStudyMaterials()
         }
       }
       .width('100%')
       .height('100%')
       .backgroundColor('#F5F7FA')
 
+      // 课程详情弹窗
       if (this.showCourseDetail) {
         this.buildCourseDetailLayer()
       }
@@ -263,6 +357,7 @@ export struct StudyTab {
     .height('100%')
   }
 
+  // ===== 课程表 =====
   @Builder
   buildCourseTable() {
     Scroll() {
@@ -363,6 +458,7 @@ export struct StudyTab {
           .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
         }, (day: WeekDayItem) => day.name + day.dayIndex.toString())
 
+        // 编辑课程表按钮
         Button('编辑课程表')
           .width('100%')
           .height(48)
@@ -371,7 +467,7 @@ export struct StudyTab {
           .backgroundColor('#1677FF')
           .borderRadius(8)
           .onClick(() => {
-            promptAction.showToast({ message: '课程编辑功能后续开放' });
+            promptAction.showToast({ message: '课程表编辑页将在后续版本开放' });
           })
       }
       .width('100%')
@@ -443,41 +539,331 @@ export struct StudyTab {
     })
   }
 
+  // ===== 成绩查询 =====
   @Builder
-  buildPlaceholder(icon: string, title: string, description: string) {
-    Column({ space: 24 }) {
-      Stack() {
-        Circle()
-          .width(140)
-          .height(140)
-          .fill('#E8F3FF')
-        Text(icon)
-          .fontSize(64)
-      }
+  buildScoreQuery() {
+    Scroll() {
+      Column({ space: 16 }) {
+        // 学号/姓名 + 平均绩点概览
+        Row() {
+          Column({ space: 4 }) {
+            Text('计算机科学与技术 · 张三')
+              .fontSize(26)
+              .fontWeight(600)
+              .fontColor('#1D2129')
+              .maxLines(1)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
+            Text('平均绩点: ' + this.getAverageGpa())
+              .fontSize(24)
+              .fontColor('#1677FF')
+              .maxLines(1)
+          }
+          .layoutWeight(1)
 
-      Column({ space: 8 }) {
-        Text(title)
-          .fontSize(28)
-          .fontWeight(700)
-          .fontColor('#1677FF')
-          .maxLines(1)
-        Text(description)
-          .fontSize(24)
-          .fontColor('#86909C')
-          .textAlign(TextAlign.Center)
-          .padding({ left: 32, right: 32 })
-          .maxLines(2)
+          Text('刷新成绩')
+            .fontSize(24)
+            .fontColor('#FFFFFF')
+            .padding({ left: 16, right: 16, top: 8, bottom: 8 })
+            .backgroundColor('#1677FF')
+            .borderRadius(8)
+            .onClick(() => {
+              this.loadScores();
+              promptAction.showToast({ message: '成绩已刷新' });
+            })
+        }
+        .width('100%')
+        .padding(16)
+        .backgroundColor('#FFFFFF')
+        .borderRadius(8)
+        .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
+        .alignItems(VerticalAlign.Center)
+
+        // 成绩列表（按绩点排序）
+        ForEach(this.getSortedScores(), (score: ScoreItem) => {
+          Row() {
+            Column({ space: 4 }) {
+              Text(score.courseName)
+                .fontSize(26)
+                .fontWeight(600)
+                .fontColor('#1D2129')
+                .maxLines(1)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+              Row({ space: 8 }) {
+                Text(score.semester)
+                  .fontSize(22)
+                  .fontColor('#86909C')
+                Text(score.examTime)
+                  .fontSize(22)
+                  .fontColor('#86909C')
+              }
+            }
+            .layoutWeight(1)
+            .alignItems(HorizontalAlign.Start)
+
+            Column({ space: 2 }) {
+              Text(score.score.toString())
+                .fontSize(28)
+                .fontWeight(700)
+                .fontColor(score.score >= 90 ? '#00B42A' : score.score >= 80 ? '#1677FF' : '#FF7D00')
+              Text('绩点 ' + score.gpa.toFixed(1))
+                .fontSize(22)
+                .fontColor('#86909C')
+            }
+            .alignItems(HorizontalAlign.Center)
+            .width(80)
+          }
+          .width('100%')
+          .padding(16)
+          .backgroundColor('#FFFFFF')
+          .borderRadius(8)
+          .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
+        }, (score: ScoreItem) => score.id)
       }
-      .alignItems(HorizontalAlign.Center)
+      .width('100%')
+      .padding({ left: 20, right: 20, top: 16, bottom: 24 })
     }
-    .width('100%')
     .layoutWeight(1)
-    .justifyContent(FlexAlign.Center)
-    .alignItems(HorizontalAlign.Center)
-    .padding({ top: 60, bottom: 60 })
-    .backgroundColor('#F5F7FA')
+    .scrollBar(BarState.Auto)
   }
 
+  // ===== 图书馆检索 =====
+  @Builder
+  buildLibrarySearch() {
+    Column() {
+      // 搜索栏固定在顶部
+      Row() {
+        TextInput({ placeholder: '请输入图书名称/作者/ISBN', text: this.bookSearchText })
+          .height(44)
+          .fontSize(24)
+          .placeholderColor('#86909C')
+          .borderRadius(8)
+          .backgroundColor('#F5F7FA')
+          .layoutWeight(1)
+          .onChange((value: string) => {
+            this.bookSearchText = value;
+          })
+
+        Button('搜索')
+          .height(44)
+          .fontSize(24)
+          .fontColor('#FFFFFF')
+          .backgroundColor('#1677FF')
+          .borderRadius(8)
+          .margin({ left: 12 })
+          .onClick(() => {
+            this.doBookSearch();
+          })
+      }
+      .width('100%')
+      .padding({ left: 20, right: 20, top: 12, bottom: 12 })
+      .backgroundColor('#FFFFFF')
+
+      // 搜索结果列表
+      Scroll() {
+        Column({ space: 12 }) {
+          if (this.filteredBooks.length === 0) {
+            Row() {
+              Text('未找到匹配的图书')
+                .fontSize(26)
+                .fontColor('#86909C')
+            }
+            .width('100%')
+            .height(200)
+            .justifyContent(FlexAlign.Center)
+            .alignItems(VerticalAlign.Center)
+          } else {
+            ForEach(this.filteredBooks, (book: BookItem) => {
+              this.buildBookCard(book)
+            }, (book: BookItem) => book.id)
+          }
+        }
+        .width('100%')
+        .padding({ left: 20, right: 20, top: 12, bottom: 24 })
+      }
+      .layoutWeight(1)
+      .scrollBar(BarState.Auto)
+    }
+    .layoutWeight(1)
+  }
+
+  @Builder
+  buildBookCard(book: BookItem) {
+    Row({ space: 12 }) {
+      // 封面占位
+      Stack() {
+        Circle()
+          .width(72)
+          .height(72)
+          .fill('#E8F3FF')
+        Text('📖')
+          .fontSize(32)
+      }
+
+      Column({ space: 4 }) {
+        Text(book.title)
+          .fontSize(26)
+          .fontWeight(600)
+          .fontColor('#1D2129')
+          .maxLines(1)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
+
+        Text(book.author + ' | ' + book.publisher)
+          .fontSize(22)
+          .fontColor('#86909C')
+          .maxLines(1)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
+
+        Row({ space: 8 }) {
+          Text(book.location)
+            .fontSize(22)
+            .fontColor('#1677FF')
+            .maxLines(1)
+
+          Blank()
+
+          if (book.availableCount > 0) {
+            Text('可借 ' + book.availableCount.toString() + '/' + book.totalCount.toString())
+              .fontSize(22)
+              .fontColor('#00B42A')
+          } else {
+            Text('已借完')
+              .fontSize(22)
+              .fontColor('#FF7D00')
+          }
+        }
+        .width('100%')
+      }
+      .layoutWeight(1)
+      .alignItems(HorizontalAlign.Start)
+
+      // 收藏按钮
+      Text(this.isBookFavorited(book.id) ? '❤️' : '🤍')
+        .fontSize(24)
+        .onClick(() => {
+          this.toggleBookFavorite(book.id);
+        })
+    }
+    .width('100%')
+    .padding(12)
+    .backgroundColor('#FFFFFF')
+    .borderRadius(8)
+    .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
+    .alignItems(VerticalAlign.Center)
+    .onClick(() => {
+      promptAction.showToast({ message: '图书详情页将在后续版本开放' });
+    })
+  }
+
+  // ===== 学习资料 =====
+  @Builder
+  buildStudyMaterials() {
+    Scroll() {
+      Column({ space: 16 }) {
+        if (this.materials.length === 0) {
+          Column({ space: 24 }) {
+            Stack() {
+              Circle()
+                .width(140)
+                .height(140)
+                .fill('#E8F3FF')
+              Text('📁')
+                .fontSize(64)
+            }
+            Column({ space: 8 }) {
+              Text('暂无学习资料')
+                .fontSize(28)
+                .fontWeight(700)
+                .fontColor('#1677FF')
+              Text('学习资料功能将在后续版本开放')
+                .fontSize(24)
+                .fontColor('#86909C')
+                .textAlign(TextAlign.Center)
+                .maxLines(2)
+            }
+            .alignItems(HorizontalAlign.Center)
+          }
+          .width('100%')
+          .layoutWeight(1)
+          .justifyContent(FlexAlign.Center)
+          .alignItems(HorizontalAlign.Center)
+          .padding({ top: 60, bottom: 60 })
+        } else {
+          ForEach(this.materials, (folder: MaterialFolder) => {
+            this.buildMaterialFolder(folder)
+          }, (folder: MaterialFolder) => folder.id)
+        }
+      }
+      .width('100%')
+      .padding({ left: 20, right: 20, top: 16, bottom: 24 })
+    }
+    .layoutWeight(1)
+    .scrollBar(BarState.Auto)
+  }
+
+  @Builder
+  buildMaterialFolder(folder: MaterialFolder) {
+    Column() {
+      // 文件夹标题
+      Row() {
+        Text('📁')
+          .fontSize(28)
+          .margin({ right: 12 })
+
+        Text(folder.folderName)
+          .fontSize(26)
+          .fontWeight(600)
+          .fontColor('#1D2129')
+          .layoutWeight(1)
+
+        Text(this.expandedMaterialId === folder.id ? '收起' : '展开')
+          .fontSize(24)
+          .fontColor('#1677FF')
+      }
+      .width('100%')
+      .padding(16)
+      .alignItems(VerticalAlign.Center)
+      .onClick(() => {
+        this.toggleMaterialExpand(folder.id);
+      })
+
+      // 展开后的文件列表
+      if (this.expandedMaterialId === folder.id) {
+        Column() {
+          ForEach(this.getMaterialItems(folder.id), (item: MaterialItem) => {
+            Row() {
+              Text(item.type === 'pdf' ? '📄' : '📎')
+                .fontSize(24)
+                .margin({ right: 12 })
+
+              Text(item.name)
+                .fontSize(24)
+                .fontColor('#1D2129')
+                .layoutWeight(1)
+                .maxLines(1)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+
+              Text('下载')
+                .fontSize(22)
+                .fontColor('#1677FF')
+            }
+            .width('100%')
+            .height(44)
+            .padding({ left: 52, right: 16 })
+            .onClick(() => {
+              promptAction.showToast({ message: '资料查看功能将在后续版本开放' });
+            })
+          }, (item: MaterialItem, index: number) => item.name + index.toString())
+        }
+        .width('100%')
+      }
+    }
+    .width('100%')
+    .backgroundColor('#FFFFFF')
+    .borderRadius(8)
+    .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
+  }
+
+  // ===== 课程详情弹窗 =====
   @Builder
   buildCourseDetailLayer() {
     Column() {

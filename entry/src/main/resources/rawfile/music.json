@@ -1,0 +1,47 @@
+[
+  {
+    "id": "mu1",
+    "title": "起风了",
+    "artist": "买辣椒也用券",
+    "album": "起风了",
+    "duration": 325,
+    "filePath": "",
+    "coverPath": ""
+  },
+  {
+    "id": "mu2",
+    "title": "平凡之路",
+    "artist": "朴树",
+    "album": "猎户星座",
+    "duration": 306,
+    "filePath": "",
+    "coverPath": ""
+  },
+  {
+    "id": "mu3",
+    "title": "晴天",
+    "artist": "周杰伦",
+    "album": "叶惠美",
+    "duration": 269,
+    "filePath": "",
+    "coverPath": ""
+  },
+  {
+    "id": "mu4",
+    "title": "夜空中最亮的星",
+    "artist": "逃跑计划",
+    "album": "世界",
+    "duration": 283,
+    "filePath": "",
+    "coverPath": ""
+  },
+  {
+    "id": "mu5",
+    "title": "成都",
+    "artist": "赵雷",
+    "album": "无法长大",
+    "duration": 351,
+    "filePath": "",
+    "coverPath": ""
+  }
+]

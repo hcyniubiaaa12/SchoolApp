@@ -89,12 +89,27 @@ struct Index {
     } else if (entry.name === '后台服务实验') {
       this.navigateToBackgroundTaskLab();
     }
-    // 学习助手首发：课程表入口直接切换到学习助手 Tab
+    // 学习助手相关：切换到学习助手 Tab
     else if (entry.name === '课程表' || entry.name === '成绩查询' || entry.name === '图书馆') {
       this.currentTab = 2;
       if (entry.name !== '课程表') {
-        promptAction.showToast({ message: entry.name + '功能后续开放，已为你打开课程表' });
+        promptAction.showToast({ message: entry.name + '功能已开放，已为你打开学习助手' });
       }
+    }
+    // 校园信息相关：切换到校园信息 Tab
+    else if (entry.name === '校园公告' || entry.name === '校园地图') {
+      this.currentTab = 1;
+    }
+    // 生活服务相关：切换到生活服务 Tab
+    else if (entry.name === '失物招领' || entry.name === '校园美食' || entry.name === '音乐播放') {
+      this.currentTab = 3;
+    }
+    // 待办提醒：跳转我的 → 待办页
+    else if (entry.name === '待办提醒') {
+      router.pushUrl({ url: 'pages/mine/TodoPage' })
+        .catch((err: Error) => {
+          console.error('[Index] todo page error: ' + err.message);
+        });
     }
   }
 
@@ -106,15 +121,28 @@ struct Index {
           HomeTab({
             username: this.username,
             onSearchClick: () => {
-              // P1: 跳转搜索结果页
-              promptAction.showToast({ message: '搜索功能开发中' });
+              router.pushUrl({ url: 'pages/common/SearchPage' })
+                .catch((err: Error) => {
+                  promptAction.showToast({ message: '打开搜索页失败' });
+                  console.error('[Index] search page error: ' + err.message);
+                });
             },
             onMessageClick: () => {
-              // P1: 跳转消息中心页
-              promptAction.showToast({ message: '消息中心开发中' });
+              router.pushUrl({ url: 'pages/common/MessageCenterPage' })
+                .catch((err: Error) => {
+                  promptAction.showToast({ message: '打开消息中心失败' });
+                  console.error('[Index] message page error: ' + err.message);
+                });
             },
             onQuickEntryClick: (entry: QuickEntryItem) => {
               this.handleQuickEntryClick(entry);
+            },
+            onWeatherClick: () => {
+              router.pushUrl({ url: 'pages/common/WeatherDetailPage' })
+                .catch((err: Error) => {
+                  promptAction.showToast({ message: '打开天气页失败' });
+                  console.error('[Index] weather page error: ' + err.message);
+                });
             }
           })
         }
@@ -140,8 +168,11 @@ struct Index {
             username: this.username,
             userId: this.userId,
             onProfileEditClick: () => {
-              // P1: 跳转个人信息编辑页
-              promptAction.showToast({ message: '个人信息编辑开发中' });
+              router.pushUrl({ url: 'pages/mine/ProfileEditPage' })
+                .catch((err: Error) => {
+                  promptAction.showToast({ message: '打开编辑页失败' });
+                  console.error('[Index] profile edit error: ' + err.message);
+                });
             },
             onSettingClick: () => {
               // 跳转设置页（NavDestination 内）

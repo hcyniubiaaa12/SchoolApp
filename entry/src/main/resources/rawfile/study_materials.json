@@ -1,0 +1,31 @@
+[
+  {
+    "id": "m1",
+    "folderName": "高数课件",
+    "icon": "",
+    "items": [
+      { "name": "第一章 函数与极限", "type": "pdf" },
+      { "name": "第二章 导数与微分", "type": "pdf" },
+      { "name": "第三章 不定积分", "type": "pdf" }
+    ]
+  },
+  {
+    "id": "m2",
+    "folderName": "计算机真题",
+    "icon": "",
+    "items": [
+      { "name": "2024年数据结构期末试题", "type": "pdf" },
+      { "name": "2024年计组成期末试题", "type": "pdf" },
+      { "name": "408统考真题汇编", "type": "pdf" }
+    ]
+  },
+  {
+    "id": "m3",
+    "folderName": "英语学习",
+    "icon": "",
+    "items": [
+      { "name": "四级核心词汇表", "type": "pdf" },
+      { "name": "学术英语写作模板", "type": "pdf" }
+    ]
+  }
+]

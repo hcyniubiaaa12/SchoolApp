@@ -1,0 +1,72 @@
+[
+  {
+    "id": "lf1",
+    "type": "lost",
+    "category": "校园卡",
+    "itemName": "蓝色校园卡",
+    "location": "二食堂一楼",
+    "time": "2026-06-24 12:30",
+    "description": "蓝色校园卡，背面贴有白色标签，学号20240101",
+    "contactPhone": "138****5678",
+    "imagePath": "",
+    "publisherId": "stu001",
+    "publishTime": "2026-06-24 13:00",
+    "status": "pending"
+  },
+  {
+    "id": "lf2",
+    "type": "found",
+    "category": "电子产品",
+    "itemName": "白色耳机一副",
+    "location": "图书馆二楼自习区",
+    "time": "2026-06-23 20:15",
+    "description": "白色无线蓝牙耳机，右耳套略有磨损",
+    "contactPhone": "139****1234",
+    "imagePath": "",
+    "publisherId": "stu002",
+    "publishTime": "2026-06-23 21:00",
+    "status": "pending"
+  },
+  {
+    "id": "lf3",
+    "type": "lost",
+    "category": "书籍",
+    "itemName": "高等数学习题集",
+    "location": "公教楼205",
+    "time": "2026-06-22 16:00",
+    "description": "绿色封面高等数学习题集，封面写有'计科2班 张三'",
+    "contactPhone": "137****9012",
+    "imagePath": "",
+    "publisherId": "stu003",
+    "publishTime": "2026-06-22 17:30",
+    "status": "resolved"
+  },
+  {
+    "id": "lf4",
+    "type": "found",
+    "category": "校园卡",
+    "itemName": "学生证+校园卡",
+    "location": "信软楼大厅",
+    "time": "2026-06-21 09:00",
+    "description": "学生证和校园卡，学号20240305，信息学院",
+    "contactPhone": "136****3456",
+    "imagePath": "",
+    "publisherId": "stu004",
+    "publishTime": "2026-06-21 09:30",
+    "status": "pending"
+  },
+  {
+    "id": "lf5",
+    "type": "lost",
+    "category": "其他",
+    "itemName": "灰色保温杯",
+    "location": "东区操场看台",
+    "time": "2026-06-20 18:00",
+    "description": "灰色小米保温杯，杯身有划痕",
+    "contactPhone": "135****7890",
+    "imagePath": "",
+    "publisherId": "stu005",
+    "publishTime": "2026-06-20 19:00",
+    "status": "pending"
+  }
+]

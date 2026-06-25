@@ -1,0 +1,67 @@
+[
+  {
+    "id": "b1",
+    "title": "深入理解计算机系统",
+    "author": "Randal E. Bryant",
+    "publisher": "机械工业出版社",
+    "isbn": "978-7-111-54493-7",
+    "cover": "",
+    "location": "图书馆三楼 A区-301",
+    "totalCount": 5,
+    "availableCount": 3,
+    "summary": "本书从程序员的视角详细阐述计算机系统的本质概念，并展示这些概念如何实实在在地影响应用程序的正确性、性能和实用性。",
+    "isFavorited": false
+  },
+  {
+    "id": "b2",
+    "title": "算法导论（第三版）",
+    "author": "Thomas H. Cormen",
+    "publisher": "机械工业出版社",
+    "isbn": "978-7-111-40701-0",
+    "cover": "",
+    "location": "图书馆三楼 B区-205",
+    "totalCount": 8,
+    "availableCount": 5,
+    "summary": "本书全面介绍了多种算法的设计和分析方法，是算法领域的经典教材。",
+    "isFavorited": false
+  },
+  {
+    "id": "b3",
+    "title": "操作系统概念",
+    "author": "Abraham Silberschatz",
+    "publisher": "高等教育出版社",
+    "isbn": "978-7-04-037993-6",
+    "cover": "",
+    "location": "图书馆三楼 A区-102",
+    "totalCount": 4,
+    "availableCount": 2,
+    "summary": "本书详细介绍了操作系统的基本概念、原理和实现方法，涵盖进程管理、内存管理、文件系统等核心内容。",
+    "isFavorited": false
+  },
+  {
+    "id": "b4",
+    "title": "计算机网络：自顶向下方法",
+    "author": "James F. Kurose",
+    "publisher": "机械工业出版社",
+    "isbn": "978-7-111-57381-4",
+    "cover": "",
+    "location": "图书馆三楼 C区-108",
+    "totalCount": 6,
+    "availableCount": 4,
+    "summary": "本书采用自顶向下的方法介绍计算机网络的协议和体系结构，是一本广受欢迎的计算机网络教材。",
+    "isFavorited": false
+  },
+  {
+    "id": "b5",
+    "title": "设计模式：可复用面向对象软件的基础",
+    "author": "Erich Gamma",
+    "publisher": "机械工业出版社",
+    "isbn": "978-7-111-07554-7",
+    "cover": "",
+    "location": "图书馆三楼 B区-310",
+    "totalCount": 3,
+    "availableCount": 1,
+    "summary": "本书结合设计实例从面向对象的设计中精选出23个设计模式，总结了面向对象设计中最有价值的经验。",
+    "isFavorited": false
+  }
+]

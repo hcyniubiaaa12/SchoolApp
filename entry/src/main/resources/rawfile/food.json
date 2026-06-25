@@ -1,0 +1,52 @@
+[
+  {
+    "id": "f1",
+    "name": "红烧牛肉面",
+    "canteen": "二食堂 · 面食窗口",
+    "imagePath": "",
+    "rating": 4,
+    "signatureDish": "红烧牛肉面",
+    "tags": ["面食", "实惠"],
+    "isFavorited": false
+  },
+  {
+    "id": "f2",
+    "name": "麻辣香锅",
+    "canteen": "一食堂 · 川味窗口",
+    "imagePath": "",
+    "rating": 5,
+    "signatureDish": "麻辣香锅（微辣/中辣/特辣）",
+    "tags": ["川菜", "热门"],
+    "isFavorited": false
+  },
+  {
+    "id": "f3",
+    "name": "黄焖鸡米饭",
+    "canteen": "三食堂 · 快餐窗口",
+    "imagePath": "",
+    "rating": 4,
+    "signatureDish": "黄焖鸡米饭",
+    "tags": ["快餐", "人气"],
+    "isFavorited": false
+  },
+  {
+    "id": "f4",
+    "name": "石锅拌饭",
+    "canteen": "二食堂 · 韩式窗口",
+    "imagePath": "",
+    "rating": 3,
+    "signatureDish": "石锅拌饭+大酱汤",
+    "tags": ["韩式", "套餐"],
+    "isFavorited": false
+  },
+  {
+    "id": "f5",
+    "name": "煎饼果子",
+    "canteen": "西门外小吃街",
+    "imagePath": "",
+    "rating": 4,
+    "signatureDish": "煎饼果子加蛋",
+    "tags": ["小吃", "早餐"],
+    "isFavorited": false
+  }
+]

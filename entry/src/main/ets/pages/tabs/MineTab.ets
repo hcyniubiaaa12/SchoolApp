@@ -1,11 +1,15 @@
-// MineTab.ets - 我的 Tab 页（P0 骨架，P1 将补充收藏/待办/设置完整功能）
-// 个人信息卡片 + 功能列表 + 设置模块
+/**
+ * MineTab.ets - 我的 Tab 页
+ * 个人信息卡片 + 功能列表 + 设置模块 + 退出登录
+ */
 import { router } from '@kit.ArkUI';
 import { preferences } from '@kit.ArkData';
+import promptAction from '@ohos.promptAction';
 
 interface FunctionItem {
   name: string;
-  icon: string;   // emoji 占位
+  icon: string;
+  target?: string;
 }
 
 @Component
@@ -13,18 +17,19 @@ export struct MineTab {
   @Prop username: string = '用户';
   @Prop userId: string = '';
   @Prop major: string = '计算机科学与技术';
+  @State cacheSize: string = '64.2MB';
   onProfileEditClick?: () => void;
   onSettingClick?: () => void;
 
-  // 功能列表项（按规范）
+  // 功能列表项（带路由目标）
   private functionList: FunctionItem[] = [
-    { name: '我的收藏', icon: '❤️' },
-    { name: '我的待办', icon: '📝' },
-    { name: '我的课程', icon: '📅' },
-    { name: '我的成绩', icon: '📊' },
-    { name: '失物发布', icon: '📋' },
-    { name: '帮助中心', icon: '❓' },
-    { name: '意见反馈', icon: '💬' }
+    { name: '我的收藏', icon: '❤️', target: 'pages/mine/FavoritePage' },
+    { name: '我的待办', icon: '📝', target: 'pages/mine/TodoPage' },
+    { name: '我的课程', icon: '📅', target: '' },
+    { name: '我的成绩', icon: '📊', target: '' },
+    { name: '失物发布', icon: '📋', target: '' },
+    { name: '帮助中心', icon: '❓', target: '' },
+    { name: '意见反馈', icon: '💬', target: '' }
   ];
 
   // 设置项
@@ -34,6 +39,17 @@ export struct MineTab {
     { name: '通知设置', icon: '🔔' },
     { name: '清理缓存', icon: '🗑️' }
   ];
+
+  private navigateTo(target: string): void {
+    if (target === '') {
+      promptAction.showToast({ message: '功能开发中，敬请期待' });
+      return;
+    }
+    router.pushUrl({ url: target })
+      .catch(() => {
+        promptAction.showToast({ message: '页面打开失败' });
+      });
+  }
 
   // 退出登录：仅清除登录态，保留注册数据供下次登录
   private doLogout(): void {
@@ -94,6 +110,8 @@ export struct MineTab {
             .onClick(() => {
               if (this.onProfileEditClick) {
                 this.onProfileEditClick();
+              } else {
+                this.navigateTo('pages/mine/ProfileEditPage');
               }
             })
 
@@ -127,6 +145,9 @@ export struct MineTab {
           .backgroundColor('#FFFFFF')
           .borderRadius(8)
           .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
+          .onClick(() => {
+            this.navigateTo('pages/mine/ProfileEditPage');
+          })
 
           // 功能列表
           Column() {
@@ -151,6 +172,13 @@ export struct MineTab {
               .height(48)
               .padding({ left: 16, right: 16 })
               .alignItems(VerticalAlign.Center)
+              .onClick(() => {
+                if (item.target) {
+                  this.navigateTo(item.target);
+                } else {
+                  promptAction.showToast({ message: item.name + '功能开发中' });
+                }
+              })
             }, (item: FunctionItem) => item.name)
           }
           .width('100%')
@@ -178,14 +206,23 @@ export struct MineTab {
                     .selectedColor('#1677FF')
                     .width(48)
                 } else if (item.name === '清理缓存') {
-                  Text('64.2MB')
+                  Text(this.cacheSize)
                     .fontSize(24)
                     .fontColor('#FF7D00')
                     .margin({ right: 8 })
+                    .onClick(() => {
+                      this.cacheSize = '0.0MB';
+                      promptAction.showToast({ message: '缓存清理完成' });
+                    })
                 } else {
                   Text('>')
                     .fontSize(24)
                     .fontColor('#86909C')
+                    .onClick(() => {
+                      if (item.name === '通知设置') {
+                        promptAction.showToast({ message: '通知设置页开发中' });
+                      }
+                    })
                 }
               }
               .width('100%')

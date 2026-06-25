@@ -1,0 +1,56 @@
+[
+  {
+    "id": "s1",
+    "courseName": "高等数学A",
+    "score": 92,
+    "gpa": 4.0,
+    "credit": "5.0",
+    "examTime": "2026-01-12",
+    "semester": "2025-2026-1"
+  },
+  {
+    "id": "s2",
+    "courseName": "大学英语III",
+    "score": 85,
+    "gpa": 3.5,
+    "credit": "3.0",
+    "examTime": "2026-01-10",
+    "semester": "2025-2026-1"
+  },
+  {
+    "id": "s3",
+    "courseName": "数据结构",
+    "score": 88,
+    "gpa": 3.7,
+    "credit": "4.0",
+    "examTime": "2025-07-05",
+    "semester": "2024-2025-2"
+  },
+  {
+    "id": "s4",
+    "courseName": "大学物理",
+    "score": 78,
+    "gpa": 2.7,
+    "credit": "3.5",
+    "examTime": "2025-07-08",
+    "semester": "2024-2025-2"
+  },
+  {
+    "id": "s5",
+    "courseName": "线性代数",
+    "score": 91,
+    "gpa": 4.0,
+    "credit": "3.0",
+    "examTime": "2025-01-15",
+    "semester": "2024-2025-1"
+  },
+  {
+    "id": "s6",
+    "courseName": "C语言程序设计",
+    "score": 95,
+    "gpa": 4.0,
+    "credit": "4.0",
+    "examTime": "2025-01-10",
+    "semester": "2024-2025-1"
+  }
+]

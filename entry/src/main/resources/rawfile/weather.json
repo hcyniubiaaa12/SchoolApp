@@ -1,0 +1,34 @@
+[
+  {
+    "date": "2026-06-25",
+    "weekDay": "周四",
+    "weather": "多云",
+    "tempHigh": 32,
+    "tempLow": 24,
+    "icon": ""
+  },
+  {
+    "date": "2026-06-26",
+    "weekDay": "周五",
+    "weather": "阵雨",
+    "tempHigh": 28,
+    "tempLow": 22,
+    "icon": ""
+  },
+  {
+    "date": "2026-06-27",
+    "weekDay": "周六",
+    "weather": "阴",
+    "tempHigh": 27,
+    "tempLow": 21,
+    "icon": ""
+  },
+  {
+    "date": "2026-06-28",
+    "weekDay": "周日",
+    "weather": "晴",
+    "tempHigh": 33,
+    "tempLow": 25,
+    "icon": ""
+  }
+]

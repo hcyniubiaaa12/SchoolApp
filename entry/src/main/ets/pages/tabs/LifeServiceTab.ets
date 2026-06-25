@@ -1,5 +1,10 @@
-// LifeServiceTab.ets - 生活服务 Tab（P1 将填充失物招领/美食/音乐/校园工具）
-// P0 框架优化：入口预览 + 美观空状态占位
+/**
+ * LifeServiceTab.ets - 生活服务 Tab
+ * 2×2 功能入口(失物招领/校园美食/音乐播放/校园工具)
+ * 默认显示失物招领内容，点击入口切换
+ */
+import promptAction from '@ohos.promptAction';
+import { JsonStoreUtil } from '../../common/utils/JsonStoreUtil';
 
 interface LifeEntryItem {
   name: string;
@@ -7,14 +12,165 @@ interface LifeEntryItem {
   color: string;
 }
 
+interface LostFoundItem {
+  id: string;
+  type: string;
+  category: string;
+  itemName: string;
+  location: string;
+  time: string;
+  description: string;
+  contactPhone: string;
+  imagePath: string;
+  publisherId: string;
+  publishTime: string;
+  status: string;
+}
+
+interface FoodItem {
+  id: string;
+  name: string;
+  canteen: string;
+  imagePath: string;
+  rating: number;
+  signatureDish: string;
+  tags: string[];
+  isFavorited: boolean;
+}
+
+interface SongItem {
+  id: string;
+  title: string;
+  artist: string;
+  album: string;
+  duration: number;
+  filePath: string;
+  coverPath: string;
+}
+
 @Component
 export struct LifeServiceTab {
+  @State currentEntry: number = 0;  // 0: 失物招领 1: 校园美食 2: 音乐播放 3: 校园工具
+  @State lostFoundList: LostFoundItem[] = [];
+  @State lfFilterIndex: number = 0;  // 失物招领筛选标签
+  @State foodList: FoodItem[] = [];
+  @State songList: SongItem[] = [];
+  @State currentSongIndex: number = 0;
+  @State isPlaying: boolean = false;
+  @State progressValue: number = 0;
+
   private entries: LifeEntryItem[] = [
     { name: '失物招领', icon: '🔍', color: '#FF7D00' },
     { name: '校园美食', icon: '🍽️', color: '#FF7D00' },
     { name: '音乐播放', icon: '🎵', color: '#1677FF' },
     { name: '校园工具', icon: '🛠️', color: '#00B42A' }
   ];
+
+  private lfFilters: string[] = ['全部', '失物', '拾物', '校园卡', '电子产品'];
+
+  aboutToAppear(): void {
+    this.loadLostFound();
+    this.loadFood();
+    this.loadSongs();
+  }
+
+  private loadLostFound(): void {
+    JsonStoreUtil.read<LostFoundItem[]>('lostfound.json').then((data: LostFoundItem[] | null) => {
+      if (data) {
+        this.lostFoundList = data;
+      }
+    });
+  }
+
+  private loadFood(): void {
+    JsonStoreUtil.read<FoodItem[]>('food.json').then((data: FoodItem[] | null) => {
+      if (data) {
+        this.foodList = data;
+      }
+    });
+  }
+
+  private loadSongs(): void {
+    JsonStoreUtil.read<SongItem[]>('music.json').then((data: SongItem[] | null) => {
+      if (data) {
+        this.songList = data;
+      }
+    });
+  }
+
+  // —— 失物招领筛选 ——
+  private getFilteredLostFound(): LostFoundItem[] {
+    if (this.lfFilterIndex === 0) {
+      return this.lostFoundList;
+    }
+    const filterText: string = this.lfFilters[this.lfFilterIndex];
+    const result: LostFoundItem[] = [];
+    for (let i = 0; i < this.lostFoundList.length; i++) {
+      const item: LostFoundItem = this.lostFoundList[i];
+      if (filterText === '失物' && item.type === 'lost') {
+        result.push(item);
+      } else if (filterText === '拾物' && item.type === 'found') {
+        result.push(item);
+      } else if (item.category === filterText) {
+        result.push(item);
+      }
+    }
+    return result;
+  }
+
+  // —— 美食 ——
+  private getStars(rating: number): string {
+    let stars: string = '';
+    for (let i = 0; i < 5; i++) {
+      stars += i < rating ? '★' : '☆';
+    }
+    return stars;
+  }
+
+  private toggleFoodFavorite(foodId: string): void {
+    for (let i = 0; i < this.foodList.length; i++) {
+      if (this.foodList[i].id === foodId) {
+        this.foodList[i].isFavorited = !this.foodList[i].isFavorited;
+        return;
+      }
+    }
+  }
+
+  // —— 音乐播放 ——
+  private getCurrentSong(): SongItem {
+    if (this.songList.length === 0) {
+      return { id: '', title: '无歌曲', artist: '', album: '', duration: 0, filePath: '', coverPath: '' };
+    }
+    return this.songList[this.currentSongIndex];
+  }
+
+  private formatDuration(seconds: number): string {
+    const min: number = Math.floor(seconds / 60);
+    const sec: number = seconds % 60;
+    return min.toString().padStart(2, '0') + ':' + sec.toString().padStart(2, '0');
+  }
+
+  private togglePlay(): void {
+    this.isPlaying = !this.isPlaying;
+  }
+
+  private prevSong(): void {
+    if (this.songList.length === 0) {
+      return;
+    }
+    this.currentSongIndex = (this.currentSongIndex - 1 + this.songList.length) % this.songList.length;
+    this.isPlaying = true;
+    this.progressValue = 0;
+  }
+
+  private nextSong(): void {
+    if (this.songList.length === 0) {
+      return;
+    }
+    this.currentSongIndex = (this.currentSongIndex + 1) % this.songList.length;
+    this.isPlaying = true;
+    this.progressValue = 0;
+  }
 
   build() {
     Column() {
@@ -34,100 +190,46 @@ export struct LifeServiceTab {
 
       Scroll() {
         Column({ space: 16 }) {
-          // 2×2 功能入口预览（视觉占位）
+          // 2×2 功能入口
           Row({ space: 12 }) {
-            ForEach(this.entries.slice(0, 2), (entry: LifeEntryItem, index: number) => {
-              Column({ space: 8 }) {
-                Stack() {
-                  Circle()
-                    .width(56)
-                    .height(56)
-                    .fill(entry.color + '1A')
-                  Text(entry.icon)
-                    .fontSize(28)
-                }
-                Text(entry.name)
-                  .fontSize(22)
-                  .fontColor('#1D2129')
-                  .maxLines(1)
-                  .textOverflow({ overflow: TextOverflow.Ellipsis })
-              }
-              .layoutWeight(1)
-              .alignItems(HorizontalAlign.Center)
-              .padding({ top: 16, bottom: 16 })
-              .backgroundColor('#FFFFFF')
-              .borderRadius(8)
-            }, (entry: LifeEntryItem, index: number) => entry.name + index.toString())
+            ForEach(this.entries.slice(0, 2), (entry: LifeEntryItem) => {
+              this.buildEntryCard(entry)
+            }, (entry: LifeEntryItem) => entry.name)
           }
           .width('100%')
           .padding({ left: 20, right: 20 })
 
           Row({ space: 12 }) {
-            ForEach(this.entries.slice(2, 4), (entry: LifeEntryItem, index: number) => {
-              Column({ space: 8 }) {
-                Stack() {
-                  Circle()
-                    .width(56)
-                    .height(56)
-                    .fill(entry.color + '1A')
-                  Text(entry.icon)
-                    .fontSize(28)
-                }
-                Text(entry.name)
-                  .fontSize(22)
-                  .fontColor('#1D2129')
-                  .maxLines(1)
-                  .textOverflow({ overflow: TextOverflow.Ellipsis })
-              }
-              .layoutWeight(1)
-              .alignItems(HorizontalAlign.Center)
-              .padding({ top: 16, bottom: 16 })
-              .backgroundColor('#FFFFFF')
-              .borderRadius(8)
-            }, (entry: LifeEntryItem, index: number) => entry.name + index.toString())
+            ForEach(this.entries.slice(2, 4), (entry: LifeEntryItem) => {
+              this.buildEntryCard(entry)
+            }, (entry: LifeEntryItem) => entry.name)
           }
           .width('100%')
           .padding({ left: 20, right: 20 })
 
-          // 空状态占位
-          Column({ space: 24 }) {
-            Stack() {
-              Circle()
-                .width(140)
-                .height(140)
-                .fill('#FFF3E0')
-              Text('🎯')
-                .fontSize(64)
-            }
-
-            Column({ space: 8 }) {
-              Text('生活服务')
-                .fontSize(28)
-                .fontWeight(700)
-                .fontColor('#FF7D00')
-                .maxLines(1)
-              Text('失物招领、校园美食、音乐播放、校园工具')
-                .fontSize(24)
-                .fontColor('#86909C')
-                .textAlign(TextAlign.Center)
-                .padding({ left: 32, right: 32 })
-                .maxLines(2)
-              Text('功能开发中，敬请期待...')
-                .fontSize(24)
-                .fontColor('#86909C')
-                .margin({ top: 8 })
-                .maxLines(1)
-            }
-            .alignItems(HorizontalAlign.Center)
+          // 内容区分隔线
+          Row() {
+            Text('▼ ' + this.entries[this.currentEntry].name)
+              .fontSize(24)
+              .fontColor('#1677FF')
+              .fontWeight(600)
           }
           .width('100%')
-          .layoutWeight(1)
-          .justifyContent(FlexAlign.Center)
-          .alignItems(HorizontalAlign.Center)
-          .padding({ top: 40, bottom: 60 })
+          .padding({ left: 20 })
+
+          // 内容区
+          if (this.currentEntry === 0) {
+            this.buildLostFoundContent()
+          } else if (this.currentEntry === 1) {
+            this.buildFoodContent()
+          } else if (this.currentEntry === 2) {
+            this.buildMusicContent()
+          } else {
+            this.buildToolsContent()
+          }
         }
         .width('100%')
-        .padding({ bottom: 16 })
+        .padding({ bottom: 24 })
       }
       .layoutWeight(1)
       .scrollBar(BarState.Auto)
@@ -135,5 +237,402 @@ export struct LifeServiceTab {
     .width('100%')
     .height('100%')
     .backgroundColor('#F5F7FA')
+  }
+
+  @Builder
+  buildEntryCard(entry: LifeEntryItem) {
+    Column({ space: 8 }) {
+      Stack() {
+        Circle()
+          .width(56)
+          .height(56)
+          .fill(entry.color + '1A')
+        Text(entry.icon)
+          .fontSize(28)
+      }
+      Text(entry.name)
+        .fontSize(22)
+        .fontColor(this.currentEntry === this.getEntryIndex(entry.name) ? '#1677FF' : '#1D2129')
+        .fontWeight(this.currentEntry === this.getEntryIndex(entry.name) ? 600 : 400)
+        .maxLines(1)
+        .textOverflow({ overflow: TextOverflow.Ellipsis })
+    }
+    .layoutWeight(1)
+    .alignItems(HorizontalAlign.Center)
+    .padding({ top: 16, bottom: 16 })
+    .backgroundColor(this.currentEntry === this.getEntryIndex(entry.name) ? '#E8F3FF' : '#FFFFFF')
+    .borderRadius(8)
+    .onClick(() => {
+      this.currentEntry = this.getEntryIndex(entry.name);
+    })
+  }
+
+  private getEntryIndex(name: string): number {
+    for (let i = 0; i < this.entries.length; i++) {
+      if (this.entries[i].name === name) {
+        return i;
+      }
+    }
+    return 0;
+  }
+
+  // ===== 失物招领 =====
+  @Builder
+  buildLostFoundContent() {
+    Column({ space: 12 }) {
+      // 发布信息按钮
+      Button('发布信息')
+        .width('100%')
+        .height(48)
+        .fontSize(26)
+        .fontColor('#FFFFFF')
+        .backgroundColor('#FF7D00')
+        .borderRadius(8)
+        .onClick(() => {
+          promptAction.showToast({ message: '失物招领发布页将在后续版本开放' });
+        })
+
+      // 筛选标签
+      Scroll() {
+        Row({ space: 12 }) {
+          ForEach(this.lfFilters, (filter: string, index: number) => {
+            Text(filter)
+              .fontSize(22)
+              .fontColor(this.lfFilterIndex === index ? '#FFFFFF' : '#1D2129')
+              .padding({ left: 16, right: 16, top: 6, bottom: 6 })
+              .backgroundColor(this.lfFilterIndex === index ? '#FF7D00' : '#FFFFFF')
+              .borderRadius(20)
+              .onClick(() => {
+                this.lfFilterIndex = index;
+              })
+          }, (filter: string, index: number) => filter + index.toString())
+        }
+        .width('100%')
+      }
+      .scrollBar(BarState.Off)
+      .scrollable(ScrollDirection.Horizontal)
+
+      // 列表
+      if (this.getFilteredLostFound().length === 0) {
+        Row() {
+          Text('暂无信息')
+            .fontSize(24)
+            .fontColor('#86909C')
+        }
+        .width('100%')
+        .height(100)
+        .justifyContent(FlexAlign.Center)
+        .alignItems(VerticalAlign.Center)
+      } else {
+        ForEach(this.getFilteredLostFound(), (item: LostFoundItem) => {
+          Row() {
+            // 缩略图 64x64
+            Stack() {
+              Circle()
+                .width(64)
+                .height(64)
+                .fill(item.type === 'lost' ? '#FFF3E0' : '#E8F3FF')
+              Text(item.type === 'lost' ? '🔍' : '📌')
+                .fontSize(28)
+            }
+
+            Column({ space: 4 }) {
+              Row({ space: 8 }) {
+                Text(item.itemName)
+                  .fontSize(26)
+                  .fontWeight(600)
+                  .fontColor('#1D2129')
+                  .maxLines(1)
+                  .textOverflow({ overflow: TextOverflow.Ellipsis })
+
+                Text(item.type === 'lost' ? '失物' : '拾物')
+                  .fontSize(20)
+                  .fontColor(item.type === 'lost' ? '#FF7D00' : '#00B42A')
+                  .padding({ left: 6, right: 6, top: 2, bottom: 2 })
+                  .backgroundColor(item.type === 'lost' ? '#FFF3E0' : '#E8F8E0')
+                  .borderRadius(4)
+              }
+              .width('100%')
+
+              Text(item.location + ' · ' + item.time)
+                .fontSize(22)
+                .fontColor('#86909C')
+                .maxLines(1)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+            }
+            .layoutWeight(1)
+            .alignItems(HorizontalAlign.Start)
+            .margin({ left: 12 })
+          }
+          .width('100%')
+          .padding(12)
+          .backgroundColor('#FFFFFF')
+          .borderRadius(8)
+          .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
+          .alignItems(VerticalAlign.Center)
+        }, (item: LostFoundItem) => item.id)
+      }
+    }
+    .width('100%')
+    .padding({ left: 20, right: 20 })
+  }
+
+  // ===== 校园美食 =====
+  @Builder
+  buildFoodContent() {
+    Column({ space: 12 }) {
+      if (this.foodList.length === 0) {
+        Row() {
+          Text('暂无美食信息')
+            .fontSize(24)
+            .fontColor('#86909C')
+        }
+        .width('100%')
+        .height(100)
+        .justifyContent(FlexAlign.Center)
+      } else {
+        ForEach(this.foodList, (food: FoodItem) => {
+          Row() {
+            // 美食图占位
+            Stack() {
+              Circle()
+                .width(64)
+                .height(64)
+                .fill('#FFF3E0')
+              Text('🍽️')
+                .fontSize(28)
+            }
+
+            Column({ space: 4 }) {
+              Row() {
+                Text(food.name)
+                  .fontSize(26)
+                  .fontWeight(600)
+                  .fontColor('#1D2129')
+                  .maxLines(1)
+                  .textOverflow({ overflow: TextOverflow.Ellipsis })
+                  .layoutWeight(1)
+
+                Text(food.isFavorited ? '❤️' : '🤍')
+                  .fontSize(22)
+                  .onClick(() => {
+                    this.toggleFoodFavorite(food.id);
+                  })
+              }
+              .width('100%')
+
+              Text(food.canteen)
+                .fontSize(22)
+                .fontColor('#86909C')
+                .maxLines(1)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+
+              Row({ space: 8 }) {
+                Text(this.getStars(food.rating))
+                  .fontSize(22)
+                  .fontColor('#FF7D00')
+
+                Text(food.signatureDish)
+                  .fontSize(22)
+                  .fontColor('#86909C')
+                  .maxLines(1)
+                  .textOverflow({ overflow: TextOverflow.Ellipsis })
+              }
+              .width('100%')
+            }
+            .layoutWeight(1)
+            .alignItems(HorizontalAlign.Start)
+            .margin({ left: 12 })
+          }
+          .width('100%')
+          .padding(12)
+          .backgroundColor('#FFFFFF')
+          .borderRadius(8)
+          .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
+          .alignItems(VerticalAlign.Center)
+        }, (food: FoodItem) => food.id)
+      }
+    }
+    .width('100%')
+    .padding({ left: 20, right: 20 })
+  }
+
+  // ===== 音乐播放 =====
+  @Builder
+  buildMusicContent() {
+    Column({ space: 16 }) {
+      if (this.songList.length === 0) {
+        Row() {
+          Text('暂无音乐，请添加本地音频文件')
+            .fontSize(24)
+            .fontColor('#86909C')
+        }
+        .width('100%')
+        .height(200)
+        .justifyContent(FlexAlign.Center)
+        .alignItems(VerticalAlign.Center)
+      } else {
+        // 专辑封面（圆形，播放时旋转动画模拟）
+        Stack() {
+          Circle()
+            .width(180)
+            .height(180)
+            .fill('#E8F3FF')
+          Text('🎵')
+            .fontSize(72)
+        }
+        .width('100%')
+        .padding({ top: 24 })
+
+        // 歌名 + 歌手
+        Text(this.getCurrentSong().title)
+          .fontSize(28)
+          .fontWeight(700)
+          .fontColor('#1D2129')
+          .width('100%')
+          .textAlign(TextAlign.Center)
+          .maxLines(1)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
+
+        Text(this.getCurrentSong().artist)
+          .fontSize(24)
+          .fontColor('#86909C')
+          .width('100%')
+          .textAlign(TextAlign.Center)
+          .maxLines(1)
+
+        // 进度条
+        Row({ space: 8 }) {
+          Text(this.formatDuration(this.progressValue))
+            .fontSize(22)
+            .fontColor('#86909C')
+
+          Slider({
+            value: this.progressValue,
+            min: 0,
+            max: this.getCurrentSong().duration,
+            step: 1,
+            style: SliderStyle.OutSet
+          })
+            .layoutWeight(1)
+            .trackColor('#E5E6EB')
+            .selectedColor('#1677FF')
+            .blockColor('#1677FF')
+            .onChange((value: number) => {
+              this.progressValue = value;
+            })
+
+          Text(this.formatDuration(this.getCurrentSong().duration))
+            .fontSize(22)
+            .fontColor('#86909C')
+        }
+        .width('100%')
+        .padding({ left: 20, right: 20 })
+
+        // 控制按钮
+        Row({ space: 32 }) {
+          // 上一曲
+          Button() {
+            Text('⏮️')
+              .fontSize(32)
+          }
+          .width(48)
+          .height(48)
+          .backgroundColor('#FFFFFF')
+          .onClick(() => {
+            this.prevSong();
+          })
+
+          // 播放/暂停
+          Button() {
+            Text(this.isPlaying ? '⏸️' : '▶️')
+              .fontSize(40)
+          }
+          .width(64)
+          .height(64)
+          .backgroundColor('#E8F3FF')
+          .borderRadius(32)
+          .onClick(() => {
+            this.togglePlay();
+          })
+
+          // 下一曲
+          Button() {
+            Text('⏭️')
+              .fontSize(32)
+          }
+          .width(48)
+          .height(48)
+          .backgroundColor('#FFFFFF')
+          .onClick(() => {
+            this.nextSong();
+          })
+        }
+        .width('100%')
+        .justifyContent(FlexAlign.Center)
+        .padding({ top: 8 })
+
+        // 本地音乐按钮
+        Button('本地音乐')
+          .width('60%')
+          .height(44)
+          .fontSize(24)
+          .fontColor('#1677FF')
+          .backgroundColor('#E8F3FF')
+          .borderRadius(22)
+          .margin({ top: 8 })
+          .onClick(() => {
+            promptAction.showToast({ message: '本地音乐列表将在后续版本开放' });
+          })
+      }
+    }
+    .width('100%')
+    .padding({ left: 20, right: 20, bottom: 32 })
+    .backgroundColor('#FFFFFF')
+    .borderRadius(8)
+    .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
+    .alignItems(HorizontalAlign.Center)
+  }
+
+  // ===== 校园工具 =====
+  @Builder
+  buildToolsContent() {
+    Column({ space: 16 }) {
+      Row({ space: 12 }) {
+        this.buildToolCard('🧮', '计算器', 0)
+        this.buildToolCard('⏱️', '倒计时', 1)
+      }
+      .width('100%')
+      .padding({ left: 20, right: 20 })
+
+      Row({ space: 12 }) {
+        this.buildToolCard('📦', '快递查询', 2)
+        this.buildToolCard('📐', '更多工具', 3)
+      }
+      .width('100%')
+      .padding({ left: 20, right: 20, bottom: 24 })
+    }
+  }
+
+  @Builder
+  buildToolCard(icon: string, name: string, _index: number) {
+    Column({ space: 12 }) {
+      Text(icon)
+        .fontSize(40)
+      Text(name)
+        .fontSize(26)
+        .fontColor('#1D2129')
+        .maxLines(1)
+        .textOverflow({ overflow: TextOverflow.Ellipsis })
+    }
+    .layoutWeight(1)
+    .alignItems(HorizontalAlign.Center)
+    .padding({ top: 32, bottom: 32 })
+    .backgroundColor('#FFFFFF')
+    .borderRadius(8)
+    .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
+    .onClick(() => {
+      promptAction.showToast({ message: name + '功能将在后续版本开放' });
+    })
   }
 }

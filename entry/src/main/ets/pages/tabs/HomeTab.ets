@@ -22,6 +22,7 @@ export struct HomeTab {
   @Prop swiperIndex: number = 0;
   onSearchClick?: () => void;
   onMessageClick?: () => void;
+  onWeatherClick?: () => void;
   onQuickEntryClick?: (entry: QuickEntryItem) => void;
   onTabChange?: (index: number) => void;
 
@@ -417,6 +418,11 @@ export struct HomeTab {
         .borderRadius(8)
         .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
         .alignItems(VerticalAlign.Center)
+        .onClick(() => {
+          if (this.onWeatherClick) {
+            this.onWeatherClick();
+          }
+        })
       }
       .padding({ left: 20, right: 20, bottom: 16 })
       .alignItems(HorizontalAlign.Start)

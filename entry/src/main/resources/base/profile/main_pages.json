@@ -7,6 +7,15 @@
     "pages/Index",
     "pages/Profile",
     "pages/DataStorageLab",
-    "pages/BackgroundTaskLab"
+    "pages/BackgroundTaskLab",
+    "pages/common/SearchPage",
+    "pages/common/MessageCenterPage",
+    "pages/common/WeatherDetailPage",
+    "pages/mine/ProfileEditPage",
+    "pages/mine/FavoritePage",
+    "pages/mine/TodoPage",
+    "pages/study/ScheduleEditPage",
+    "pages/life/LostFoundPublishPage",
+    "pages/life/MusicListPage"
   ]
 }
