@@ -33,12 +33,20 @@ struct WeatherDetailPage {
     return '#00B42A';
   }
 
+  private getWeatherSymbol(weather: string): Resource {
+    if (weather.includes('晴')) return $r('sys.symbol.sun_max');
+    if (weather.includes('多云')) return $r('sys.symbol.cloud');
+    if (weather.includes('阴')) return $r('sys.symbol.cloud');
+    if (weather.includes('雨') || weather.includes('阵雨')) return $r('sys.symbol.cloud');
+    return $r('sys.symbol.sun_max');
+  }
+
   build() {
     Column() {
       // 导航栏
       Row() {
         Image($r('app.media.ic_back'))
-          .width(24).height(24).fillColor('#1D2129')
+          .width(24).height(24).fillColor($r('app.color.text_primary'))
           .onClick(() => {
             router.back();
           })
@@ -48,7 +56,7 @@ struct WeatherDetailPage {
         Text('天气详情')
           .fontSize(30)
           .fontWeight(600)
-          .fontColor('#1D2129')
+          .fontColor($r('app.color.text_primary'))
           .layoutWeight(1)
           .textAlign(TextAlign.Center)
 
@@ -59,7 +67,7 @@ struct WeatherDetailPage {
       .width('100%')
       .height(56)
       .padding({ left: 16, right: 20 })
-      .backgroundColor('#FFFFFF')
+      .backgroundColor($r('app.color.card_white'))
       .alignItems(VerticalAlign.Center)
 
       Scroll() {
@@ -70,9 +78,9 @@ struct WeatherDetailPage {
               Text('今日 · ' + this.forecast[0].weekDay)
                 .fontSize(28)
                 .fontWeight(600)
-                .fontColor('#FFFFFF')
+                .fontColor($r('app.color.card_white'))
 
-              Text(this.getWeatherIcon(this.forecast[0].weather))
+              SymbolGlyph(this.getWeatherSymbol(this.forecast[0].weather))
                 .fontSize(72)
 
               Text(this.forecast[0].weather)
@@ -84,7 +92,7 @@ struct WeatherDetailPage {
                   Text(this.forecast[0].tempHigh.toString() + '°C')
                     .fontSize(48)
                     .fontWeight(700)
-                    .fontColor('#FFFFFF')
+                    .fontColor($r('app.color.card_white'))
                   Text('最高温')
                     .fontSize(22)
                     .fontColor('#FFFFFFCC')
@@ -95,7 +103,7 @@ struct WeatherDetailPage {
                   Text(this.forecast[0].tempLow.toString() + '°C')
                     .fontSize(48)
                     .fontWeight(700)
-                    .fontColor('#FFFFFF')
+                    .fontColor($r('app.color.card_white'))
                   Text('最低温')
                     .fontSize(22)
                     .fontColor('#FFFFFFCC')
@@ -116,7 +124,7 @@ struct WeatherDetailPage {
           Text('未来天气趋势')
             .fontSize(28)
             .fontWeight(700)
-            .fontColor('#1D2129')
+            .fontColor($r('app.color.text_primary'))
             .width('100%')
 
           ForEach(this.forecast, (day: WeatherRow) => {
@@ -125,35 +133,35 @@ struct WeatherDetailPage {
                 Text(day.weekDay)
                   .fontSize(26)
                   .fontWeight(600)
-                  .fontColor('#1D2129')
+                  .fontColor($r('app.color.text_primary'))
                 Text(day.dateText.substring(5))
                   .fontSize(22)
-                  .fontColor('#86909C')
+                  .fontColor($r('app.color.text_secondary'))
               }
               .width(60)
 
-              Text(this.getWeatherIcon(day.weather))
+              SymbolGlyph(this.getWeatherSymbol(day.weather))
                 .fontSize(36)
                 .margin({ left: 16, right: 16 })
 
               Text(day.weather)
                 .fontSize(24)
-                .fontColor('#1D2129')
+                .fontColor($r('app.color.text_primary'))
                 .layoutWeight(1)
 
               Row({ space: 12 }) {
                 Text(day.tempLow.toString() + '°')
                   .fontSize(24)
-                  .fontColor('#86909C')
+                  .fontColor($r('app.color.text_secondary'))
                 Text(day.tempHigh.toString() + '°')
                   .fontSize(26)
                   .fontWeight(600)
-                  .fontColor('#1D2129')
+                  .fontColor($r('app.color.text_primary'))
               }
             }
             .width('100%')
             .padding(16)
-            .backgroundColor('#FFFFFF')
+            .backgroundColor($r('app.color.card_white'))
             .borderRadius(8)
             .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
             .alignItems(VerticalAlign.Center)
@@ -167,6 +175,6 @@ struct WeatherDetailPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#F5F7FA')
+    .backgroundColor($r('app.color.background'))
   }
 }

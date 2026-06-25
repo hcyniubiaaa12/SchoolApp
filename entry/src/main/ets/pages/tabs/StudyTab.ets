@@ -295,14 +295,14 @@ export struct StudyTab {
             Column({ space: 6 }) {
               Text(tag.name)
                 .fontSize(22)
-                .fontColor(this.currentTagIndex === index ? '#1677FF' : this.darkSecondary)
+                .fontColor(this.currentTagIndex === index ? $r('app.color.primary') : this.darkSecondary)
                 .fontWeight(this.currentTagIndex === index ? 600 : 400)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
               Row()
                 .width(34)
                 .height(2)
-                .backgroundColor(this.currentTagIndex === index ? '#1677FF' : '#00FFFFFF')
+                .backgroundColor(this.currentTagIndex === index ? $r('app.color.primary') : '#00FFFFFF')
                 .borderRadius(1)
             }
             .layoutWeight(1)
@@ -351,7 +351,7 @@ export struct StudyTab {
         Row() {
           Text('上一周')
             .fontSize(24)
-            .fontColor(this.currentWeek === 1 ? this.darkSecondary : '#1677FF')
+            .fontColor(this.currentWeek === 1 ? this.darkSecondary : $r('app.color.primary'))
             .width(80)
             .textAlign(TextAlign.Start)
             .onClick(() => {
@@ -374,7 +374,7 @@ export struct StudyTab {
 
           Text('下一周')
             .fontSize(24)
-            .fontColor(this.currentWeek === 20 ? this.darkSecondary : '#1677FF')
+            .fontColor(this.currentWeek === 20 ? this.darkSecondary : $r('app.color.primary'))
             .width(80)
             .textAlign(TextAlign.End)
             .onClick(() => {
@@ -396,11 +396,11 @@ export struct StudyTab {
                 Circle()
                   .width(36)
                   .height(36)
-                  .fill('#E8F3FF')
+                  .fill($r('app.color.primary_light'))
                 Text(day.shortName)
                   .fontSize(22)
                   .fontWeight(600)
-                  .fontColor('#1677FF')
+                  .fontColor($r('app.color.primary'))
               }
               .margin({ right: 12 })
 
@@ -530,7 +530,7 @@ export struct StudyTab {
               .textOverflow({ overflow: TextOverflow.Ellipsis })
             Text('平均绩点: ' + this.getAverageGpa())
               .fontSize(24)
-              .fontColor('#1677FF')
+              .fontColor($r('app.color.primary'))
               .maxLines(1)
           }
           .layoutWeight(1)
@@ -539,7 +539,7 @@ export struct StudyTab {
             .fontSize(24)
             .fontColor('#FFFFFF')
             .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-            .backgroundColor('#1677FF')
+            .backgroundColor($r('app.color.primary'))
             .borderRadius(8)
             .onClick(() => {
               this.loadScores();
@@ -579,7 +579,7 @@ export struct StudyTab {
               Text(score.score.toString())
                 .fontSize(28)
                 .fontWeight(700)
-                .fontColor(score.score >= 90 ? '#00B42A' : score.score >= 80 ? '#1677FF' : '#FF7D00')
+                .fontColor(score.score >= 90 ? $r('app.color.fresh_green') : score.score >= 80 ? $r('app.color.primary') : $r('app.color.warm_orange'))
               Text('绩点 ' + score.gpa.toFixed(1))
                 .fontSize(22)
                 .fontColor(this.darkSecondary)
@@ -622,7 +622,7 @@ export struct StudyTab {
           .height(44)
           .fontSize(24)
           .fontColor('#FFFFFF')
-          .backgroundColor('#1677FF')
+          .backgroundColor($r('app.color.primary'))
           .borderRadius(8)
           .margin({ left: 12 })
           .onClick(() => {
@@ -669,7 +669,7 @@ export struct StudyTab {
         Circle()
           .width(72)
           .height(72)
-          .fill('#E8F3FF')
+          .fill($r('app.color.primary_light'))
         Image($r('app.media.ic_book'))
           .width(32)
           .height(32)
@@ -692,7 +692,7 @@ export struct StudyTab {
         Row({ space: 8 }) {
           Text(book.location)
             .fontSize(22)
-            .fontColor('#1677FF')
+            .fontColor($r('app.color.primary'))
             .maxLines(1)
 
           Blank()
@@ -700,11 +700,11 @@ export struct StudyTab {
           if (book.availableCount > 0) {
             Text('可借 ' + book.availableCount.toString() + '/' + book.totalCount.toString())
               .fontSize(22)
-              .fontColor('#00B42A')
+              .fontColor($r('app.color.fresh_green'))
           } else {
             Text('已借完')
               .fontSize(22)
-              .fontColor('#FF7D00')
+              .fontColor($r('app.color.warm_orange'))
           }
         }
         .width('100%')
@@ -713,7 +713,7 @@ export struct StudyTab {
       .alignItems(HorizontalAlign.Start)
 
       // 收藏按钮
-      Text(this.isBookFavorited(book.id) ? '❤️' : '🤍')
+      SymbolGlyph(this.isBookFavorited(book.id) ? $r('sys.symbol.heart_fill') : $r('sys.symbol.heart'))
         .fontSize(24)
         .onClick(() => {
           this.toggleBookFavorite(book.id);
@@ -741,15 +741,15 @@ export struct StudyTab {
               Circle()
                 .width(140)
                 .height(140)
-                .fill('#E8F3FF')
-              Text('📁')
+                .fill($r('app.color.primary_light'))
+              SymbolGlyph($r('sys.symbol.folder'))
                 .fontSize(64)
             }
             Column({ space: 8 }) {
               Text('暂无学习资料')
                 .fontSize(28)
                 .fontWeight(700)
-                .fontColor('#1677FF')
+                .fontColor($r('app.color.primary'))
               Text('学习资料功能将在后续版本开放')
                 .fontSize(24)
                 .fontColor(this.darkSecondary)
@@ -781,7 +781,7 @@ export struct StudyTab {
     Column() {
       // 文件夹标题
       Row() {
-        Text('📁')
+        SymbolGlyph($r('sys.symbol.folder'))
           .fontSize(28)
           .margin({ right: 12 })
 
@@ -793,7 +793,7 @@ export struct StudyTab {
 
         Text(this.expandedMaterialId === folder.id ? '收起' : '展开')
           .fontSize(24)
-          .fontColor('#1677FF')
+          .fontColor($r('app.color.primary'))
       }
       .width('100%')
       .padding(16)
@@ -807,9 +807,15 @@ export struct StudyTab {
         Column() {
           ForEach(this.getMaterialItems(folder.id), (item: MaterialItem) => {
             Row() {
-              Text(item.type === 'pdf' ? '📄' : '📎')
-                .fontSize(24)
-                .margin({ right: 12 })
+              if (item.type === 'pdf') {
+                SymbolGlyph($r('sys.symbol.doc_text'))
+                  .fontSize(24)
+                  .margin({ right: 12 })
+              } else {
+                SymbolGlyph($r('sys.symbol.paperclip'))
+                  .fontSize(24)
+                  .margin({ right: 12 })
+              }
 
               Text(item.name)
                 .fontSize(24)
@@ -820,7 +826,7 @@ export struct StudyTab {
 
               Text('下载')
                 .fontSize(22)
-                .fontColor('#1677FF')
+                .fontColor($r('app.color.primary'))
             }
             .width('100%')
             .height(44)
@@ -854,7 +860,7 @@ export struct StudyTab {
             .layoutWeight(1)
           Text('关闭')
             .fontSize(24)
-            .fontColor('#1677FF')
+            .fontColor($r('app.color.primary'))
             .onClick(() => {
               this.closeCourseDetail();
             })
@@ -866,7 +872,7 @@ export struct StudyTab {
         Text(this.getSelectedCourse().name)
           .fontSize(32)
           .fontWeight(700)
-          .fontColor('#1677FF')
+          .fontColor($r('app.color.primary'))
           .width('100%')
           .maxLines(2)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -883,8 +889,8 @@ export struct StudyTab {
             .layoutWeight(1)
             .height(48)
             .fontSize(26)
-            .fontColor('#1677FF')
-            .backgroundColor('#E8F3FF')
+            .fontColor($r('app.color.primary'))
+            .backgroundColor($r('app.color.primary_light'))
             .borderRadius(8)
             .onClick(() => {
               this.closeCourseDetail();
@@ -901,7 +907,7 @@ export struct StudyTab {
             .height(48)
             .fontSize(26)
             .fontColor('#FFFFFF')
-            .backgroundColor('#1677FF')
+            .backgroundColor($r('app.color.primary'))
             .borderRadius(8)
             .onClick(() => {
               this.closeCourseDetail();

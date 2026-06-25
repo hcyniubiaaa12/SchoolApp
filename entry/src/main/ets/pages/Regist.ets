@@ -174,7 +174,7 @@ struct Regist {
           Image($r('app.media.ic_account'))
             .width(20)
             .height(20)
-            .fillColor('#999999')
+            .fillColor($r('app.color.text_secondary'))
             .margin({ right: 8 })
           TextInput({ placeholder: '请输入手机号' })
             .fontSize(26)
@@ -194,10 +194,9 @@ struct Regist {
 
         // 验证码输入框 + 获取验证码按钮
         Row() {
-          Image($r('app.media.ic_code'))
-            .width(20)
-            .height(20)
-            .fillColor('#999999')
+          SymbolGlyph($r('sys.symbol.message'))
+            .fontColor([$r('app.color.text_secondary')])
+            .fontSize(20)
             .margin({ right: 8 })
           TextInput({ placeholder: '输入6位验证码' })
             .fontSize(26)
@@ -239,7 +238,7 @@ struct Regist {
           Image($r('app.media.ic_lock'))
             .width(20)
             .height(20)
-            .fillColor('#999999')
+            .fillColor($r('app.color.text_secondary'))
             .margin({ right: 8 })
           TextInput({ placeholder: '请输入6-20位密码' })
             .fontSize(26)
@@ -250,12 +249,18 @@ struct Regist {
             .type(this.showPassword ? InputType.Normal : InputType.Password)
             .onChange((value: string) => { this.password = value; })
 
-          // 密码显隐按钮（暂时用 ic_code，后续替换为真实眼睛图标）
-          Image($r('app.media.ic_code'))
-            .width(20)
-            .height(20)
-            .fillColor(this.showPassword ? $r('app.color.primary') : '#999999')
-            .onClick(() => { this.showPassword = !this.showPassword; })
+          // 密码显隐按钮
+          if (this.showPassword) {
+            SymbolGlyph($r('sys.symbol.eye'))
+              .fontColor([$r('app.color.primary')])
+              .fontSize(20)
+              .onClick(() => { this.showPassword = !this.showPassword; })
+          } else {
+            SymbolGlyph($r('sys.symbol.eye_slash'))
+              .fontColor([$r('app.color.text_secondary')])
+              .fontSize(20)
+              .onClick(() => { this.showPassword = !this.showPassword; })
+          }
         }
         .height(48)
         .padding({ left: 16, right: 16 })
@@ -268,7 +273,7 @@ struct Regist {
           Image($r('app.media.ic_lock'))
             .width(20)
             .height(20)
-            .fillColor('#999999')
+            .fillColor($r('app.color.text_secondary'))
             .margin({ right: 8 })
           TextInput({ placeholder: '请再次输入密码' })
             .fontSize(26)
@@ -279,11 +284,17 @@ struct Regist {
             .type(this.showConfirmPassword ? InputType.Normal : InputType.Password)
             .onChange((value: string) => { this.confirmPassword = value; })
 
-          Image($r('app.media.ic_code'))
-            .width(20)
-            .height(20)
-            .fillColor(this.showConfirmPassword ? $r('app.color.primary') : '#999999')
-            .onClick(() => { this.showConfirmPassword = !this.showConfirmPassword; })
+          if (this.showConfirmPassword) {
+            SymbolGlyph($r('sys.symbol.eye'))
+              .fontColor([$r('app.color.primary')])
+              .fontSize(20)
+              .onClick(() => { this.showConfirmPassword = !this.showConfirmPassword; })
+          } else {
+            SymbolGlyph($r('sys.symbol.eye_slash'))
+              .fontColor([$r('app.color.text_secondary')])
+              .fontSize(20)
+              .onClick(() => { this.showConfirmPassword = !this.showConfirmPassword; })
+          }
         }
         .height(48)
         .padding({ left: 16, right: 16 })

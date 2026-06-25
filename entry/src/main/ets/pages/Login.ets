@@ -162,7 +162,7 @@ struct Login {
           .height(48)
           .padding({ left: 16, right: 16 })
           .borderRadius(8)
-          .backgroundColor('#FFFFFF')
+          .backgroundColor($r('app.color.card_white'))
           .border({ width: 1, color: '#E0E0E0', radius: 8 })
         }
         .width('100%')
@@ -179,7 +179,7 @@ struct Login {
 
             Text('忘记密码？')
               .fontSize(14)
-              .fontColor('#1677FF')
+              .fontColor($r('app.color.primary'))
               .onClick(() => {
                 promptAction.showToast({ message: '忘记密码功能开发中' });
               })
@@ -203,16 +203,15 @@ struct Login {
               .onChange((value: string) => { this.password = value; })
 
             // 显示/隐藏密码
-            Image($r('app.media.ic_code'))
-              .width(20)
-              .height(20)
-              .fillColor(this.showPassword ? '#1677FF' : '#999999')
+            SymbolGlyph(this.showPassword ? $r('sys.symbol.eye') : $r('sys.symbol.eye_slash'))
+              .fontSize(20)
+              .fontColor([this.showPassword ? $r('app.color.primary') : '#999999'])
               .onClick(() => { this.showPassword = !this.showPassword; })
           }
           .height(48)
           .padding({ left: 16, right: 16 })
           .borderRadius(8)
-          .backgroundColor('#FFFFFF')
+          .backgroundColor($r('app.color.card_white'))
           .border({ width: 1, color: '#E0E0E0', radius: 8 })
         }
         .width('100%')
@@ -224,8 +223,8 @@ struct Login {
           .height(48)
           .fontSize(16)
           .fontWeight(FontWeight.Medium)
-          .fontColor(this.isLoginActive() ? Color.White : '#86909C')
-          .backgroundColor(this.isLoginActive() ? '#1677FF' : '#C6E2FF')
+          .fontColor(this.isLoginActive() ? Color.White : $r('app.color.text_secondary'))
+          .backgroundColor(this.isLoginActive() ? $r('app.color.primary') : $r('app.color.button_inactive_bg'))
           .borderRadius(8)
           .margin({ top: 8 })
           .onClick(() => { this.doLogin(); })
@@ -251,7 +250,7 @@ struct Login {
               .fill('#07C160')
             Text('微')
               .fontSize(14)
-              .fontColor('#FFFFFF')
+              .fontColor($r('app.color.card_white'))
           }
 
           // QQ图标
@@ -262,7 +261,7 @@ struct Login {
               .fill('#12B7F5')
             Text('Q')
               .fontSize(14)
-              .fontColor('#FFFFFF')
+              .fontColor($r('app.color.card_white'))
           }
         }
       }
@@ -275,7 +274,7 @@ struct Login {
           .fontColor('#666666')
         Text('立即注册')
           .fontSize(14)
-          .fontColor('#1677FF')
+          .fontColor($r('app.color.primary'))
           .fontWeight(FontWeight.Medium)
           .onClick(() => {
             this.navigateToRegist();
@@ -285,7 +284,7 @@ struct Login {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#F5F7FA')
+    .backgroundColor($r('app.color.background'))
     .alignItems(HorizontalAlign.Center)
   }
 }

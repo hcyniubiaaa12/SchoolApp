@@ -13,22 +13,22 @@ struct Guide {
   private guidePages: GuidePageItemData[] = [
     {
       icon: $r('app.media.ic_book'),
-      circleColor: '#E8F3FF',
-      iconColor: '#1677FF',
+      circleColor: $r('app.color.primary_light'),
+      iconColor: $r('app.color.primary'),
       title: '校园信息，实时掌握',
       desc: '校园公告、资讯、地图，一手了解校园动态。'
     },
     {
       icon: $r('app.media.ic_book'),
       circleColor: '#FFF3E0',
-      iconColor: '#FF7D00',
+      iconColor: $r('app.color.warm_orange'),
       title: '学习助手，高效备考',
       desc: '课程表、成绩查询、图书馆检索，学业好帮手。'
     },
     {
       icon: $r('app.media.ic_book'),
       circleColor: '#E6FFE6',
-      iconColor: '#00B42A',
+      iconColor: $r('app.color.fresh_green'),
       title: '生活服务，贴心相伴',
       desc: '失物招领、校园美食、音乐播放，丰富校园生活。'
     }
@@ -67,7 +67,7 @@ struct Guide {
           Circle()
             .width(8)
             .height(8)
-            .fill(this.currentIndex === item ? '#1677FF' : '#E5E6EB')
+            .fill(this.currentIndex === item ? $r('app.color.primary') : $r('app.color.border'))
         })
       }
       .margin({ top: 16, bottom: 16 })
@@ -80,8 +80,8 @@ struct Guide {
             .height(48)
             .fontSize(26)
             .fontWeight(FontWeight.Medium)
-            .fontColor('#FFFFFF')
-            .backgroundColor('#1677FF')
+            .fontColor($r('app.color.card_white'))
+            .backgroundColor($r('app.color.primary'))
             .borderRadius(24)
             .onClick(() => {
               this.navigateToLogin();
@@ -97,8 +97,8 @@ struct Guide {
             .height(48)
             .fontSize(26)
             .fontWeight(FontWeight.Medium)
-            .fontColor('#FFFFFF')
-            .backgroundColor('#1677FF')
+            .fontColor($r('app.color.card_white'))
+            .backgroundColor($r('app.color.primary'))
             .borderRadius(24)
             .onClick(() => {
               this.currentIndex += 1;
@@ -108,7 +108,7 @@ struct Guide {
           // "跳过介绍"在按钮正下方居中
           Text('跳过介绍')
             .fontSize(22)
-            .fontColor('#86909C')
+            .fontColor($r('app.color.text_secondary'))
             .onClick(() => {
               this.navigateToLogin();
             })
@@ -119,7 +119,7 @@ struct Guide {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#F5F7FA')
+    .backgroundColor($r('app.color.background'))
   }
 
   // 构建单页引导页Item
@@ -131,13 +131,13 @@ struct Guide {
         Circle()
           .width(220)
           .height(220)
-          .fill(page.circleColor ?? '#E8F3FF')
+          .fill(page.circleColor ?? $r('app.color.primary_light'))
 
         Image(page.icon)
           .width(100)
           .height(100)
           .objectFit(ImageFit.Contain)
-          .fillColor(page.iconColor ?? '#1677FF')
+          .fillColor(page.iconColor ?? $r('app.color.primary'))
       }
       .margin({ top: 120 })
 
@@ -145,14 +145,14 @@ struct Guide {
       Text(page.title)
         .fontSize(32)
         .fontWeight(700)
-        .fontColor('#1677FF')
+        .fontColor($r('app.color.primary'))
         .textAlign(TextAlign.Center)
         .margin({ top: 48 })
 
       // 描述 - 26sp 主色
       Text(page.desc)
         .fontSize(26)
-        .fontColor('#1D2129')
+        .fontColor($r('app.color.text_primary'))
         .textAlign(TextAlign.Center)
         .lineHeight(39)
         .maxLines(2)
@@ -167,8 +167,8 @@ struct Guide {
 // 引导页数据类型
 interface GuidePageItemData {
   icon: Resource;
-  circleColor?: string;
-  iconColor?: string;
+  circleColor?: ResourceColor;
+  iconColor?: Resource;
   title: string;
   desc: string;
 }

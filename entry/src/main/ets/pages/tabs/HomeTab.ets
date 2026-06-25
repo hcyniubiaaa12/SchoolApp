@@ -6,6 +6,7 @@ export interface QuickEntryItem {
   name: string;
   icon: string;
   image?: Resource;
+  symbol?: Resource;
   color: string;
   targetPage?: string;
 }
@@ -37,11 +38,11 @@ export struct HomeTab {
 
   // 九宫格 9 入口（3×3）
   private quickEntries: QuickEntryItem[] = [
-    { name: '校园公告', icon: '📢', color: '#1677FF' },
-    { name: '课程表', icon: '📅', color: '#FF7D00' },
+    { name: '校园公告', icon: '📢', symbol: $r('sys.symbol.bell'), color: '#1677FF' },
+    { name: '课程表', icon: '📅', symbol: $r('sys.symbol.calendar'), color: '#FF7D00' },
     { name: '成绩查询', icon: '📊', color: '#00B42A' },
-    { name: '失物招领', icon: '🔍', color: '#FF7D00' },
-    { name: '校园地图', icon: '🗺️', color: '#1677FF' },
+    { name: '失物招领', icon: '🔍', symbol: $r('sys.symbol.magnifyingglass'), color: '#FF7D00' },
+    { name: '校园地图', icon: '🗺️', symbol: $r('sys.symbol.map'), color: '#1677FF' },
     { name: '图书馆', icon: '', image: $r('app.media.ic_book'), color: '#00B42A' },
     { name: '校园美食', icon: '🍽️', color: '#FF7D00' },
     { name: '音乐播放', icon: '🎵', color: '#1677FF' },
@@ -73,6 +74,10 @@ export struct HomeTab {
     return this.quickEntries[index].image;
   }
 
+  private getEntrySymbol(index: number): Resource | undefined {
+    return this.quickEntries[index].symbol;
+  }
+
   build() {
     Scroll() {
       Column({ space: 16 }) {
@@ -81,19 +86,19 @@ export struct HomeTab {
           Text('校园助手')
             .fontSize(30)
             .fontWeight(600)
-            .fontColor('#1677FF')
+            .fontColor($r('app.color.primary'))
             .layoutWeight(1)
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
 
           // 铃铛图标 + 红点
           Stack() {
-            Text('🔔')
+            SymbolGlyph($r('sys.symbol.bell'))
               .fontSize(24)
             Circle()
               .width(8)
               .height(8)
-              .fill('#FF7D00')
+              .fill($r('app.color.warm_orange'))
               .position({ x: 18, y: 0 })
           }
           .width(36)
@@ -111,7 +116,7 @@ export struct HomeTab {
 
         // 2. 搜索栏
         Row() {
-          Text('🔍')
+          SymbolGlyph($r('sys.symbol.magnifyingglass'))
             .fontSize(24)
             .margin({ right: 8 })
           Text('搜索校园信息/课程/美食')
@@ -120,7 +125,7 @@ export struct HomeTab {
             .layoutWeight(1)
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
-          Text('🎤')
+          SymbolGlyph($r('sys.symbol.mic'))
             .fontSize(22)
             .margin({ left: 8 })
         }
@@ -211,6 +216,9 @@ export struct HomeTab {
                       Image(this.getEntryImage(rowIdx * 3 + colIdx)!)
                         .width(32)
                         .height(32)
+                    } else if (this.getEntrySymbol(rowIdx * 3 + colIdx)) {
+                      SymbolGlyph(this.getEntrySymbol(rowIdx * 3 + colIdx)!)
+                        .fontSize(32)
                     } else {
                       Text(this.getEntryIcon(rowIdx * 3 + colIdx))
                         .fontSize(32)
@@ -238,7 +246,7 @@ export struct HomeTab {
         .padding({ top: 12, bottom: 12 })
         .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
         .borderRadius(8)
-        .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
+        .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
 
         // 5. 校园公告卡片
         Column() {
@@ -246,7 +254,7 @@ export struct HomeTab {
             Text('校园公告')
               .fontSize(28)
               .fontWeight(600)
-              .fontColor('#1677FF')
+              .fontColor($r('app.color.primary'))
             Blank()
             Text('更多 >')
               .fontSize(24)
@@ -262,7 +270,7 @@ export struct HomeTab {
                 Row()
                   .width(3)
                   .height('100%')
-                  .backgroundColor('#1677FF')
+                  .backgroundColor($r('app.color.primary'))
                   .borderRadius(2)
 
                 Column({ space: 4 }) {
@@ -287,7 +295,7 @@ export struct HomeTab {
               .padding({ top: 8, bottom: 8 })
 
               if (index < 2) {
-                Divider().color('#E5E6EB').margin({ left: 11 })
+                Divider().color($r('app.color.border')).margin({ left: 11 })
               }
             }
           }, (item: AnnouncementItem, index: number) => item.title + index.toString())
@@ -296,7 +304,7 @@ export struct HomeTab {
         .padding(16)
         .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
         .borderRadius(8)
-        .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
+        .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
 
         // 6. 今日课程卡片
         Column() {
@@ -325,8 +333,8 @@ export struct HomeTab {
               .textAlign(TextAlign.Center)
 
             Column() {
-              Circle().width(8).height(8).fill('#FF7D00')
-              Row().width(2).height(30).backgroundColor('#E5E6EB')
+              Circle().width(8).height(8).fill($r('app.color.warm_orange'))
+              Row().width(2).height(30).backgroundColor($r('app.color.border'))
             }
             .alignItems(HorizontalAlign.Center)
             .margin({ left: 8, right: 12 })
@@ -349,7 +357,7 @@ export struct HomeTab {
 
             Text('必修')
               .fontSize(22)
-              .fontColor('#FF7D00')
+              .fontColor($r('app.color.warm_orange'))
               .padding({ left: 8, right: 8, top: 2, bottom: 2 })
               .borderRadius(4)
               .backgroundColor('#FFF3E0')
@@ -357,7 +365,7 @@ export struct HomeTab {
           .width('100%')
           .padding({ top: 8, bottom: 8 })
 
-          Divider().color('#E5E6EB')
+          Divider().color($r('app.color.border'))
 
           // 课程 2
           Row() {
@@ -368,8 +376,8 @@ export struct HomeTab {
               .textAlign(TextAlign.Center)
 
             Column() {
-              Circle().width(8).height(8).fill('#00B42A')
-              Row().width(2).height(30).backgroundColor('#E5E6EB')
+              Circle().width(8).height(8).fill($r('app.color.fresh_green'))
+              Row().width(2).height(30).backgroundColor($r('app.color.border'))
             }
             .alignItems(HorizontalAlign.Center)
             .margin({ left: 8, right: 12 })
@@ -392,7 +400,7 @@ export struct HomeTab {
 
             Text('选修')
               .fontSize(22)
-              .fontColor('#00B42A')
+              .fontColor($r('app.color.fresh_green'))
               .padding({ left: 8, right: 8, top: 2, bottom: 2 })
               .borderRadius(4)
               .backgroundColor('#E6FFE6')
@@ -404,11 +412,11 @@ export struct HomeTab {
         .padding(16)
         .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
         .borderRadius(8)
-        .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
+        .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
 
         // 7. 天气提醒卡片
         Row() {
-          Text('☀️')
+          SymbolGlyph($r('sys.symbol.sun_max'))
             .fontSize(48)
             .margin({ right: 12 })
 
@@ -436,7 +444,7 @@ export struct HomeTab {
         .padding(16)
         .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
         .borderRadius(8)
-        .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
+        .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
         .alignItems(VerticalAlign.Center)
         .onClick(() => {
           if (this.onWeatherClick) {

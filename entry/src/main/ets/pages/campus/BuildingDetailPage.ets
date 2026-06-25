@@ -21,17 +21,17 @@ struct BuildingDetailPage {
       // 导航栏
       Row() {
         Image($r('app.media.ic_back'))
-          .width(24).height(24).fillColor('#1D2129')
+          .width(24).height(24).fillColor($r('app.color.text_primary'))
           .onClick(() => { router.back(); })
         Blank()
         Text(this.buildingName)
-          .fontSize(30).fontWeight(600).fontColor('#1D2129')
+          .fontSize(30).fontWeight(600).fontColor($r('app.color.text_primary'))
           .layoutWeight(1).textAlign(TextAlign.Center)
         Blank()
         Row().width(24)
       }
       .width('100%').height(56).padding({ left: 16, right: 20 })
-      .backgroundColor('#FFFFFF').alignItems(VerticalAlign.Center)
+      .backgroundColor($r('app.color.card_white')).alignItems(VerticalAlign.Center)
 
       Scroll() {
         Column({ space: 16 }) {
@@ -39,13 +39,13 @@ struct BuildingDetailPage {
           Stack() {
             Column()
               .width('100%').height(200)
-              .backgroundColor('#E8F3FF')
+              .backgroundColor($r('app.color.primary_light'))
               .borderRadius(8)
 
             Column({ space: 8 }) {
-              Text('🏛️').fontSize(72)
+              SymbolGlyph($r('sys.symbol.building')).fontSize(72)
               Text(this.buildingName)
-                .fontSize(28).fontWeight(700).fontColor('#1677FF')
+                .fontSize(28).fontWeight(700).fontColor($r('app.color.primary'))
             }
             .alignItems(HorizontalAlign.Center)
           }
@@ -53,34 +53,34 @@ struct BuildingDetailPage {
           // 建筑介绍
           Column({ space: 8 }) {
             Text('建筑介绍')
-              .fontSize(26).fontWeight(600).fontColor('#1D2129')
+              .fontSize(26).fontWeight(600).fontColor($r('app.color.text_primary'))
 
             Text(this.buildingDescription)
-              .fontSize(24).fontColor('#1D2129')
+              .fontSize(24).fontColor($r('app.color.text_primary'))
               .lineHeight(36)
           }
           .width('100%').padding(16)
-          .backgroundColor('#FFFFFF').borderRadius(8)
+          .backgroundColor($r('app.color.card_white')).borderRadius(8)
 
           // 位置信息（模拟）
           Column({ space: 8 }) {
             Text('位置信息')
-              .fontSize(26).fontWeight(600).fontColor('#1D2129')
+              .fontSize(26).fontWeight(600).fontColor($r('app.color.text_primary'))
 
             Row({ space: 12 }) {
-              Text('📍').fontSize(24)
+              SymbolGlyph($r('sys.symbol.pin')).fontSize(24)
               Text('校园地图中可查看详细位置')
-                .fontSize(24).fontColor('#86909C')
+                .fontSize(24).fontColor($r('app.color.text_secondary'))
             }
 
             Row({ space: 12 }) {
-              Text('🕐').fontSize(24)
+              SymbolGlyph($r('sys.symbol.clock')).fontSize(24)
               Text('开放时间：7:00 - 22:00')
-                .fontSize(24).fontColor('#86909C')
+                .fontSize(24).fontColor($r('app.color.text_secondary'))
             }
           }
           .width('100%').padding(16)
-          .backgroundColor('#FFFFFF').borderRadius(8)
+          .backgroundColor($r('app.color.card_white')).borderRadius(8)
         }
         .width('100%')
         .padding({ left: 20, right: 20, top: 16, bottom: 32 })
@@ -89,6 +89,6 @@ struct BuildingDetailPage {
       .scrollBar(BarState.Auto)
     }
     .width('100%').height('100%')
-    .backgroundColor('#F5F7FA')
+    .backgroundColor($r('app.color.background'))
   }
 }

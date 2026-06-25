@@ -63,7 +63,7 @@ struct CountdownPage {
       const diff: number = target.getTime() - now.getTime();
 
       if (diff <= 0) {
-        this.remaining = '🎉 时间到！';
+        this.remaining = '时间到！';
         this.stopTimer();
         return;
       }
@@ -88,74 +88,81 @@ struct CountdownPage {
       // 导航栏
       Row() {
         Image($r('app.media.ic_back'))
-          .width(24).height(24).fillColor('#1D2129')
+          .width(24).height(24).fillColor($r('app.color.text_primary'))
           .onClick(() => { router.back(); })
         Blank()
         Text('倒计时')
-          .fontSize(30).fontWeight(600).fontColor('#1D2129')
+          .fontSize(30).fontWeight(600).fontColor($r('app.color.text_primary'))
         Blank()
         Row().width(24)
       }
       .width('100%').height(56).padding({ left: 16, right: 20 })
-      .backgroundColor('#FFFFFF').alignItems(VerticalAlign.Center)
+      .backgroundColor($r('app.color.card_white')).alignItems(VerticalAlign.Center)
 
       Scroll() {
         Column({ space: 20 }) {
           // 目标名称
           Column({ space: 8 }) {
             Text('事件名称')
-              .fontSize(26).fontWeight(600).fontColor('#1D2129')
+              .fontSize(26).fontWeight(600).fontColor($r('app.color.text_primary'))
             TextInput({ placeholder: '如：期末考试、生日', text: this.targetName })
               .height(48).fontSize(26)
-              .placeholderColor('#86909C')
-              .backgroundColor('#F5F7FA').borderRadius(8)
+              .placeholderColor($r('app.color.text_secondary'))
+              .backgroundColor($r('app.color.background')).borderRadius(8)
               .onChange((val: string) => { this.targetName = val; })
           }
           .width('100%').padding(16)
-          .backgroundColor('#FFFFFF').borderRadius(8)
+          .backgroundColor($r('app.color.card_white')).borderRadius(8)
 
           // 目标日期
           Column({ space: 8 }) {
             Text('目标日期')
-              .fontSize(26).fontWeight(600).fontColor('#1D2129')
+              .fontSize(26).fontWeight(600).fontColor($r('app.color.text_primary'))
             TextInput({ placeholder: '如：2026-07-01', text: this.targetDate })
               .height(48).fontSize(26)
-              .placeholderColor('#86909C')
-              .backgroundColor('#F5F7FA').borderRadius(8)
+              .placeholderColor($r('app.color.text_secondary'))
+              .backgroundColor($r('app.color.background')).borderRadius(8)
               .onChange((val: string) => { this.targetDate = val; })
             Text('格式：YYYY-MM-DD')
-              .fontSize(22).fontColor('#86909C')
+              .fontSize(22).fontColor($r('app.color.text_secondary'))
           }
           .width('100%').padding(16)
-          .backgroundColor('#FFFFFF').borderRadius(8)
+          .backgroundColor($r('app.color.card_white')).borderRadius(8)
 
           // 倒计时显示
           Column({ space: 16 }) {
             if (this.targetName.trim() !== '') {
               Text(this.targetName.trim())
-                .fontSize(28).fontWeight(700).fontColor('#1677FF')
+                .fontSize(28).fontWeight(700).fontColor($r('app.color.primary'))
             }
 
-            Text(this.remaining)
-              .fontSize(32).fontWeight(700)
-              .fontColor(this.remaining.includes('时间到') ? '#FF7D00' : '#1D2129')
-              .textAlign(TextAlign.Center)
+            Row({ space: 8 }) {
+              if (this.remaining.includes('时间到')) {
+                SymbolGlyph($r('sys.symbol.gift')).fontSize(48)
+              }
+              Text(this.remaining)
+                .fontSize(32).fontWeight(700)
+                .fontColor(this.remaining.includes('时间到') ? $r('app.color.warm_orange') : $r('app.color.text_primary'))
+                .textAlign(TextAlign.Center)
+            }
+            .width('100%')
+            .justifyContent(FlexAlign.Center)
 
             if (this.isRunning) {
               Text('倒计时运行中...')
-                .fontSize(22).fontColor('#00B42A')
+                .fontSize(22).fontColor($r('app.color.fresh_green'))
             }
           }
           .width('100%').padding(32)
-          .backgroundColor('#FFFFFF').borderRadius(8)
+          .backgroundColor($r('app.color.card_white')).borderRadius(8)
           .alignItems(HorizontalAlign.Center)
 
           // 控制按钮
           Row({ space: 16 }) {
             Button(this.isRunning ? '停止' : '开始倒计时')
               .layoutWeight(1).height(48)
-              .fontSize(26).fontColor('#FFFFFF')
-              .backgroundColor(this.isRunning ? '#FF7D00' : '#1677FF')
+              .fontSize(26).fontColor($r('app.color.card_white'))
+              .backgroundColor(this.isRunning ? $r('app.color.warm_orange') : $r('app.color.primary'))
               .borderRadius(8)
               .onClick(() => {
                 if (this.isRunning) {
@@ -167,8 +174,8 @@ struct CountdownPage {
 
             Button('重置')
               .width(100).height(48)
-              .fontSize(26).fontColor('#86909C')
-              .backgroundColor('#F5F7FA')
+              .fontSize(26).fontColor($r('app.color.text_secondary'))
+              .backgroundColor($r('app.color.background'))
               .borderRadius(8)
               .onClick(() => { this.resetTimer(); })
           }
@@ -181,6 +188,6 @@ struct CountdownPage {
       .scrollBar(BarState.Auto)
     }
     .width('100%').height('100%')
-    .backgroundColor('#F5F7FA')
+    .backgroundColor($r('app.color.background'))
   }
 }

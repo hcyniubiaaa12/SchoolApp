@@ -49,16 +49,16 @@ struct ExpressQueryPage {
       // 导航栏
       Row() {
         Image($r('app.media.ic_back'))
-          .width(24).height(24).fillColor('#1D2129')
+          .width(24).height(24).fillColor($r('app.color.text_primary'))
           .onClick(() => { router.back(); })
         Blank()
         Text('快递查询')
-          .fontSize(30).fontWeight(600).fontColor('#1D2129')
+          .fontSize(30).fontWeight(600).fontColor($r('app.color.text_primary'))
         Blank()
         Row().width(24)
       }
       .width('100%').height(56).padding({ left: 16, right: 20 })
-      .backgroundColor('#FFFFFF').alignItems(VerticalAlign.Center)
+      .backgroundColor($r('app.color.card_white')).alignItems(VerticalAlign.Center)
 
       Scroll() {
         Column({ space: 16 }) {
@@ -66,33 +66,32 @@ struct ExpressQueryPage {
           Row({ space: 12 }) {
             TextInput({ placeholder: '请输入快递单号', text: this.trackingNumber })
               .layoutWeight(1).height(48).fontSize(26)
-              .placeholderColor('#86909C')
-              .backgroundColor('#F5F7FA').borderRadius(8)
+              .placeholderColor($r('app.color.text_secondary'))
+              .backgroundColor($r('app.color.background')).borderRadius(8)
               .onChange((val: string) => { this.trackingNumber = val; })
 
             Button('查询')
               .height(48).width(80)
-              .fontSize(24).fontColor('#FFFFFF')
-              .backgroundColor('#1677FF').borderRadius(8)
+              .fontSize(24).fontColor($r('app.color.card_white'))
+              .backgroundColor($r('app.color.primary')).borderRadius(8)
               .onClick(() => { this.searchExpress(); })
           }
           .width('100%').padding({ left: 20, right: 20 })
 
           Text('提示：当前为模拟查询，仅演示界面效果')
-            .fontSize(22).fontColor('#86909C')
+            .fontSize(22).fontColor($r('app.color.text_secondary'))
             .width('100%').padding({ left: 20, right: 20 })
 
           if (this.hasSearched) {
             // 快递信息卡片
             Column({ space: 12 }) {
               Row({ space: 12 }) {
-                Text('📦')
-                  .fontSize(32)
+                Text('📦').fontSize(40)
                 Column({ space: 4 }) {
                   Text(this.carrier)
-                    .fontSize(26).fontWeight(600).fontColor('#1D2129')
+                    .fontSize(26).fontWeight(600).fontColor($r('app.color.text_primary'))
                   Text('单号：' + this.trackingNumber)
-                    .fontSize(22).fontColor('#86909C')
+                    .fontSize(22).fontColor($r('app.color.text_secondary'))
                     .maxLines(1)
                     .textOverflow({ overflow: TextOverflow.Ellipsis })
                 }
@@ -106,13 +105,13 @@ struct ExpressQueryPage {
               }
             }
             .width('100%').padding(16)
-            .backgroundColor('#FFFFFF').borderRadius(8)
+            .backgroundColor($r('app.color.card_white')).borderRadius(8)
             .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
 
             // 物流详情
             Column({ space: 12 }) {
               Text('物流详情')
-                .fontSize(26).fontWeight(600).fontColor('#1D2129')
+                .fontSize(26).fontWeight(600).fontColor($r('app.color.text_primary'))
 
               Column({ space: 0 }) {
                 ForEach(this.expressSteps, (step: ExpressStep, index: number) => {
@@ -124,7 +123,7 @@ struct ExpressQueryPage {
                         Column() {
                           Circle()
                             .width(12).height(12)
-                            .fill(step.isCurrent ? '#1677FF' : '#00B42A')
+                            .fill(step.isCurrent ? $r('app.color.primary') : '#00B42A')
                         }
                         .height('50%')
                         .justifyContent(FlexAlign.End)
@@ -134,10 +133,10 @@ struct ExpressQueryPage {
                         Column() {
                           Circle()
                             .width(12).height(12)
-                            .fill(step.isCurrent ? '#1677FF' : '#00B42A')
+                            .fill(step.isCurrent ? $r('app.color.primary') : '#00B42A')
                           Column()
                             .width(2).height('100%')
-                            .backgroundColor('#E5E6EB')
+                            .backgroundColor($r('app.color.border'))
                         }
                         .alignItems(HorizontalAlign.Center)
                       }
@@ -147,14 +146,14 @@ struct ExpressQueryPage {
                     Column({ space: 4 }) {
                       Text(step.status)
                         .fontSize(26)
-                        .fontColor(step.isCurrent ? '#1677FF' : '#1D2129')
+                        .fontColor(step.isCurrent ? $r('app.color.primary') : $r('app.color.text_primary'))
                         .fontWeight(step.isCurrent ? 700 : 400)
 
                       Text(step.location)
-                        .fontSize(22).fontColor('#86909C')
+                        .fontSize(22).fontColor($r('app.color.text_secondary'))
 
                       Text(step.time)
-                        .fontSize(22).fontColor('#86909C')
+                        .fontSize(22).fontColor($r('app.color.text_secondary'))
                     }
                     .alignItems(HorizontalAlign.Start)
                     .margin({ left: 12 })
@@ -167,7 +166,7 @@ struct ExpressQueryPage {
               }
             }
             .width('100%').padding(16)
-            .backgroundColor('#FFFFFF').borderRadius(8)
+            .backgroundColor($r('app.color.card_white')).borderRadius(8)
             .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
           }
         }
@@ -178,6 +177,6 @@ struct ExpressQueryPage {
       .scrollBar(BarState.Auto)
     }
     .width('100%').height('100%')
-    .backgroundColor('#F5F7FA')
+    .backgroundColor($r('app.color.background'))
   }
 }

@@ -197,10 +197,10 @@ struct TodoPage {
     promptAction.showToast({ message: '已标记完成' });
   }
 
-  private getCategoryColor(category: string): string {
-    if (category === '学习') return '#1677FF';
-    if (category === '生活') return '#00B42A';
-    return '#FF7D00';
+  private getCategoryColor(category: string): Resource {
+    if (category === '学习') return $r('app.color.primary');
+    if (category === '生活') return $r('app.color.fresh_green');
+    return $r('app.color.warm_orange');
   }
 
   build() {
@@ -216,7 +216,7 @@ struct TodoPage {
           .layoutWeight(1).textAlign(TextAlign.Center)
         Blank()
         Text(this.batchMode ? '取消' : '批量')
-          .fontSize(24).fontColor('#1677FF')
+          .fontSize(24).fontColor($r('app.color.primary'))
           .onClick(() => {
             this.batchMode = !this.batchMode;
             if (!this.batchMode) {
@@ -225,27 +225,27 @@ struct TodoPage {
           })
       }
       .width('100%').height(56).padding({ left: 16, right: 20 })
-      .backgroundColor('#FFFFFF').alignItems(VerticalAlign.Center)
+      .backgroundColor($r('app.color.card_white')).alignItems(VerticalAlign.Center)
 
       // 概况
       Row() {
         Text('待完成 ' + this.getPendingCount().toString() + ' 项')
-          .fontSize(22).fontColor('#FF7D00')
+          .fontSize(22).fontColor($r('app.color.warm_orange'))
         Blank()
         if (this.batchMode) {
           Row({ space: 8 }) {
             Text('完成')
-              .fontSize(22).fontColor('#00B42A')
+              .fontSize(22).fontColor($r('app.color.fresh_green'))
               .onClick(() => { this.batchComplete(); })
-            Text('|').fontSize(22).fontColor('#E5E6EB')
+            Text('|').fontSize(22).fontColor($r('app.color.border'))
             Text('删除')
-              .fontSize(22).fontColor('#FF7D00')
+              .fontSize(22).fontColor($r('app.color.warm_orange'))
               .onClick(() => { this.batchDelete(); })
           }
         }
       }
       .width('100%').padding({ left: 20, right: 20, top: 8, bottom: 8 })
-      .backgroundColor('#FFF3E0')
+      .backgroundColor($r('app.color.warm_orange'))
 
       // 分类筛选
       Scroll() {
@@ -253,9 +253,9 @@ struct TodoPage {
           ForEach(this.filters, (filter: string) => {
             Text(filter)
               .fontSize(22)
-              .fontColor(this.currentFilter === filter ? '#FFFFFF' : '#1D2129')
+              .fontColor(this.currentFilter === filter ? $r('app.color.card_white') : '#1D2129')
               .padding({ left: 16, right: 16, top: 6, bottom: 6 })
-              .backgroundColor(this.currentFilter === filter ? '#1677FF' : '#F5F7FA')
+              .backgroundColor(this.currentFilter === filter ? $r('app.color.primary') : $r('app.color.background'))
               .borderRadius(20)
               .onClick(() => { this.currentFilter = filter; })
           }, (filter: string) => filter)
@@ -264,24 +264,24 @@ struct TodoPage {
       }
       .scrollBar(BarState.Off)
       .scrollable(ScrollDirection.Horizontal)
-      .backgroundColor('#FFFFFF')
+      .backgroundColor($r('app.color.card_white'))
 
       // 新增待办输入区
       if (this.showAddInput) {
         Column({ space: 12 }) {
           TextInput({ placeholder: '输入待办内容', text: this.newTodoContent })
             .height(48).fontSize(26)
-            .placeholderColor('#86909C')
-            .backgroundColor('#F5F7FA').borderRadius(8)
+            .placeholderColor($r('app.color.text_secondary'))
+            .backgroundColor($r('app.color.background')).borderRadius(8)
             .onChange((val: string) => { this.newTodoContent = val; })
 
           Row({ space: 12 }) {
             ForEach(this.categories, (cat: string) => {
               Text(cat)
                 .fontSize(22)
-                .fontColor(this.newTodoCategory === cat ? '#FFFFFF' : '#1D2129')
+                .fontColor(this.newTodoCategory === cat ? $r('app.color.card_white') : '#1D2129')
                 .padding({ left: 12, right: 12, top: 4, bottom: 4 })
-                .backgroundColor(this.newTodoCategory === cat ? '#1677FF' : '#F5F7FA')
+                .backgroundColor(this.newTodoCategory === cat ? $r('app.color.primary') : $r('app.color.background'))
                 .borderRadius(12)
                 .onClick(() => { this.newTodoCategory = cat; })
             }, (cat: string) => cat)
@@ -290,13 +290,13 @@ struct TodoPage {
 
           Button('添加')
             .width('100%').height(44)
-            .fontSize(24).fontColor('#FFFFFF')
-            .backgroundColor('#1677FF').borderRadius(8)
+            .fontSize(24).fontColor($r('app.color.card_white'))
+            .backgroundColor($r('app.color.primary')).borderRadius(8)
             .onClick(() => { this.addTodo(); })
         }
         .width('100%')
         .padding(16)
-        .backgroundColor('#FFFFFF')
+        .backgroundColor($r('app.color.card_white'))
       }
 
       // 待办列表
@@ -304,10 +304,10 @@ struct TodoPage {
         Column({ space: 8 }) {
           if (this.getFilteredTodos().length === 0) {
             Column({ space: 16 }) {
-              Text('✅')
+              SymbolGlyph($r('sys.symbol.checkmark_circle'))
                 .fontSize(48)
               Text('暂无待办事项')
-                .fontSize(26).fontColor('#86909C')
+                .fontSize(26).fontColor($r('app.color.text_secondary'))
             }
             .width('100%').height(200)
             .justifyContent(FlexAlign.Center).alignItems(HorizontalAlign.Center)
@@ -317,14 +317,14 @@ struct TodoPage {
                 Row() {
                   if (this.batchMode) {
                     // 批量选择模式
-                    Text(this.selectedIds.indexOf(item.id) >= 0 ? '☑️' : '⬜')
+                    SymbolGlyph(this.selectedIds.indexOf(item.id) >= 0 ? $r('sys.symbol.checkmark_square') : $r('sys.symbol.square'))
                       .fontSize(24)
                       .onClick(() => { this.toggleSelect(item.id); })
                       .margin({ right: 8 })
                   }
 
                   // 完成状态
-                  Text(item.isCompleted ? '✅' : '⭕')
+                  SymbolGlyph(item.isCompleted ? $r('sys.symbol.checkmark_circle') : $r('sys.symbol.circle'))
                     .fontSize(24)
                     .onClick(() => { this.toggleComplete(item.id); })
                     .margin({ right: 8 })
@@ -332,7 +332,7 @@ struct TodoPage {
                   Column({ space: 4 }) {
                     Text(item.content)
                       .fontSize(26)
-                      .fontColor(item.isCompleted ? '#86909C' : '#1D2129')
+                      .fontColor(item.isCompleted ? $r('app.color.text_secondary') : '#1D2129')
                       .decoration({ type: item.isCompleted ? TextDecorationType.LineThrough : TextDecorationType.None })
                       .layoutWeight(1)
                       .maxLines(2)
@@ -341,18 +341,18 @@ struct TodoPage {
                     Row({ space: 8 }) {
                       Text(item.category)
                         .fontSize(20)
-                        .fontColor('#FFFFFF')
+                        .fontColor($r('app.color.card_white'))
                         .padding({ left: 6, right: 6, top: 2, bottom: 2 })
                         .backgroundColor(this.getCategoryColor(item.category))
                         .borderRadius(4)
 
                       if (item.remindTime !== '') {
                         Text('⏰' + item.remindTime)
-                          .fontSize(20).fontColor('#86909C')
+                          .fontSize(20).fontColor($r('app.color.text_secondary'))
                       }
 
                       Text(item.createTime)
-                        .fontSize(20).fontColor('#86909C')
+                        .fontSize(20).fontColor($r('app.color.text_secondary'))
                     }
                     .width('100%')
                   }
@@ -360,15 +360,15 @@ struct TodoPage {
                   .alignItems(HorizontalAlign.Start)
 
                   if (!this.batchMode) {
-                    Text('🗑️')
+                    SymbolGlyph($r('sys.symbol.trash'))
                       .fontSize(22)
                       .onClick(() => { this.deleteTodo(item.id); })
                   }
                 }
                 .width('100%').padding(12)
-                .backgroundColor('#FFFFFF')
+                .backgroundColor($r('app.color.card_white'))
                 .borderRadius(8)
-                .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
+                .shadow({ radius: 4, color: $r('app.color.shadow'), offsetX: 0, offsetY: 1 })
                 .alignItems(VerticalAlign.Center)
               }
             }, (item: TodoItem) => item.id)
@@ -384,8 +384,8 @@ struct TodoPage {
       if (!this.showAddInput) {
         Button('+ 新增待办')
           .width('90%').height(48)
-          .fontSize(26).fontColor('#FFFFFF')
-          .backgroundColor('#1677FF').borderRadius(8)
+          .fontSize(26).fontColor($r('app.color.card_white'))
+          .backgroundColor($r('app.color.primary')).borderRadius(8)
           .margin({ bottom: 16 })
           .onClick(() => {
             this.showAddInput = true;
@@ -393,6 +393,6 @@ struct TodoPage {
       }
     }
     .width('100%').height('100%')
-    .backgroundColor('#F5F7FA')
+    .backgroundColor($r('app.color.background'))
   }
 }

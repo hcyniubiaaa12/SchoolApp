@@ -45,7 +45,7 @@ struct MessageCenterPage {
       // 导航栏
       Row() {
         Image($r('app.media.ic_back'))
-          .width(24).height(24).fillColor('#1D2129')
+          .width(24).height(24).fillColor($r('app.color.text_primary'))
           .onClick(() => {
             router.back();
           })
@@ -55,7 +55,7 @@ struct MessageCenterPage {
         Text('消息中心')
           .fontSize(30)
           .fontWeight(600)
-          .fontColor('#1D2129')
+          .fontColor($r('app.color.text_primary'))
           .layoutWeight(1)
           .textAlign(TextAlign.Center)
 
@@ -63,7 +63,7 @@ struct MessageCenterPage {
 
         Text('全部已读')
           .fontSize(24)
-          .fontColor('#1677FF')
+          .fontColor($r('app.color.primary'))
           .onClick(() => {
             this.markAllRead();
           })
@@ -71,14 +71,14 @@ struct MessageCenterPage {
       .width('100%')
       .height(56)
       .padding({ left: 16, right: 20 })
-      .backgroundColor('#FFFFFF')
+      .backgroundColor($r('app.color.card_white'))
       .alignItems(VerticalAlign.Center)
 
       // 未读概况
       Row() {
         Text('未读消息 ' + this.getUnreadCount().toString() + ' 条')
           .fontSize(24)
-          .fontColor('#FF7D00')
+          .fontColor($r('app.color.warm_orange'))
       }
       .width('100%')
       .padding({ left: 20, right: 20, top: 12, bottom: 12 })
@@ -95,7 +95,7 @@ struct MessageCenterPage {
                   .width(44)
                   .height(44)
                   .fill(this.getMessageColor(item.type) + '1A')
-                Text(this.getMessageIcon(item.type))
+                SymbolGlyph(this.getMessageIcon(item.type))
                   .fontSize(24)
               }
 
@@ -104,7 +104,7 @@ struct MessageCenterPage {
                   Text(item.title)
                     .fontSize(26)
                     .fontWeight(600)
-                    .fontColor('#1D2129')
+                    .fontColor($r('app.color.text_primary'))
                     .layoutWeight(1)
                     .maxLines(1)
                     .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -113,21 +113,21 @@ struct MessageCenterPage {
                     Circle()
                       .width(8)
                       .height(8)
-                      .fill('#FF7D00')
+                      .fill($r('app.color.warm_orange'))
                   }
                 }
                 .width('100%')
 
                 Text(item.content)
                   .fontSize(24)
-                  .fontColor('#86909C')
+                  .fontColor($r('app.color.text_secondary'))
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
                   .width('100%')
 
                 Text(item.time)
                   .fontSize(22)
-                  .fontColor('#86909C')
+                  .fontColor($r('app.color.text_secondary'))
                   .width('100%')
               }
               .layoutWeight(1)
@@ -136,7 +136,7 @@ struct MessageCenterPage {
             }
             .width('100%')
             .padding(12)
-            .backgroundColor('#FFFFFF')
+            .backgroundColor($r('app.color.card_white'))
             .borderRadius(8)
             .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
             .alignItems(VerticalAlign.Center)
@@ -150,7 +150,7 @@ struct MessageCenterPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#F5F7FA')
+    .backgroundColor($r('app.color.background'))
   }
 
   private getMessageColor(type: string): string {
@@ -160,11 +160,11 @@ struct MessageCenterPage {
     return '#86909C';
   }
 
-  private getMessageIcon(type: string): string {
-    if (type === '课程') return '📅';
-    if (type === '公告') return '📢';
-    if (type === '待办') return '📝';
-    if (type === '活动') return '🎉';
-    return '🔔';
+  private getMessageIcon(type: string): Resource {
+    if (type === '课程') return $r('sys.symbol.calendar');
+    if (type === '公告') return $r('sys.symbol.bell');
+    if (type === '待办') return $r('sys.symbol.doc_text');
+    if (type === '活动') return $r('sys.symbol.gift');
+    return $r('sys.symbol.bell_fill');
   }
 }

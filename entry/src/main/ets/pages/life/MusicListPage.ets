@@ -54,24 +54,24 @@ struct MusicListPage {
       // 导航栏
       Row() {
         Image($r('app.media.ic_back'))
-          .width(24).height(24).fillColor('#1D2129')
+          .width(24).height(24).fillColor($r('app.color.text_primary'))
           .onClick(() => { router.back(); })
         Blank()
         Text('本地音乐')
-          .fontSize(30).fontWeight(600).fontColor('#1D2129')
+          .fontSize(30).fontWeight(600).fontColor($r('app.color.text_primary'))
           .layoutWeight(1).textAlign(TextAlign.Center)
         Blank()
         Row().width(24)
       }
       .width('100%').height(56).padding({ left: 16, right: 20 })
-      .backgroundColor('#FFFFFF').alignItems(VerticalAlign.Center)
+      .backgroundColor($r('app.color.card_white')).alignItems(VerticalAlign.Center)
 
       // 提示信息
       Row({ space: 8 }) {
-        Text('📌')
-          .fontSize(22)
+        SymbolGlyph($r('sys.symbol.pin'))
+          .fontSize(24)
         Text('当前为演示列表，实际音频文件需放入设备存储')
-          .fontSize(22).fontColor('#86909C').layoutWeight(1)
+          .fontSize(22).fontColor($r('app.color.text_secondary')).layoutWeight(1)
       }
       .width('100%').padding({ left: 20, right: 20, top: 10, bottom: 10 })
       .backgroundColor('#FFF3E0')
@@ -80,7 +80,7 @@ struct MusicListPage {
         // 加载中
         Column() {
           Text('加载中...')
-            .fontSize(26).fontColor('#86909C')
+            .fontSize(26).fontColor($r('app.color.text_secondary'))
         }
         .layoutWeight(1)
         .justifyContent(FlexAlign.Center)
@@ -89,11 +89,11 @@ struct MusicListPage {
         // 空状态
         Column({ space: 16 }) {
           Text('🎵')
-            .fontSize(64)
+            .fontSize(24)
           Text('暂无本地音乐')
-            .fontSize(26).fontColor('#86909C')
+            .fontSize(26).fontColor($r('app.color.text_secondary'))
           Text('请将音频文件放入设备存储后刷新')
-            .fontSize(24).fontColor('#86909C')
+            .fontSize(24).fontColor($r('app.color.text_secondary'))
         }
         .layoutWeight(1)
         .justifyContent(FlexAlign.Center)
@@ -108,7 +108,7 @@ struct MusicListPage {
                 Stack() {
                   Circle()
                     .width(48).height(48)
-                    .fill('#E8F3FF')
+                    .fill($r('app.color.primary_light'))
                   Text('🎵')
                     .fontSize(24)
                 }
@@ -116,21 +116,21 @@ struct MusicListPage {
                 Column({ space: 4 }) {
                   Text(song.title)
                     .fontSize(26).fontWeight(600)
-                    .fontColor('#1D2129')
+                    .fontColor($r('app.color.text_primary'))
                     .maxLines(1)
                     .textOverflow({ overflow: TextOverflow.Ellipsis })
 
                   Row({ space: 8 }) {
                     Text(song.artist)
-                      .fontSize(22).fontColor('#86909C')
+                      .fontSize(22).fontColor($r('app.color.text_secondary'))
                       .maxLines(1)
                       .textOverflow({ overflow: TextOverflow.Ellipsis })
 
                     Text('·')
-                      .fontSize(22).fontColor('#E5E6EB')
+                      .fontSize(22).fontColor($r('app.color.border'))
 
                     Text(song.album)
-                      .fontSize(22).fontColor('#86909C')
+                      .fontSize(22).fontColor($r('app.color.text_secondary'))
                       .maxLines(1)
                       .textOverflow({ overflow: TextOverflow.Ellipsis })
                       .layoutWeight(1)
@@ -144,15 +144,15 @@ struct MusicListPage {
                 // 时长 + 播放按钮
                 Row({ space: 8 }) {
                   Text(this.formatDuration(song.duration))
-                    .fontSize(22).fontColor('#86909C')
-                  Text('▶️')
+                    .fontSize(22).fontColor($r('app.color.text_secondary'))
+                  SymbolGlyph($r('sys.symbol.play_fill'))
                     .fontSize(24)
                     .onClick(() => { this.playSong(song); })
                 }
               }
               .width('100%')
               .padding(12)
-              .backgroundColor('#FFFFFF')
+              .backgroundColor($r('app.color.card_white'))
               .borderRadius(8)
               .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
               .alignItems(VerticalAlign.Center)
@@ -167,6 +167,6 @@ struct MusicListPage {
       }
     }
     .width('100%').height('100%')
-    .backgroundColor('#F5F7FA')
+    .backgroundColor($r('app.color.background'))
   }
 }

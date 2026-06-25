@@ -170,7 +170,7 @@ export struct CampusInfoTab {
                 .fontSize(22)
                 .fontColor(this.currentTagIndex === index ? '#FFFFFF' : this.darkPrimary)
                 .padding({ left: 16, right: 16, top: 6, bottom: 6 })
-                .backgroundColor(this.currentTagIndex === index ? '#1677FF' : '#F5F7FA')
+                .backgroundColor(this.currentTagIndex === index ? $r('app.color.primary') : $r('app.color.background'))
                 .borderRadius(20)
                 .onClick(() => {
                   this.currentTagIndex = index;
@@ -216,7 +216,7 @@ export struct CampusInfoTab {
     Scroll() {
       Column({ space: 12 }) {
         if (this.announcements.length === 0) {
-          this.buildEmptyPlaceholder('📢', '暂无公告')
+          this.buildEmptyPlaceholder('bell', '暂无公告')
         } else {
           ForEach(this.announcements, (item: AnnouncementItem) => {
             Row() {
@@ -225,9 +225,9 @@ export struct CampusInfoTab {
                 Circle()
                   .width(64)
                   .height(64)
-                  .fill('#E8F3FF')
-                Text('📢')
-                  .fontSize(28)
+                  .fill($r('app.color.primary_light'))
+                SymbolGlyph($r('sys.symbol.bell'))
+                  .fontSize(24)
               }
 
               Column({ space: 4 }) {
@@ -243,7 +243,7 @@ export struct CampusInfoTab {
                     Circle()
                       .width(8)
                       .height(8)
-                      .fill('#FF7D00')
+                      .fill($r('app.color.warm_orange'))
                   }
                 }
                 .width('100%')
@@ -289,7 +289,7 @@ export struct CampusInfoTab {
     Scroll() {
       Column({ space: 12 }) {
         if (this.news.length === 0) {
-          this.buildEmptyPlaceholder('📰', '暂无资讯')
+          this.buildEmptyPlaceholder('newspaper', '暂无资讯')
         } else {
           ForEach(this.news, (item: NewsItem) => {
             Row() {
@@ -297,9 +297,9 @@ export struct CampusInfoTab {
                 Circle()
                   .width(64)
                   .height(64)
-                  .fill('#E8F3FF')
-                Text('📰')
-                  .fontSize(28)
+                  .fill($r('app.color.primary_light'))
+                SymbolGlyph($r('sys.symbol.doc_text'))
+                  .fontSize(24)
               }
 
               Column({ space: 4 }) {
@@ -363,7 +363,7 @@ export struct CampusInfoTab {
 
               Text(item.tag)
                 .fontSize(20)
-                .fontColor('#FF7D00')
+                .fontColor($r('app.color.warm_orange'))
                 .padding({ left: 8, right: 8, top: 2, bottom: 2 })
                 .backgroundColor('#FFF3E0')
                 .borderRadius(4)
@@ -376,10 +376,14 @@ export struct CampusInfoTab {
               .maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
 
-            Text('📍 ' + item.location)
-              .fontSize(22)
-              .fontColor('#1677FF')
-              .maxLines(1)
+            Row({ space: 4 }) {
+              SymbolGlyph($r('sys.symbol.pin'))
+                .fontSize(24)
+              Text(item.location)
+                .fontSize(22)
+                .fontColor($r('app.color.primary'))
+                .maxLines(1)
+            }
 
             Text(item.summary)
               .fontSize(24)
@@ -418,9 +422,11 @@ export struct CampusInfoTab {
               .textOverflow({ overflow: TextOverflow.Ellipsis })
 
             Row({ space: 8 }) {
-              Text('🎤 ' + item.speaker)
+              SymbolGlyph($r('sys.symbol.mic'))
+                .fontSize(24)
+              Text(item.speaker)
                 .fontSize(22)
-                .fontColor('#1677FF')
+                .fontColor($r('app.color.primary'))
                 .layoutWeight(1)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -428,12 +434,20 @@ export struct CampusInfoTab {
             .width('100%')
 
             Row({ space: 16 }) {
-              Text('🕐 ' + item.time)
-                .fontSize(22)
-                .fontColor(this.darkSecondary)
-              Text('📍 ' + item.location)
-                .fontSize(22)
-                .fontColor(this.darkSecondary)
+              Row({ space: 4 }) {
+                SymbolGlyph($r('sys.symbol.clock'))
+                  .fontSize(24)
+                Text(item.time)
+                  .fontSize(22)
+                  .fontColor(this.darkSecondary)
+              }
+              Row({ space: 4 }) {
+                SymbolGlyph($r('sys.symbol.pin'))
+                  .fontSize(24)
+                Text(item.location)
+                  .fontSize(22)
+                  .fontColor(this.darkSecondary)
+              }
             }
             .width('100%')
 
@@ -479,7 +493,7 @@ export struct CampusInfoTab {
                 Circle()
                   .width(28)
                   .height(28)
-                  .fill(this.selectedBuilding === this.getBuildingIndex(b.name) ? '#FF7D00' : '#1677FF')
+                  .fill(this.selectedBuilding === this.getBuildingIndex(b.name) ? $r('app.color.warm_orange') : $r('app.color.primary'))
                 Text(b.name.substring(0, 1))
                   .fontSize(18)
                   .fontColor('#FFFFFF')
@@ -507,7 +521,7 @@ export struct CampusInfoTab {
             Text(this.buildings[this.selectedBuilding].name)
               .fontSize(28)
               .fontWeight(700)
-              .fontColor('#1677FF')
+              .fontColor($r('app.color.primary'))
             Text(this.buildings[this.selectedBuilding].description)
               .fontSize(24)
               .fontColor(this.darkSecondary)
@@ -539,7 +553,7 @@ export struct CampusInfoTab {
             .height(44)
             .fontSize(24)
             .fontColor('#FFFFFF')
-            .backgroundColor('#1677FF')
+            .backgroundColor($r('app.color.primary'))
             .borderRadius(8)
             .margin({ left: 12 })
             .onClick(() => {
@@ -565,7 +579,7 @@ export struct CampusInfoTab {
                   Circle()
                     .width(44)
                     .height(44)
-                    .fill(this.selectedBuilding === index ? '#E8F3FF' : '#F5F7FA')
+                    .fill(this.selectedBuilding === index ? $r('app.color.primary_light') : $r('app.color.background'))
                   Text(b.name.substring(0, 1))
                     .fontSize(22)
                     .fontColor(this.selectedBuilding === index ? '#1677FF' : this.darkSecondary)
@@ -592,7 +606,7 @@ export struct CampusInfoTab {
             .height(48)
             .fontSize(26)
             .fontColor('#FFFFFF')
-            .backgroundColor('#1677FF')
+            .backgroundColor($r('app.color.primary'))
             .borderRadius(8)
             .onClick(() => {
               const b = this.buildings[this.selectedBuilding]; router.pushUrl({ url: 'pages/campus/BuildingDetailPage', params: { name: b.name, description: b.description } }).catch((err: Error) => { console.error('[CampusInfo] 跳转建筑详情失败: ' + err.message); });
@@ -616,15 +630,20 @@ export struct CampusInfoTab {
   }
 
   @Builder
-  buildEmptyPlaceholder(icon: string, message: string) {
+  buildEmptyPlaceholder(iconType: string, message: string) {
     Column({ space: 24 }) {
       Stack() {
         Circle()
           .width(100)
           .height(100)
-          .fill('#E8F3FF')
-        Text(icon)
-          .fontSize(48)
+          .fill($r('app.color.primary_light'))
+        if (iconType === 'bell') {
+          SymbolGlyph($r('sys.symbol.bell'))
+            .fontSize(48)
+        } else if (iconType === 'newspaper') {
+          SymbolGlyph($r('sys.symbol.doc_text'))
+            .fontSize(48)
+        }
       }
       Text(message)
         .fontSize(28)
@@ -652,14 +671,14 @@ export struct CampusInfoTab {
               .layoutWeight(1)
             Text('关闭')
               .fontSize(24)
-              .fontColor('#1677FF')
+              .fontColor($r('app.color.primary'))
               .onClick(() => {
                 this.closeDetail();
               })
           }
           .width('100%')
 
-          Divider().color('#E5E6EB')
+          Divider().color($r('app.color.border'))
 
           Text(this.selectedAnnouncement!.title)
             .fontSize(32)
@@ -672,7 +691,7 @@ export struct CampusInfoTab {
           Row({ space: 8 }) {
             Text(this.selectedAnnouncement!.source)
               .fontSize(22)
-              .fontColor('#1677FF')
+              .fontColor($r('app.color.primary'))
             Text(this.selectedAnnouncement!.publishTime)
               .fontSize(22)
               .fontColor(this.darkSecondary)
@@ -681,12 +700,12 @@ export struct CampusInfoTab {
 
           Text(this.selectedAnnouncement!.category)
             .fontSize(22)
-            .fontColor('#FF7D00')
+            .fontColor($r('app.color.warm_orange'))
             .padding({ left: 8, right: 8, top: 2, bottom: 2 })
             .backgroundColor('#FFF3E0')
             .borderRadius(4)
 
-          Divider().color('#E5E6EB')
+          Divider().color($r('app.color.border'))
 
           Text(this.selectedAnnouncement!.content)
             .fontSize(26)
@@ -695,21 +714,44 @@ export struct CampusInfoTab {
             .width('100%')
 
           Row({ space: 24 }) {
-            Text(this.selectedAnnouncement!.isFavorited ? '❤️ 已收藏' : '🤍 收藏')
-              .fontSize(24)
-              .fontColor('#1677FF')
+            if (this.selectedAnnouncement!.isFavorited) {
+              Row({ space: 4 }) {
+                SymbolGlyph($r('sys.symbol.heart_fill'))
+                  .fontSize(22)
+                Text('已收藏')
+                  .fontSize(24)
+                  .fontColor($r('app.color.primary'))
+              }
               .onClick(() => {
                 if (this.selectedAnnouncement) {
                   this.selectedAnnouncement.isFavorited = !this.selectedAnnouncement.isFavorited;
                 }
               })
-
-            Text('📤 分享')
-              .fontSize(24)
-              .fontColor('#1677FF')
+            } else {
+              Row({ space: 4 }) {
+                SymbolGlyph($r('sys.symbol.heart'))
+                  .fontSize(22)
+                Text('收藏')
+                  .fontSize(24)
+                  .fontColor($r('app.color.primary'))
+              }
               .onClick(() => {
-                promptAction.showToast({ message: '链接已复制' });
+                if (this.selectedAnnouncement) {
+                  this.selectedAnnouncement.isFavorited = !this.selectedAnnouncement.isFavorited;
+                }
               })
+            }
+
+            Row({ space: 4 }) {
+              SymbolGlyph($r('sys.symbol.share'))
+                .fontSize(22)
+              Text('分享')
+                .fontSize(24)
+                .fontColor($r('app.color.primary'))
+            }
+            .onClick(() => {
+              promptAction.showToast({ message: '链接已复制' });
+            })
           }
           .width('100%')
           .justifyContent(FlexAlign.Center)

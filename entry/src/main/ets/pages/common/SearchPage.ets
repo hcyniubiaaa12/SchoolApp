@@ -54,7 +54,7 @@ struct SearchPage {
       // 导航栏 + 搜索框
       Row() {
         Image($r('app.media.ic_back'))
-          .width(24).height(24).fillColor('#1D2129')
+          .width(24).height(24).fillColor($r('app.color.text_primary'))
           .margin({ right: 12 })
           .onClick(() => {
             router.back();
@@ -63,9 +63,9 @@ struct SearchPage {
         TextInput({ placeholder: '搜索校园信息/课程/美食', text: this.searchText })
           .height(44)
           .fontSize(24)
-          .placeholderColor('#86909C')
+          .placeholderColor($r('app.color.text_secondary'))
           .borderRadius(24)
-          .backgroundColor('#F5F7FA')
+          .backgroundColor($r('app.color.background'))
           .layoutWeight(1)
           .onChange((value: string) => {
             this.searchText = value;
@@ -76,7 +76,7 @@ struct SearchPage {
 
         Text('搜索')
           .fontSize(24)
-          .fontColor('#1677FF')
+          .fontColor($r('app.color.primary'))
           .margin({ left: 12 })
           .onClick(() => {
             this.doSearch();
@@ -85,7 +85,7 @@ struct SearchPage {
       .width('100%')
       .height(56)
       .padding({ left: 16, right: 20 })
-      .backgroundColor('#FFFFFF')
+      .backgroundColor($r('app.color.card_white'))
       .alignItems(VerticalAlign.Center)
 
       if (!this.hasSearched) {
@@ -94,7 +94,7 @@ struct SearchPage {
           Text('热门搜索')
             .fontSize(28)
             .fontWeight(700)
-            .fontColor('#1D2129')
+            .fontColor($r('app.color.text_primary'))
             .width('100%')
 
           Row({ space: 12 }) {
@@ -117,16 +117,16 @@ struct SearchPage {
           Column({ space: 12 }) {
             Text('找到 ' + this.results.length.toString() + ' 个结果')
               .fontSize(24)
-              .fontColor('#86909C')
+              .fontColor($r('app.color.text_secondary'))
               .width('100%')
 
             if (this.results.length === 0) {
               Column({ space: 16 }) {
-                Text('😕')
-                  .fontSize(48)
+                SymbolGlyph($r('sys.symbol.questionmark_circle'))
+                  .fontSize(64)
                 Text('未找到相关内容')
                   .fontSize(26)
-                  .fontColor('#86909C')
+                  .fontColor($r('app.color.text_secondary'))
               }
               .width('100%')
               .height(200)
@@ -140,14 +140,14 @@ struct SearchPage {
                       Text(item.title)
                         .fontSize(26)
                         .fontWeight(600)
-                        .fontColor('#1D2129')
+                        .fontColor($r('app.color.text_primary'))
                         .layoutWeight(1)
                         .maxLines(1)
                         .textOverflow({ overflow: TextOverflow.Ellipsis })
 
                       Text(item.type)
                         .fontSize(20)
-                        .fontColor('#1677FF')
+                        .fontColor($r('app.color.primary'))
                         .padding({ left: 6, right: 6, top: 2, bottom: 2 })
                         .backgroundColor('#E8F3FF')
                         .borderRadius(4)
@@ -156,7 +156,7 @@ struct SearchPage {
 
                     Text(item.subTitle)
                       .fontSize(22)
-                      .fontColor('#86909C')
+                      .fontColor($r('app.color.text_secondary'))
                       .maxLines(1)
                       .textOverflow({ overflow: TextOverflow.Ellipsis })
                   }
@@ -165,7 +165,7 @@ struct SearchPage {
                 }
                 .width('100%')
                 .padding(16)
-                .backgroundColor('#FFFFFF')
+                .backgroundColor($r('app.color.card_white'))
                 .borderRadius(8)
                 .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
               }, (item: SearchResultItem, index: number) => item.title + index.toString())
@@ -180,16 +180,16 @@ struct SearchPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#F5F7FA')
+    .backgroundColor($r('app.color.background'))
   }
 
   @Builder
   buildHotTag(tag: string) {
     Text(tag)
       .fontSize(24)
-      .fontColor('#1D2129')
+      .fontColor($r('app.color.text_primary'))
       .padding({ left: 16, right: 16, top: 6, bottom: 6 })
-      .backgroundColor('#FFFFFF')
+      .backgroundColor($r('app.color.card_white'))
       .borderRadius(20)
       .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
       .onClick(() => {

@@ -10,6 +10,7 @@ import { KVStoreUtil } from '../../common/utils/KVStoreUtil';
 interface FunctionItem {
   name: string;
   icon: string;
+  symbol?: Resource;
   target?: string;
 }
 
@@ -32,21 +33,21 @@ export struct MineTab {
 
   // 功能列表项（带路由目标）
   private functionList: FunctionItem[] = [
-    { name: '我的收藏', icon: '❤️', target: 'pages/mine/FavoritePage' },
-    { name: '我的待办', icon: '📝', target: 'pages/mine/TodoPage' },
-    { name: '我的课程', icon: '📅', target: '' },
+    { name: '我的收藏', icon: '❤️', symbol: $r('sys.symbol.heart_fill'), target: 'pages/mine/FavoritePage' },
+    { name: '我的待办', icon: '📝', symbol: $r('sys.symbol.doc_text'), target: 'pages/mine/TodoPage' },
+    { name: '我的课程', icon: '📅', symbol: $r('sys.symbol.calendar'), target: '' },
     { name: '我的成绩', icon: '📊', target: '' },
-    { name: '失物发布', icon: '📋', target: 'pages/life/LostFoundPublishPage' },
-    { name: '帮助中心', icon: '❓', target: '' },
-    { name: '意见反馈', icon: '💬', target: '' }
+    { name: '失物发布', icon: '📋', symbol: $r('sys.symbol.doc_text'), target: 'pages/life/LostFoundPublishPage' },
+    { name: '帮助中心', icon: '❓', symbol: $r('sys.symbol.questionmark_circle'), target: '' },
+    { name: '意见反馈', icon: '💬', symbol: $r('sys.symbol.message'), target: '' }
   ];
 
   // 设置项
   private settingList: FunctionItem[] = [
-    { name: '深色模式', icon: '🌙' },
-    { name: '字体大小', icon: '🔤' },
-    { name: '通知设置', icon: '🔔' },
-    { name: '清理缓存', icon: '🗑️' }
+    { name: '深色模式', icon: '🌙', symbol: $r('sys.symbol.moon') },
+    { name: '字体大小', icon: '🔤', symbol: $r('sys.symbol.textformat') },
+    { name: '通知设置', icon: '🔔', symbol: $r('sys.symbol.bell') },
+    { name: '清理缓存', icon: '🗑️', symbol: $r('sys.symbol.trash') }
   ];
 
   private navigateTo(target: string): void {
@@ -89,7 +90,7 @@ export struct MineTab {
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
 
-        Text('⚙️')
+        SymbolGlyph($r('sys.symbol.gearshape'))
           .fontSize(24)
           .onClick(() => {
             if (this.onSettingClick) {
@@ -100,7 +101,7 @@ export struct MineTab {
       .width('100%')
       .height(56)
       .padding({ left: 20, right: 20 })
-      .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
+      .backgroundColor(this.isDarkMode ? '#252540' : $r('app.color.card_white'))
 
       Scroll() {
         Column({ space: 16 }) {
@@ -111,10 +112,10 @@ export struct MineTab {
               Circle()
                 .width(80)
                 .height(80)
-                .fill('#E8F3FF')
+                .fill($r('app.color.primary_light'))
               Text(this.username.charAt(0))
                 .fontSize(32)
-                .fontColor('#1677FF')
+                .fontColor($r('app.color.primary'))
             }
             .onClick(() => {
               if (this.onProfileEditClick) {
@@ -151,7 +152,7 @@ export struct MineTab {
           }
           .width('100%')
           .padding(20)
-          .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
+          .backgroundColor(this.isDarkMode ? '#252540' : $r('app.color.card_white'))
           .borderRadius(8)
           .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
           .onClick(() => {
@@ -162,10 +163,16 @@ export struct MineTab {
           Column() {
             ForEach(this.functionList, (item: FunctionItem) => {
               Row() {
-                Text(item.icon)
-                  .fontSize(24)
-                  .width(32)
-                  .textAlign(TextAlign.Center)
+                if (item.symbol) {
+                  SymbolGlyph(item.symbol)
+                    .fontSize(24)
+                    .width(32)
+                } else {
+                  Text(item.icon)
+                    .fontSize(24)
+                    .width(32)
+                    .textAlign(TextAlign.Center)
+                }
 
                 Text(item.name)
                   .fontSize(26)
@@ -191,7 +198,7 @@ export struct MineTab {
             }, (item: FunctionItem) => item.name)
           }
           .width('100%')
-          .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
+          .backgroundColor(this.isDarkMode ? '#252540' : $r('app.color.card_white'))
           .borderRadius(8)
           .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
 
@@ -199,10 +206,16 @@ export struct MineTab {
           Column() {
             ForEach(this.settingList, (item: FunctionItem) => {
               Row() {
-                Text(item.icon)
-                  .fontSize(24)
-                  .width(32)
-                  .textAlign(TextAlign.Center)
+                if (item.symbol) {
+                  SymbolGlyph(item.symbol)
+                    .fontSize(24)
+                    .width(32)
+                } else {
+                  Text(item.icon)
+                    .fontSize(24)
+                    .width(32)
+                    .textAlign(TextAlign.Center)
+                }
 
                 Text(item.name)
                   .fontSize(26)
@@ -212,7 +225,7 @@ export struct MineTab {
 
                 if (item.name === '深色模式') {
                   Toggle({ type: ToggleType.Switch, isOn: this.isDarkMode })
-                    .selectedColor('#1677FF')
+                    .selectedColor($r('app.color.primary'))
                     .width(48)
                     .onChange((val: boolean) => {
                       AppStorage.Set('isDarkMode', val);
@@ -222,7 +235,7 @@ export struct MineTab {
                 } else if (item.name === '清理缓存') {
                   Text(this.cacheSize)
                     .fontSize(24)
-                    .fontColor('#FF7D00')
+                    .fontColor($r('app.color.warm_orange'))
                     .margin({ right: 8 })
                     .onClick(() => {
                       this.cacheSize = '0.0MB';
@@ -246,7 +259,7 @@ export struct MineTab {
             }, (item: FunctionItem) => item.name)
           }
           .width('100%')
-          .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
+          .backgroundColor(this.isDarkMode ? '#252540' : $r('app.color.card_white'))
           .borderRadius(8)
           .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
 
@@ -255,10 +268,10 @@ export struct MineTab {
             .width('100%')
             .height(48)
             .fontSize(26)
-            .fontColor('#FF7D00')
-            .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
+            .fontColor($r('app.color.warm_orange'))
+            .backgroundColor(this.isDarkMode ? '#252540' : $r('app.color.card_white'))
             .borderRadius(8)
-            .border({ width: 1, color: '#FF7D00' })
+            .border({ width: 1, color: $r('app.color.warm_orange') })
             .onClick(() => {
               this.doLogout();
             })
@@ -286,6 +299,6 @@ export struct MineTab {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor(this.isDarkMode ? '#1A1A2E' : '#F5F7FA')
+    .backgroundColor(this.isDarkMode ? '#1A1A2E' : $r('app.color.background'))
   }
 }
