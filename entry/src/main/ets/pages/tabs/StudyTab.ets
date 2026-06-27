@@ -63,8 +63,6 @@ export struct StudyTab {
   @State books: BookRow[] = [];
   @State filteredBooks: BookRow[] = [];
   @State materials: MaterialFolder[] = [];
-  @State courseSearchText: string = '';
-  @State materialSearchText: string = '';
   @State bookSearchText: string = '';
   @State expandedMaterialId: string = '';
   @State showCourseEdit: boolean = false;
@@ -151,9 +149,8 @@ export struct StudyTab {
 
   private getCoursesByDay(dayIndex: number): CourseRow[] {
     const result: CourseRow[] = [];
-    const source: CourseRow[] = this.getFilteredWeekCourses();
-    for (let i = 0; i < source.length; i++) {
-      const c: CourseRow = source[i];
+    for (let i = 0; i < this.courses.length; i++) {
+      const c: CourseRow = this.courses[i];
       if (c.dayIndex === dayIndex && this.currentWeek >= c.startWeek && this.currentWeek <= c.endWeek) {
         result.push(c);
       }
@@ -163,45 +160,6 @@ export struct StudyTab {
 
   private getDayCourseCount(dayIndex: number): number {
     return this.getCoursesByDay(dayIndex).length;
-  }
-
-  private getFilteredWeekCourses(): CourseRow[] {
-    if (this.courseSearchText.trim() === '') {
-      return this.courses;
-    }
-    const keyword: string = this.courseSearchText.trim().toLowerCase();
-    const result: CourseRow[] = [];
-    for (let i = 0; i < this.courses.length; i++) {
-      const c: CourseRow = this.courses[i];
-      if (c.name.toLowerCase().includes(keyword) ||
-          c.teacher.toLowerCase().includes(keyword) ||
-          c.location.toLowerCase().includes(keyword)) {
-        result.push(c);
-      }
-    }
-    return result;
-  }
-
-  private getFilteredMaterials(): MaterialFolder[] {
-    if (this.materialSearchText.trim() === '') {
-      return this.materials;
-    }
-    const keyword: string = this.materialSearchText.trim().toLowerCase();
-    const result: MaterialFolder[] = [];
-    for (let i = 0; i < this.materials.length; i++) {
-      const folder: MaterialFolder = this.materials[i];
-      if (folder.folderName.toLowerCase().includes(keyword)) {
-        result.push(folder);
-        continue;
-      }
-      for (let j = 0; j < folder.items.length; j++) {
-        if (folder.items[j].name.toLowerCase().includes(keyword)) {
-          result.push(folder);
-          break;
-        }
-      }
-    }
-    return result;
   }
 
   private showCourse(course: CourseRow): void {
@@ -343,31 +301,22 @@ export struct StudyTab {
         .padding({ left: 20, right: 20 })
         .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
 
-        // 功能标签栏（下划线样式：选中鸿蒙蓝 + 2px 下划线）
+        // 功能标签栏（胶囊样式：选中蓝底白字，横向可滑动）
         Scroll() {
           Row({ space: 8 }) {
             ForEach(this.tags, (tag: TagItem, index: number) => {
-              Column({ space: 4 }) {
-                Text(tag.name)
-                  .fontSize(this.fsBody)
-                  .fontColor(this.currentTagIndex === index ? '#1677FF' : this.isDarkMode ? '#A0A0A0' : '#86909C')
-                  .fontWeight(this.currentTagIndex === index ? 600 : 400)
-                  .padding({ left: 12, right: 12, top: 4, bottom: 4 })
-                  .maxLines(1)
-                  .textOverflow({ overflow: TextOverflow.Ellipsis })
-                if (this.currentTagIndex === index) {
-                  Row()
-                    .width('100%')
-                    .height(2)
-                    .backgroundColor('#1677FF')
-                    .borderRadius(1)
-                }
-              }
-              .padding({ top: 6 })
-              .alignItems(HorizontalAlign.Center)
-              .onClick(() => {
-                this.currentTagIndex = index;
-              })
+              Text(tag.name)
+                .fontSize(this.fsTiny)
+                .fontColor(this.currentTagIndex === index ? '#FFFFFF' : this.isDarkMode ? '#E8E8E8' : '#1D2129')
+                .fontWeight(this.currentTagIndex === index ? 600 : 400)
+                .padding({ left: 16, right: 16, top: 8, bottom: 12 })
+                .backgroundColor(this.currentTagIndex === index ? $r('app.color.primary') : this.isDarkMode ? '#3A3A5C' : '#F5F7FA')
+                .borderRadius(8)
+                .maxLines(1)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+                .onClick(() => {
+                  this.currentTagIndex = index;
+                })
             }, (tag: TagItem, index: number) => tag.name + index.toString())
           }
           .padding({ left: 20, right: 20 })
@@ -407,31 +356,6 @@ export struct StudyTab {
   buildCourseTable() {
     Scroll() {
       Column({ space: 16 }) {
-        // 课程搜索栏
-        Row() {
-          TextInput({ placeholder: '搜索课程名称/教师/地点...', text: this.courseSearchText })
-            .height(44)
-            .fontSize(this.fsSmall)
-            .placeholderColor('#86909C')
-            .borderRadius(24)
-            .backgroundColor(this.isDarkMode ? '#1A1A2E' : '#F5F7FA')
-            .layoutWeight(1)
-            .onChange((value: string) => {
-              this.courseSearchText = value;
-            })
-          Button('搜索')
-            .height(40)
-            .fontSize(this.fsSmall)
-            .fontColor('#FFFFFF')
-            .backgroundColor($r('app.color.primary'))
-            .borderRadius(20)
-            .margin({ left: 12 })
-            .onClick(() => {
-              this.courseSearchText = this.courseSearchText;
-            })
-        }
-        .width('100%')
-
         // 周次切换（蓝色顶部色条）
         Row() {
           Text('上一周')
@@ -529,20 +453,7 @@ export struct StudyTab {
           .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
         }, (day: WeekDayItem) => day.name + day.dayIndex.toString())
 
-        // 编辑课程表按钮
-        Button('编辑课程表')
-          .width('100%')
-          .height(48)
-          .fontSize(this.fsBody)
-          .fontColor('#FFFFFF')
-          .backgroundColor($r('app.color.primary'))
-          .borderRadius(8)
-          .onClick(() => {
-            router.pushUrl({ url: 'pages/study/ScheduleEditPage' })
-              .catch((err: Error) => {
-                console.error('[StudyTab] 编辑课程表失败: ' + err.message);
-              });
-          })
+        // 编辑课程：点课程卡片→详情弹窗→编辑课程入口
       }
       .width('100%')
       .padding({ left: 20, right: 20, top: 16, bottom: 24 })
@@ -880,29 +791,7 @@ export struct StudyTab {
   buildStudyMaterials() {
     Scroll() {
       Column({ space: 16 }) {
-        // 学习资料搜索栏
-        Row() {
-          TextInput({ placeholder: '搜索资料名称...', text: this.materialSearchText })
-            .height(44)
-            .fontSize(this.fsSmall)
-            .placeholderColor('#86909C')
-            .borderRadius(24)
-            .backgroundColor(this.isDarkMode ? '#1A1A2E' : '#F5F7FA')
-            .layoutWeight(1)
-            .onChange((value: string) => {
-              this.materialSearchText = value;
-            })
-          Button('搜索')
-            .height(40)
-            .fontSize(this.fsSmall)
-            .fontColor('#FFFFFF')
-            .backgroundColor($r('app.color.primary'))
-            .borderRadius(20)
-            .margin({ left: 12 })
-        }
-        .width('100%')
-
-        if (this.getFilteredMaterials().length === 0) {
+        if (this.materials.length === 0) {
           Column({ space: 24 }) {
             Stack() {
               Circle()
@@ -931,7 +820,7 @@ export struct StudyTab {
           .alignItems(HorizontalAlign.Center)
           .padding({ top: 60, bottom: 60 })
         } else {
-          ForEach(this.getFilteredMaterials(), (folder: MaterialFolder) => {
+          ForEach(this.materials, (folder: MaterialFolder) => {
             this.buildMaterialFolder(folder)
           }, (folder: MaterialFolder) => folder.id)
         }
