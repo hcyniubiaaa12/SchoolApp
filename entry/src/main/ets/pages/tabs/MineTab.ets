@@ -19,10 +19,24 @@ export struct MineTab {
   @Prop @Watch('onDarkChange') isDarkMode: boolean = false;
   @State darkPrimary: string = '#1D2129';
   @State darkSecondary: string = '#86909C';
+  @StorageLink('fontScale') @Watch('onFontScaleChange') fontScale: number = 1.0;
+  @State fsTitle: number = 30;
+  @State fsMid: number = 28;
+  @State fsBody: number = 26;
+  @State fsSmall: number = 24;
+  @State fsTiny: number = 22;
 
   private onDarkChange(): void {
     this.darkPrimary = this.isDarkMode ? '#E8E8E8' : '#1D2129';
     this.darkSecondary = this.isDarkMode ? '#A0A0A0' : '#86909C';
+  }
+
+  private onFontScaleChange(): void {
+    this.fsTitle = Math.round(30 * this.fontScale);
+    this.fsMid = Math.round(28 * this.fontScale);
+    this.fsBody = Math.round(26 * this.fontScale);
+    this.fsSmall = Math.round(24 * this.fontScale);
+    this.fsTiny = Math.round(22 * this.fontScale);
   }
   @Prop username: string = '用户';
   @Prop userId: string = '';
@@ -30,6 +44,7 @@ export struct MineTab {
   @State cacheSize: string = '64.2MB';
   onProfileEditClick?: () => void;
   onSettingClick?: () => void;
+  onTabSwitch?: (tabIndex: number) => void;
 
   // 功能列表项（带路由目标）
   private functionList: FunctionItem[] = [
@@ -83,7 +98,7 @@ export struct MineTab {
       // 导航栏
       Row() {
         Text('我的')
-          .fontSize(30)
+          .fontSize(this.fsTitle)
           .fontWeight(600)
           .fontColor(this.darkPrimary)
           .layoutWeight(1)
@@ -91,7 +106,7 @@ export struct MineTab {
           .textOverflow({ overflow: TextOverflow.Ellipsis })
 
         SymbolGlyph($r('sys.symbol.gearshape'))
-          .fontSize(24)
+          .fontSize(this.fsSmall)
           .onClick(() => {
             if (this.onSettingClick) {
               this.onSettingClick();
@@ -127,18 +142,18 @@ export struct MineTab {
 
             Column({ space: 4 }) {
               Text(this.username)
-                .fontSize(28)
+                .fontSize(this.fsMid)
                 .fontWeight(700)
                 .fontColor(this.darkPrimary)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
               Text(`学号: ${this.userId}`)
-                .fontSize(24)
+                .fontSize(this.fsSmall)
                 .fontColor(this.darkSecondary)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
               Text(`${this.major}`)
-                .fontSize(22)
+                .fontSize(this.fsTiny)
                 .fontColor(this.darkSecondary)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -147,7 +162,7 @@ export struct MineTab {
             .layoutWeight(1)
 
             Text('>')
-              .fontSize(24)
+              .fontSize(this.fsSmall)
               .fontColor(this.darkSecondary)
           }
           .width('100%')
@@ -165,23 +180,23 @@ export struct MineTab {
               Row() {
                 if (item.symbol) {
                   SymbolGlyph(item.symbol)
-                    .fontSize(24)
+                    .fontSize(this.fsSmall)
                     .width(32)
                 } else {
                   Text(item.icon)
-                    .fontSize(24)
+                    .fontSize(this.fsSmall)
                     .width(32)
                     .textAlign(TextAlign.Center)
                 }
 
                 Text(item.name)
-                  .fontSize(26)
+                  .fontSize(this.fsBody)
                   .fontColor(this.darkPrimary)
                   .margin({ left: 12 })
                   .layoutWeight(1)
 
                 Text('>')
-                  .fontSize(24)
+                  .fontSize(this.fsSmall)
                   .fontColor(this.darkSecondary)
               }
               .width('100%')
@@ -189,6 +204,12 @@ export struct MineTab {
               .padding({ left: 16, right: 16 })
               .alignItems(VerticalAlign.Center)
               .onClick(() => {
+                if (item.name === '我的课程' || item.name === '我的成绩') {
+                  if (this.onTabSwitch) {
+                    this.onTabSwitch(2);
+                  }
+                  return;
+                }
                 if (item.target) {
                   this.navigateTo(item.target);
                 } else {
@@ -208,17 +229,17 @@ export struct MineTab {
               Row() {
                 if (item.symbol) {
                   SymbolGlyph(item.symbol)
-                    .fontSize(24)
+                    .fontSize(this.fsSmall)
                     .width(32)
                 } else {
                   Text(item.icon)
-                    .fontSize(24)
+                    .fontSize(this.fsSmall)
                     .width(32)
                     .textAlign(TextAlign.Center)
                 }
 
                 Text(item.name)
-                  .fontSize(26)
+                  .fontSize(this.fsBody)
                   .fontColor(this.darkPrimary)
                   .margin({ left: 12 })
                   .layoutWeight(1)
@@ -234,7 +255,7 @@ export struct MineTab {
                     })
                 } else if (item.name === '清理缓存') {
                   Text(this.cacheSize)
-                    .fontSize(24)
+                    .fontSize(this.fsSmall)
                     .fontColor($r('app.color.warm_orange'))
                     .margin({ right: 8 })
                     .onClick(() => {
@@ -243,7 +264,7 @@ export struct MineTab {
                     })
                 } else {
                   Text('>')
-                    .fontSize(24)
+                    .fontSize(this.fsSmall)
                     .fontColor(this.darkSecondary)
                     .onClick(() => {
                       if (item.name === '通知设置') {
@@ -267,7 +288,7 @@ export struct MineTab {
           Button('退出登录')
             .width('100%')
             .height(48)
-            .fontSize(26)
+            .fontSize(this.fsBody)
             .fontColor($r('app.color.warm_orange'))
             .backgroundColor(this.isDarkMode ? '#252540' : $r('app.color.card_white'))
             .borderRadius(8)
@@ -279,13 +300,13 @@ export struct MineTab {
           // 底部关于区
           Column({ space: 4 }) {
             Text('高校校园助手 V1.0.0')
-              .fontSize(24)
+              .fontSize(this.fsSmall)
               .fontColor(this.darkSecondary)
             Text('校园助手开发团队')
-              .fontSize(22)
+              .fontSize(this.fsTiny)
               .fontColor(this.darkSecondary)
             Text('© 2026 All Rights Reserved')
-              .fontSize(22)
+              .fontSize(this.fsTiny)
               .fontColor(this.darkSecondary)
           }
           .width('100%')

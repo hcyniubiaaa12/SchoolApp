@@ -27,7 +27,15 @@ interface SongItem {
 
 @Component
 export struct LifeServiceTab {
-  @Prop isDarkMode: boolean = false;
+  @Prop @Watch('onDarkChange') isDarkMode: boolean = false;
+  @State darkPrimary: string = '#1D2129';
+  @State darkSecondary: string = '#86909C';
+  @StorageLink('fontScale') @Watch('onFontScaleChange') fontScale: number = 1.0;
+  @State fsTitle: number = 30;
+  @State fsMid: number = 28;
+  @State fsBody: number = 26;
+  @State fsSmall: number = 24;
+  @State fsTiny: number = 22;
   @Prop uiContext?: Context;
   @Prop @Watch('onRefresh') refreshSignal: number = 0;
   @State currentEntry: number = 0;
@@ -37,6 +45,19 @@ export struct LifeServiceTab {
   @State currentSongIndex: number = 0;
   @State isPlaying: boolean = false;
   @State progressValue: number = 0;
+
+  private onDarkChange(): void {
+    this.darkPrimary = this.isDarkMode ? '#E8E8E8' : '#1D2129';
+    this.darkSecondary = this.isDarkMode ? '#A0A0A0' : '#86909C';
+  }
+
+  private onFontScaleChange(): void {
+    this.fsTitle = Math.round(30 * this.fontScale);
+    this.fsMid = Math.round(28 * this.fontScale);
+    this.fsBody = Math.round(26 * this.fontScale);
+    this.fsSmall = Math.round(24 * this.fontScale);
+    this.fsTiny = Math.round(22 * this.fontScale);
+  }
 
   private entries: LifeEntryItem[] = [
     { name: '失物招领', symbol: $r('sys.symbol.magnifyingglass'), color: $r('app.color.warm_orange') },
@@ -149,7 +170,7 @@ export struct LifeServiceTab {
         } else {
           SymbolGlyph($r('sys.symbol.star'))
             .fontSize(18)
-            .fontColor([$r('app.color.text_secondary')])
+            .fontColor([this.darkSecondary])
         }
       }, (i: number) => i.toString())
     }
@@ -205,16 +226,16 @@ export struct LifeServiceTab {
       // 顶部导航栏
       Row() {
         Text('生活服务')
-          .fontSize(30)
+          .fontSize(this.fsTitle)
           .fontWeight(600)
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(this.darkPrimary)
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
       }
       .width('100%')
       .height(56)
       .padding({ left: 20, right: 20 })
-      .backgroundColor($r('app.color.card_white'))
+      .backgroundColor(this.isDarkMode ? '#252540' : $r('app.color.card_white'))
       Scroll() {
         Column({ space: 16 }) {
           // 2×2 功能入口
@@ -237,7 +258,7 @@ export struct LifeServiceTab {
           // 内容区分隔线
           Row() {
             Text('▼ ' + this.entries[this.currentEntry].name)
-              .fontSize(24)
+              .fontSize(this.fsSmall)
               .fontColor($r('app.color.primary'))
               .fontWeight(600)
           }
@@ -263,7 +284,7 @@ export struct LifeServiceTab {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor($r('app.color.background'))
+    .backgroundColor(this.isDarkMode ? '#1A1A2E' : $r('app.color.background'))
   }
 
   @Builder
@@ -276,11 +297,11 @@ export struct LifeServiceTab {
           .fill(entry.color)
           .opacity(0.1)
         SymbolGlyph(entry.symbol)
-          .fontSize(28)
+          .fontSize(this.fsMid)
       }
       Text(entry.name)
-        .fontSize(22)
-        .fontColor(this.currentEntry === this.getEntryIndex(entry.name) ? $r('app.color.primary') : $r('app.color.text_primary'))
+        .fontSize(this.fsTiny)
+        .fontColor(this.currentEntry === this.getEntryIndex(entry.name) ? $r('app.color.primary') : this.darkPrimary)
         .fontWeight(this.currentEntry === this.getEntryIndex(entry.name) ? 600 : 400)
         .maxLines(1)
         .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -288,7 +309,7 @@ export struct LifeServiceTab {
     .layoutWeight(1)
     .alignItems(HorizontalAlign.Center)
     .padding({ top: 16, bottom: 16 })
-    .backgroundColor(this.currentEntry === this.getEntryIndex(entry.name) ? $r('app.color.primary_light') : $r('app.color.card_white'))
+    .backgroundColor(this.currentEntry === this.getEntryIndex(entry.name) ? $r('app.color.primary_light') : (this.isDarkMode ? '#252540' : $r('app.color.card_white')))
     .borderRadius(8)
     .onClick(() => {
       this.currentEntry = this.getEntryIndex(entry.name);
@@ -312,7 +333,7 @@ export struct LifeServiceTab {
       Button('发布信息')
         .width('100%')
         .height(48)
-        .fontSize(26)
+        .fontSize(this.fsBody)
         .fontColor('#FFFFFF')
         .backgroundColor($r('app.color.warm_orange'))
         .borderRadius(8)
@@ -327,8 +348,8 @@ export struct LifeServiceTab {
       if (this.lostFoundList.length === 0) {
         Row() {
           Text('暂无信息')
-            .fontSize(24)
-            .fontColor($r('app.color.text_secondary'))
+            .fontSize(this.fsSmall)
+            .fontColor(this.darkSecondary)
         }
         .width('100%')
         .height(100)
@@ -346,19 +367,19 @@ export struct LifeServiceTab {
                 .opacity(item.type === 'lost' ? 0.1 : 1)
               if (item.type === 'lost') {
                 SymbolGlyph($r('sys.symbol.magnifyingglass'))
-                  .fontSize(28)
+                  .fontSize(this.fsMid)
               } else {
                 SymbolGlyph($r('sys.symbol.pin'))
-                  .fontSize(28)
+                  .fontSize(this.fsMid)
               }
             }
 
             Column({ space: 4 }) {
               Row({ space: 8 }) {
                 Text(item.itemName)
-                  .fontSize(26)
+                  .fontSize(this.fsBody)
                   .fontWeight(600)
-                  .fontColor($r('app.color.text_primary'))
+                  .fontColor(this.darkPrimary)
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
 
@@ -374,8 +395,8 @@ export struct LifeServiceTab {
               .width('100%')
 
               Text(item.location + ' · ' + item.time)
-                .fontSize(22)
-                .fontColor($r('app.color.text_secondary'))
+                .fontSize(this.fsTiny)
+                .fontColor(this.darkSecondary)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
             }
@@ -388,7 +409,7 @@ export struct LifeServiceTab {
               Button('删除')
                 .height(32).fontSize(20)
                 .fontColor($r('app.color.warm_orange'))
-                .backgroundColor($r('app.color.card_white'))
+                .backgroundColor(this.isDarkMode ? '#3A3A5C' : $r('app.color.card_white'))
                 .border({ width: 1, color: $r('app.color.warm_orange'), radius: 4 })
                 .padding({ left: 10, right: 10 })
                 .onClick(() => { this.deleteLostFoundItem(item); })
@@ -396,7 +417,7 @@ export struct LifeServiceTab {
           }
           .width('100%')
           .padding(12)
-          .backgroundColor($r('app.color.card_white'))
+          .backgroundColor(this.isDarkMode ? '#252540' : $r('app.color.card_white'))
           .borderRadius(8)
           .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
           .alignItems(VerticalAlign.Center)
@@ -415,8 +436,8 @@ export struct LifeServiceTab {
       if (this.foodList.length === 0) {
         Row() {
           Text('暂无美食信息')
-            .fontSize(24)
-            .fontColor($r('app.color.text_secondary'))
+            .fontSize(this.fsSmall)
+            .fontColor(this.darkSecondary)
         }
         .width('100%')
         .height(100)
@@ -432,30 +453,30 @@ export struct LifeServiceTab {
                 .fill($r('app.color.warm_orange'))
                 .opacity(0.1)
               Text('🍽️')
-                .fontSize(28)
+                .fontSize(this.fsMid)
             }
 
             Column({ space: 4 }) {
               Row() {
                 Text(food.name)
-                  .fontSize(26)
+                  .fontSize(this.fsBody)
                   .fontWeight(600)
-                  .fontColor($r('app.color.text_primary'))
+                  .fontColor(this.darkPrimary)
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
                   .layoutWeight(1)
 
                 if (food.isFavorited) {
                   SymbolGlyph($r('sys.symbol.heart_fill'))
-                    .fontSize(22)
+                    .fontSize(this.fsTiny)
                     .fontColor([$r('app.color.primary')])
                     .onClick(() => {
                       this.toggleFoodFavorite(food.id);
                     })
                 } else {
                   SymbolGlyph($r('sys.symbol.heart'))
-                    .fontSize(22)
-                    .fontColor([$r('app.color.text_secondary')])
+                    .fontSize(this.fsTiny)
+                    .fontColor([this.darkSecondary])
                     .onClick(() => {
                       this.toggleFoodFavorite(food.id);
                     })
@@ -464,8 +485,8 @@ export struct LifeServiceTab {
               .width('100%')
 
               Text(food.canteen)
-                .fontSize(22)
-                .fontColor($r('app.color.text_secondary'))
+                .fontSize(this.fsTiny)
+                .fontColor(this.darkSecondary)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
 
@@ -473,8 +494,8 @@ export struct LifeServiceTab {
                 this.buildStarRow(food.rating)
 
                 Text(food.signatureDish)
-                  .fontSize(22)
-                  .fontColor($r('app.color.text_secondary'))
+                  .fontSize(this.fsTiny)
+                  .fontColor(this.darkSecondary)
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
               }
@@ -486,7 +507,7 @@ export struct LifeServiceTab {
           }
           .width('100%')
           .padding(12)
-          .backgroundColor($r('app.color.card_white'))
+          .backgroundColor(this.isDarkMode ? '#252540' : $r('app.color.card_white'))
           .borderRadius(8)
           .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
           .alignItems(VerticalAlign.Center)
@@ -504,8 +525,8 @@ export struct LifeServiceTab {
       if (this.songList.length === 0) {
         Row() {
           Text('暂无音乐，请添加本地音频文件')
-            .fontSize(24)
-            .fontColor($r('app.color.text_secondary'))
+            .fontSize(this.fsSmall)
+            .fontColor(this.darkSecondary)
         }
         .width('100%')
         .height(200)
@@ -520,24 +541,24 @@ export struct LifeServiceTab {
             .fill($r('app.color.primary_light'))
           Text('🎵')
             .fontSize(72)
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(this.darkPrimary)
         }
         .width('100%')
         .padding({ top: 24 })
 
         // 歌名 + 歌手
         Text(this.getCurrentSong().title)
-          .fontSize(28)
+          .fontSize(this.fsMid)
           .fontWeight(700)
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(this.darkPrimary)
           .width('100%')
           .textAlign(TextAlign.Center)
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
 
         Text(this.getCurrentSong().artist)
-          .fontSize(24)
-          .fontColor($r('app.color.text_secondary'))
+          .fontSize(this.fsSmall)
+          .fontColor(this.darkSecondary)
           .width('100%')
           .textAlign(TextAlign.Center)
           .maxLines(1)
@@ -545,8 +566,8 @@ export struct LifeServiceTab {
         // 进度条
         Row({ space: 8 }) {
           Text(this.formatDuration(this.progressValue))
-            .fontSize(22)
-            .fontColor($r('app.color.text_secondary'))
+            .fontSize(this.fsTiny)
+            .fontColor(this.darkSecondary)
 
           Slider({
             value: this.progressValue,
@@ -564,8 +585,8 @@ export struct LifeServiceTab {
             })
 
           Text(this.formatDuration(this.getCurrentSong().duration))
-            .fontSize(22)
-            .fontColor($r('app.color.text_secondary'))
+            .fontSize(this.fsTiny)
+            .fontColor(this.darkSecondary)
         }
         .width('100%')
         .padding({ left: 20, right: 20 })
@@ -579,7 +600,7 @@ export struct LifeServiceTab {
           }
           .width(48)
           .height(48)
-          .backgroundColor($r('app.color.card_white'))
+          .backgroundColor(this.isDarkMode ? '#3A3A5C' : $r('app.color.card_white'))
           .onClick(() => {
             this.prevSong();
           })
@@ -609,7 +630,7 @@ export struct LifeServiceTab {
           }
           .width(48)
           .height(48)
-          .backgroundColor($r('app.color.card_white'))
+          .backgroundColor(this.isDarkMode ? '#3A3A5C' : $r('app.color.card_white'))
           .onClick(() => {
             this.nextSong();
           })
@@ -622,7 +643,7 @@ export struct LifeServiceTab {
         Button('本地音乐')
           .width('60%')
           .height(44)
-          .fontSize(24)
+          .fontSize(this.fsSmall)
           .fontColor($r('app.color.primary'))
           .backgroundColor($r('app.color.primary_light'))
           .borderRadius(22)
@@ -634,7 +655,7 @@ export struct LifeServiceTab {
     }
     .width('100%')
     .padding({ left: 20, right: 20, bottom: 32 })
-    .backgroundColor($r('app.color.card_white'))
+    .backgroundColor(this.isDarkMode ? '#252540' : $r('app.color.card_white'))
     .borderRadius(8)
     .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
     .alignItems(HorizontalAlign.Center)
@@ -686,15 +707,15 @@ export struct LifeServiceTab {
       Text(icon)
         .fontSize(40)
       Text(name)
-        .fontSize(26)
-        .fontColor($r('app.color.text_primary'))
+        .fontSize(this.fsBody)
+        .fontColor(this.darkPrimary)
         .maxLines(1)
         .textOverflow({ overflow: TextOverflow.Ellipsis })
     }
     .layoutWeight(1)
     .alignItems(HorizontalAlign.Center)
     .padding({ top: 32, bottom: 32 })
-    .backgroundColor($r('app.color.card_white'))
+    .backgroundColor(this.isDarkMode ? '#252540' : $r('app.color.card_white'))
     .borderRadius(8)
     .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
     .onClick(() => {

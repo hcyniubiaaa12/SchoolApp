@@ -53,6 +53,10 @@ struct Index {
     KVStoreUtil.getThemeMode(this.context).then((mode: string) => {
       AppStorage.Set('isDarkMode', mode === 'dark');
     });
+    // 初始化字体缩放
+    KVStoreUtil.getFontSize(this.context).then((size: number) => {
+      AppStorage.Set('fontScale', size / DEFAULT_FONT_SIZE);
+    });
   }
 
   onPageShow(): void {
@@ -195,6 +199,9 @@ struct Index {
             onSettingClick: () => {
               // 跳转设置页（NavDestination 内）
               this.navPathStack.pushPath({ name: NAV_SETTING, param: { type: 'setting' } as PageTypeParam });
+            },
+            onTabSwitch: (tabIndex: number) => {
+              this.currentTab = tabIndex;
             }
           })
         }
@@ -399,6 +406,7 @@ struct SettingPage {
     if (this.pageType === 'setting') {
       this.themeMode = await KVStoreUtil.getThemeMode(this.context);
       this.fontSize = await KVStoreUtil.getFontSize(this.context);
+      AppStorage.Set('fontScale', this.fontSize / DEFAULT_FONT_SIZE);
     }
   }
 
@@ -488,6 +496,7 @@ struct SettingPage {
             .onChange((value: number) => {
               this.fontSize = Math.round(value);
               KVStoreUtil.setFontSize(this.context, this.fontSize);
+              AppStorage.Set('fontScale', this.fontSize / DEFAULT_FONT_SIZE);
             })
         }
 

@@ -66,10 +66,24 @@ export struct CampusInfoTab {
   @Prop @Watch('onDarkChange') isDarkMode: boolean = false;
   @State darkPrimary: string = '#1D2129';
   @State darkSecondary: string = '#86909C';
+  @StorageLink('fontScale') @Watch('onFontScaleChange') fontScale: number = 1.0;
+  @State fsTitle: number = 30;
+  @State fsMid: number = 28;
+  @State fsBody: number = 26;
+  @State fsSmall: number = 24;
+  @State fsTiny: number = 22;
 
   private onDarkChange(): void {
     this.darkPrimary = this.isDarkMode ? '#E8E8E8' : '#1D2129';
     this.darkSecondary = this.isDarkMode ? '#A0A0A0' : '#86909C';
+  }
+
+  private onFontScaleChange(): void {
+    this.fsTitle = Math.round(30 * this.fontScale);
+    this.fsMid = Math.round(28 * this.fontScale);
+    this.fsBody = Math.round(26 * this.fontScale);
+    this.fsSmall = Math.round(24 * this.fontScale);
+    this.fsTiny = Math.round(22 * this.fontScale);
   }
   @State currentTagIndex: number = 0;
   @State announcements: AnnouncementItem[] = [];
@@ -151,7 +165,7 @@ export struct CampusInfoTab {
         // 顶部导航栏
         Row() {
           Text('校园信息')
-            .fontSize(30)
+            .fontSize(this.fsTitle)
             .fontWeight(600)
             .fontColor(this.darkPrimary)
             .maxLines(1)
@@ -167,10 +181,10 @@ export struct CampusInfoTab {
           Row({ space: 12 }) {
             ForEach(this.tags, (tag: TagItem, index: number) => {
               Text(tag.name)
-                .fontSize(22)
+                .fontSize(this.fsTiny)
                 .fontColor(this.currentTagIndex === index ? '#FFFFFF' : this.darkPrimary)
                 .padding({ left: 16, right: 16, top: 6, bottom: 6 })
-                .backgroundColor(this.currentTagIndex === index ? $r('app.color.primary') : $r('app.color.background'))
+                .backgroundColor(this.currentTagIndex === index ? $r('app.color.primary') : (this.isDarkMode ? '#3A3A5C' : $r('app.color.background')))
                 .borderRadius(20)
                 .onClick(() => {
                   this.currentTagIndex = index;
@@ -227,13 +241,13 @@ export struct CampusInfoTab {
                   .height(64)
                   .fill($r('app.color.primary_light'))
                 SymbolGlyph($r('sys.symbol.bell'))
-                  .fontSize(24)
+                  .fontSize(this.fsSmall)
               }
 
               Column({ space: 4 }) {
                 Row() {
                   Text(item.title)
-                    .fontSize(26)
+                    .fontSize(this.fsBody)
                     .fontWeight(600)
                     .fontColor(this.darkPrimary)
                     .maxLines(1)
@@ -249,13 +263,13 @@ export struct CampusInfoTab {
                 .width('100%')
 
                 Text(item.source + ' · ' + item.publishTime)
-                  .fontSize(22)
+                  .fontSize(this.fsTiny)
                   .fontColor(this.darkSecondary)
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
 
                 Text(item.summary)
-                  .fontSize(24)
+                  .fontSize(this.fsSmall)
                   .fontColor(this.darkSecondary)
                   .maxLines(2)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -299,25 +313,25 @@ export struct CampusInfoTab {
                   .height(64)
                   .fill($r('app.color.primary_light'))
                 SymbolGlyph($r('sys.symbol.doc_text'))
-                  .fontSize(24)
+                  .fontSize(this.fsSmall)
               }
 
               Column({ space: 4 }) {
                 Text(item.title)
-                  .fontSize(26)
+                  .fontSize(this.fsBody)
                   .fontWeight(600)
                   .fontColor(this.darkPrimary)
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
 
                 Text(item.source + ' · ' + item.publishTime)
-                  .fontSize(22)
+                  .fontSize(this.fsTiny)
                   .fontColor(this.darkSecondary)
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
 
                 Text(item.summary)
-                  .fontSize(24)
+                  .fontSize(this.fsSmall)
                   .fontColor(this.darkSecondary)
                   .maxLines(2)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -354,7 +368,7 @@ export struct CampusInfoTab {
           Column({ space: 8 }) {
             Row() {
               Text(item.title)
-                .fontSize(26)
+                .fontSize(this.fsBody)
                 .fontWeight(600)
                 .fontColor(this.darkPrimary)
                 .layoutWeight(1)
@@ -371,22 +385,22 @@ export struct CampusInfoTab {
             .width('100%')
 
             Text(item.organizer + ' · ' + item.time)
-              .fontSize(22)
+              .fontSize(this.fsTiny)
               .fontColor(this.darkSecondary)
               .maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
 
             Row({ space: 4 }) {
               SymbolGlyph($r('sys.symbol.pin'))
-                .fontSize(24)
+                .fontSize(this.fsSmall)
               Text(item.location)
-                .fontSize(22)
+                .fontSize(this.fsTiny)
                 .fontColor($r('app.color.primary'))
                 .maxLines(1)
             }
 
             Text(item.summary)
-              .fontSize(24)
+              .fontSize(this.fsSmall)
               .fontColor(this.darkSecondary)
               .maxLines(2)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -414,7 +428,7 @@ export struct CampusInfoTab {
         ForEach(this.lectureData, (item: LectureItem) => {
           Column({ space: 8 }) {
             Text(item.title)
-              .fontSize(26)
+              .fontSize(this.fsBody)
               .fontWeight(600)
               .fontColor(this.darkPrimary)
               .width('100%')
@@ -423,9 +437,9 @@ export struct CampusInfoTab {
 
             Row({ space: 8 }) {
               SymbolGlyph($r('sys.symbol.mic'))
-                .fontSize(24)
+                .fontSize(this.fsSmall)
               Text(item.speaker)
-                .fontSize(22)
+                .fontSize(this.fsTiny)
                 .fontColor($r('app.color.primary'))
                 .layoutWeight(1)
                 .maxLines(1)
@@ -436,23 +450,23 @@ export struct CampusInfoTab {
             Row({ space: 16 }) {
               Row({ space: 4 }) {
                 SymbolGlyph($r('sys.symbol.clock'))
-                  .fontSize(24)
+                  .fontSize(this.fsSmall)
                 Text(item.time)
-                  .fontSize(22)
+                  .fontSize(this.fsTiny)
                   .fontColor(this.darkSecondary)
               }
               Row({ space: 4 }) {
                 SymbolGlyph($r('sys.symbol.pin'))
-                  .fontSize(24)
+                  .fontSize(this.fsSmall)
                 Text(item.location)
-                  .fontSize(22)
+                  .fontSize(this.fsTiny)
                   .fontColor(this.darkSecondary)
               }
             }
             .width('100%')
 
             Text(item.summary)
-              .fontSize(24)
+              .fontSize(this.fsSmall)
               .fontColor(this.darkSecondary)
               .maxLines(2)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -519,11 +533,11 @@ export struct CampusInfoTab {
         if (this.selectedBuilding >= 0 && this.selectedBuilding < this.buildings.length) {
           Column({ space: 8 }) {
             Text(this.buildings[this.selectedBuilding].name)
-              .fontSize(28)
+              .fontSize(this.fsMid)
               .fontWeight(700)
               .fontColor($r('app.color.primary'))
             Text(this.buildings[this.selectedBuilding].description)
-              .fontSize(24)
+              .fontSize(this.fsSmall)
               .fontColor(this.darkSecondary)
               .maxLines(3)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -540,7 +554,7 @@ export struct CampusInfoTab {
         Row() {
           TextInput({ placeholder: '搜索校园建筑...', text: this.mapSearchText })
             .height(44)
-            .fontSize(24)
+            .fontSize(this.fsSmall)
             .placeholderColor('#86909C')
             .borderRadius(8)
             .backgroundColor(this.isDarkMode ? '#1A1A2E' : '#F5F7FA')
@@ -551,7 +565,7 @@ export struct CampusInfoTab {
 
           Button('搜索')
             .height(44)
-            .fontSize(24)
+            .fontSize(this.fsSmall)
             .fontColor('#FFFFFF')
             .backgroundColor($r('app.color.primary'))
             .borderRadius(8)
@@ -581,7 +595,7 @@ export struct CampusInfoTab {
                     .height(44)
                     .fill(this.selectedBuilding === index ? $r('app.color.primary_light') : $r('app.color.background'))
                   Text(b.name.substring(0, 1))
-                    .fontSize(22)
+                    .fontSize(this.fsTiny)
                     .fontColor(this.selectedBuilding === index ? '#1677FF' : this.darkSecondary)
                 }
                 Text(b.name)
@@ -604,7 +618,7 @@ export struct CampusInfoTab {
           Button('查看建筑详情')
             .width('100%')
             .height(48)
-            .fontSize(26)
+            .fontSize(this.fsBody)
             .fontColor('#FFFFFF')
             .backgroundColor($r('app.color.primary'))
             .borderRadius(8)
@@ -646,7 +660,7 @@ export struct CampusInfoTab {
         }
       }
       Text(message)
-        .fontSize(28)
+        .fontSize(this.fsMid)
         .fontColor(this.darkSecondary)
     }
     .width('100%')
@@ -665,12 +679,12 @@ export struct CampusInfoTab {
         Column({ space: 16 }) {
           Row() {
             Text('公告详情')
-              .fontSize(28)
+              .fontSize(this.fsMid)
               .fontWeight(700)
               .fontColor(this.darkPrimary)
               .layoutWeight(1)
             Text('关闭')
-              .fontSize(24)
+              .fontSize(this.fsSmall)
               .fontColor($r('app.color.primary'))
               .onClick(() => {
                 this.closeDetail();
@@ -690,16 +704,16 @@ export struct CampusInfoTab {
 
           Row({ space: 8 }) {
             Text(this.selectedAnnouncement!.source)
-              .fontSize(22)
+              .fontSize(this.fsTiny)
               .fontColor($r('app.color.primary'))
             Text(this.selectedAnnouncement!.publishTime)
-              .fontSize(22)
+              .fontSize(this.fsTiny)
               .fontColor(this.darkSecondary)
           }
           .width('100%')
 
           Text(this.selectedAnnouncement!.category)
-            .fontSize(22)
+            .fontSize(this.fsTiny)
             .fontColor($r('app.color.warm_orange'))
             .padding({ left: 8, right: 8, top: 2, bottom: 2 })
             .backgroundColor('#FFF3E0')
@@ -708,7 +722,7 @@ export struct CampusInfoTab {
           Divider().color($r('app.color.border'))
 
           Text(this.selectedAnnouncement!.content)
-            .fontSize(26)
+            .fontSize(this.fsBody)
             .fontColor(this.darkPrimary)
             .lineHeight(22)
             .width('100%')
@@ -717,9 +731,9 @@ export struct CampusInfoTab {
             if (this.selectedAnnouncement!.isFavorited) {
               Row({ space: 4 }) {
                 SymbolGlyph($r('sys.symbol.heart_fill'))
-                  .fontSize(22)
+                  .fontSize(this.fsTiny)
                 Text('已收藏')
-                  .fontSize(24)
+                  .fontSize(this.fsSmall)
                   .fontColor($r('app.color.primary'))
               }
               .onClick(() => {
@@ -730,9 +744,9 @@ export struct CampusInfoTab {
             } else {
               Row({ space: 4 }) {
                 SymbolGlyph($r('sys.symbol.heart'))
-                  .fontSize(22)
+                  .fontSize(this.fsTiny)
                 Text('收藏')
-                  .fontSize(24)
+                  .fontSize(this.fsSmall)
                   .fontColor($r('app.color.primary'))
               }
               .onClick(() => {
@@ -744,9 +758,9 @@ export struct CampusInfoTab {
 
             Row({ space: 4 }) {
               SymbolGlyph($r('sys.symbol.share'))
-                .fontSize(22)
+                .fontSize(this.fsTiny)
               Text('分享')
-                .fontSize(24)
+                .fontSize(this.fsSmall)
                 .fontColor($r('app.color.primary'))
             }
             .onClick(() => {

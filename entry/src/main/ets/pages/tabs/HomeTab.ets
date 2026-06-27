@@ -23,10 +23,25 @@ export struct HomeTab {
   @Prop @Watch('onDarkChange') isDarkMode: boolean = false;
   @State darkPrimary: string = '#1D2129';
   @State darkSecondary: string = '#86909C';
+  @StorageLink('fontScale') @Watch('onFontScaleChange') fontScale: number = 1.0;
+  @State fsTitle: number = 30;
+  @State fsMid: number = 28;
+  @State fsBody: number = 26;
+  @State fsSmall: number = 24;
+  @State fsTiny: number = 22;
 
   private onDarkChange(): void {
     this.darkPrimary = this.isDarkMode ? '#E8E8E8' : '#1D2129';
     this.darkSecondary = this.isDarkMode ? '#A0A0A0' : '#86909C';
+  }
+
+  // 字体缩放值变化时更新所有字体大小
+  private onFontScaleChange(): void {
+    this.fsTitle = Math.round(30 * this.fontScale);
+    this.fsMid = Math.round(28 * this.fontScale);
+    this.fsBody = Math.round(26 * this.fontScale);
+    this.fsSmall = Math.round(24 * this.fontScale);
+    this.fsTiny = Math.round(22 * this.fontScale);
   }
   @Prop username: string = '用户';
   @Prop swiperIndex: number = 0;
@@ -84,7 +99,7 @@ export struct HomeTab {
         // 1. 导航栏（规范：标题「校园助手」30sp 鸿蒙蓝 600 + 右侧消息铃铛）
         Row() {
           Text('校园助手')
-            .fontSize(30)
+            .fontSize(this.fsTitle)
             .fontWeight(600)
             .fontColor($r('app.color.primary'))
             .layoutWeight(1)
@@ -94,7 +109,7 @@ export struct HomeTab {
           // 铃铛图标 + 红点
           Stack() {
             SymbolGlyph($r('sys.symbol.bell'))
-              .fontSize(24)
+              .fontSize(this.fsSmall)
             Circle()
               .width(8)
               .height(8)
@@ -117,16 +132,16 @@ export struct HomeTab {
         // 2. 搜索栏
         Row() {
           SymbolGlyph($r('sys.symbol.magnifyingglass'))
-            .fontSize(24)
+            .fontSize(this.fsSmall)
             .margin({ right: 8 })
           Text('搜索校园信息/课程/美食')
-            .fontSize(24)
+            .fontSize(this.fsSmall)
             .fontColor(this.darkSecondary)
             .layoutWeight(1)
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
           SymbolGlyph($r('sys.symbol.mic'))
-            .fontSize(22)
+            .fontSize(this.fsTiny)
             .margin({ left: 8 })
         }
         .width('100%')
@@ -155,11 +170,11 @@ export struct HomeTab {
                 })
               Column({ space: 8 }) {
                 Text('2026春季学术周启幕')
-                  .fontSize(28)
+                  .fontSize(this.fsMid)
                   .fontWeight(700)
                   .fontColor('#FFFFFF')
                 Text('精彩讲座即将开启')
-                  .fontSize(24)
+                  .fontSize(this.fsSmall)
                   .fontColor('#FFFFFFCC')
               }
               .alignItems(HorizontalAlign.Start)
@@ -179,11 +194,11 @@ export struct HomeTab {
                 })
               Column({ space: 8 }) {
                 Text('校园运动会报名')
-                  .fontSize(28)
+                  .fontSize(this.fsMid)
                   .fontWeight(700)
                   .fontColor('#FFFFFF')
                 Text('5月15日开赛')
-                  .fontSize(24)
+                  .fontSize(this.fsSmall)
                   .fontColor('#FFFFFFCC')
               }
               .alignItems(HorizontalAlign.Start)
@@ -225,7 +240,7 @@ export struct HomeTab {
                     }
                   }
                   Text(this.getEntryName(rowIdx * 3 + colIdx))
-                    .fontSize(24)
+                    .fontSize(this.fsSmall)
                     .fontColor(this.darkPrimary)
                     .maxLines(1)
                 }
@@ -252,12 +267,12 @@ export struct HomeTab {
         Column() {
           Row() {
             Text('校园公告')
-              .fontSize(28)
+              .fontSize(this.fsMid)
               .fontWeight(600)
               .fontColor($r('app.color.primary'))
             Blank()
             Text('更多 >')
-              .fontSize(24)
+              .fontSize(this.fsSmall)
               .fontColor(this.darkSecondary)
           }
           .width('100%')
@@ -275,15 +290,15 @@ export struct HomeTab {
 
                 Column({ space: 4 }) {
                   Text(item.title)
-                    .fontSize(26)
+                    .fontSize(this.fsBody)
                     .fontColor(this.darkPrimary)
                     .maxLines(1)
                     .textOverflow({ overflow: TextOverflow.Ellipsis })
                   Text(item.time)
-                    .fontSize(22)
+                    .fontSize(this.fsTiny)
                     .fontColor(this.darkSecondary)
                   Text(item.content)
-                    .fontSize(24)
+                    .fontSize(this.fsSmall)
                     .fontColor(this.darkSecondary)
                     .maxLines(1)
                     .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -310,15 +325,15 @@ export struct HomeTab {
         Column() {
           Row() {
             Text('今日课程')
-              .fontSize(28)
+              .fontSize(this.fsMid)
               .fontWeight(600)
               .fontColor(this.darkPrimary)
             Text('（2）')
-              .fontSize(24)
+              .fontSize(this.fsSmall)
               .fontColor(this.darkSecondary)
             Blank()
             Text('完整课程 >')
-              .fontSize(24)
+              .fontSize(this.fsSmall)
               .fontColor(this.darkSecondary)
           }
           .width('100%')
@@ -327,7 +342,7 @@ export struct HomeTab {
           // 课程 1
           Row() {
             Text('10:00')
-              .fontSize(24)
+              .fontSize(this.fsSmall)
               .fontColor(this.darkPrimary)
               .width(60)
               .textAlign(TextAlign.Center)
@@ -341,13 +356,13 @@ export struct HomeTab {
 
             Column({ space: 4 }) {
               Text('高级人工智能')
-                .fontSize(26)
+                .fontSize(this.fsBody)
                 .fontWeight(500)
                 .fontColor(this.darkPrimary)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
               Text('信软楼302（数字多媒体教室）')
-                .fontSize(24)
+                .fontSize(this.fsSmall)
                 .fontColor(this.darkSecondary)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -356,7 +371,7 @@ export struct HomeTab {
             .layoutWeight(1)
 
             Text('必修')
-              .fontSize(22)
+              .fontSize(this.fsTiny)
               .fontColor($r('app.color.warm_orange'))
               .padding({ left: 8, right: 8, top: 2, bottom: 2 })
               .borderRadius(4)
@@ -370,7 +385,7 @@ export struct HomeTab {
           // 课程 2
           Row() {
             Text('14:00')
-              .fontSize(24)
+              .fontSize(this.fsSmall)
               .fontColor(this.darkPrimary)
               .width(60)
               .textAlign(TextAlign.Center)
@@ -384,13 +399,13 @@ export struct HomeTab {
 
             Column({ space: 4 }) {
               Text('创业管理学')
-                .fontSize(26)
+                .fontSize(this.fsBody)
                 .fontWeight(500)
                 .fontColor(this.darkPrimary)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
               Text('公教楼508')
-                .fontSize(24)
+                .fontSize(this.fsSmall)
                 .fontColor(this.darkSecondary)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -399,7 +414,7 @@ export struct HomeTab {
             .layoutWeight(1)
 
             Text('选修')
-              .fontSize(22)
+              .fontSize(this.fsTiny)
               .fontColor($r('app.color.fresh_green'))
               .padding({ left: 8, right: 8, top: 2, bottom: 2 })
               .borderRadius(4)
@@ -428,7 +443,7 @@ export struct HomeTab {
               .maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
             Text('深圳 · 紫外线较强')
-              .fontSize(24)
+              .fontSize(this.fsSmall)
               .fontColor(this.darkSecondary)
               .maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -437,7 +452,7 @@ export struct HomeTab {
           .layoutWeight(1)
 
           Text('未来3天 >')
-            .fontSize(24)
+            .fontSize(this.fsSmall)
             .fontColor(this.darkSecondary)
         }
         .width('100%')
