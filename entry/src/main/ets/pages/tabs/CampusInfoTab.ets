@@ -176,7 +176,7 @@ export struct CampusInfoTab {
               Text(tag.name)
                 .fontSize(this.fsTiny)
                 .fontColor(this.currentTagIndex === index ? '#FFFFFF' : this.isDarkMode ? '#E8E8E8' : '#1D2129')
-                .padding({ left: 16, right: 16, top: 6, bottom: 6 })
+                .padding({ left: 16, right: 16, top: 8, bottom: 12 })
                 .backgroundColor(this.currentTagIndex === index ? $r('app.color.primary') : (this.isDarkMode ? '#3A3A5C' : $r('app.color.background')))
                 .borderRadius(20)
                 .onClick(() => {
@@ -188,6 +188,7 @@ export struct CampusInfoTab {
         }
         .scrollBar(BarState.On)
         .scrollable(ScrollDirection.Horizontal)
+        .height(52)
         .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
 
         // 内容区

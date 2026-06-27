@@ -304,7 +304,7 @@ export struct StudyTab {
                 .fontSize(this.fsTiny)
                 .fontColor(this.currentTagIndex === index ? '#FFFFFF' : this.isDarkMode ? '#E8E8E8' : '#1D2129')
                 .fontWeight(this.currentTagIndex === index ? 600 : 400)
-                .padding({ left: 16, right: 16, top: 6, bottom: 6 })
+                .padding({ left: 16, right: 16, top: 8, bottom: 12 })
                 .backgroundColor(this.currentTagIndex === index ? $r('app.color.primary') : this.isDarkMode ? '#3A3A5C' : '#F5F7FA')
                 .borderRadius(8)
                 .maxLines(1)
@@ -318,8 +318,8 @@ export struct StudyTab {
         }
         .scrollBar(BarState.On)
         .scrollable(ScrollDirection.Horizontal)
+        .height(52)
         .width('100%')
-        .padding({ top: 12, bottom: 12 })
         .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
 
         // 标签内容区
