@@ -69,6 +69,27 @@ export struct MineTab {
       });
   }
 
+  // 根据功能名称返回图标背景色
+  private getIconBg(name: string): Resource {
+    if (['我的收藏', '我的课程', '我的成绩'].indexOf(name) !== -1) {
+      return $r('app.color.card_bg_blue');
+    }
+    if (['我的待办', '失物发布', '意见反馈'].indexOf(name) !== -1) {
+      return $r('app.color.card_bg_orange');
+    }
+    return $r('app.color.card_bg_green');
+  }
+
+  private getSettingIconBg(name: string): Resource {
+    if (name === '深色模式' || name === '字体大小') {
+      return $r('app.color.card_bg_blue');
+    }
+    if (name === '通知设置') {
+      return $r('app.color.card_bg_orange');
+    }
+    return $r('app.color.card_bg_green');
+  }
+
   // 退出登录：仅清除登录态，保留注册数据供下次登录
   private doLogout(): void {
     try {
@@ -113,17 +134,17 @@ export struct MineTab {
 
       Scroll() {
         Column({ space: 16 }) {
-          // 个人信息卡片
+          // 个人信息卡片（蓝色顶部色条 + 蓝底白字头像）
           Row({ space: 16 }) {
-            // 头像 — 圆形 80px
+            // 头像 — 圆形 80px（蓝色实底白字）
             Stack() {
               Circle()
                 .width(80)
                 .height(80)
-                .fill($r('app.color.primary_light'))
+                .fill($r('app.color.primary'))
               Text(this.username.charAt(0))
                 .fontSize(32)
-                .fontColor($r('app.color.primary'))
+                .fontColor('#FFFFFF')
             }
             .onClick(() => {
               if (this.onProfileEditClick) {
@@ -162,24 +183,44 @@ export struct MineTab {
           .padding(20)
           .backgroundColor(this.isDarkMode ? '#252540' : $r('app.color.card_white'))
           .borderRadius(8)
-          .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
+          .border({ width: { top: 3 }, color: $r('app.color.primary') })
+          .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
           .onClick(() => {
             this.navigateTo('pages/mine/ProfileEditPage');
           })
 
-          // 功能列表
+          // 功能列表（灰色顶部色条 + 灰色圆点标题）
           Column() {
+            Row() {
+              Circle()
+                .width(6)
+                .height(6)
+                .fill($r('app.color.text_secondary'))
+              Text('我的功能')
+                .fontSize(this.fsMid)
+                .fontWeight(600)
+                .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
+                .margin({ left: 6 })
+            }
+            .width('100%')
+            .padding({ left: 16, top: 16, bottom: 8 })
+
             ForEach(this.functionList, (item: FunctionItem) => {
               Row() {
-                if (item.symbol) {
-                  SymbolGlyph(item.symbol)
-                    .fontSize(this.fsSmall)
-                    .width(32)
-                } else {
-                  Text(item.icon)
-                    .fontSize(this.fsSmall)
-                    .width(32)
-                    .textAlign(TextAlign.Center)
+                // 图标容器（分类色背景）
+                Stack() {
+                  Circle()
+                    .width(28)
+                    .height(28)
+                    .fill(this.getIconBg(item.name))
+                  if (item.symbol) {
+                    SymbolGlyph(item.symbol)
+                      .fontSize(this.fsTiny)
+                  } else {
+                    Text(item.icon)
+                      .fontSize(this.fsTiny)
+                      .textAlign(TextAlign.Center)
+                  }
                 }
 
                 Text(item.name)
@@ -214,21 +255,41 @@ export struct MineTab {
           .width('100%')
           .backgroundColor(this.isDarkMode ? '#252540' : $r('app.color.card_white'))
           .borderRadius(8)
-          .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
+          .border({ width: { top: 3 }, color: $r('app.color.text_secondary') })
+          .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
 
-          // 设置模块
+          // 设置模块（灰色顶部色条 + 灰色圆点标题）
           Column() {
+            Row() {
+              Circle()
+                .width(6)
+                .height(6)
+                .fill($r('app.color.text_secondary'))
+              Text('设置')
+                .fontSize(this.fsMid)
+                .fontWeight(600)
+                .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
+                .margin({ left: 6 })
+            }
+            .width('100%')
+            .padding({ left: 16, top: 16, bottom: 8 })
+
             ForEach(this.settingList, (item: FunctionItem) => {
               Row() {
-                if (item.symbol) {
-                  SymbolGlyph(item.symbol)
-                    .fontSize(this.fsSmall)
-                    .width(32)
-                } else {
-                  Text(item.icon)
-                    .fontSize(this.fsSmall)
-                    .width(32)
-                    .textAlign(TextAlign.Center)
+                // 图标容器（分类色背景）
+                Stack() {
+                  Circle()
+                    .width(28)
+                    .height(28)
+                    .fill(this.getSettingIconBg(item.name))
+                  if (item.symbol) {
+                    SymbolGlyph(item.symbol)
+                      .fontSize(this.fsTiny)
+                  } else {
+                    Text(item.icon)
+                      .fontSize(this.fsTiny)
+                      .textAlign(TextAlign.Center)
+                  }
                 }
 
                 Text(item.name)
@@ -275,7 +336,8 @@ export struct MineTab {
           .width('100%')
           .backgroundColor(this.isDarkMode ? '#252540' : $r('app.color.card_white'))
           .borderRadius(8)
-          .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
+          .border({ width: { top: 3 }, color: $r('app.color.text_secondary') })
+          .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
 
           // 退出登录按钮
           Button('退出登录')
