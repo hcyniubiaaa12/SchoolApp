@@ -11,6 +11,8 @@ struct Login {
   @State studentId: string = '';
   @State password: string = '';
   @State showPassword: boolean = false;
+  @State isIdFocused: boolean = false;
+  @State isPwdFocused: boolean = false;
 
   private context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
 
@@ -102,7 +104,7 @@ struct Login {
           Text('欢迎回来')
             .fontSize(24)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#333333')
+            .fontColor($r('app.color.text_primary'))
 
           // 黄色鸭子表情
           Text('🦆')
@@ -112,7 +114,7 @@ struct Login {
 
         Text('请登录您的高校校园助手账号')
           .fontSize(14)
-          .fontColor('#666666')
+          .fontColor($r('app.color.text_secondary'))
       }
       .width('100%')
       .padding({ top: 60, left: 24, right: 24 })
@@ -120,43 +122,45 @@ struct Login {
 
       // 表单区域
       Column({ space: 20 }) {
-        // 手机号/学号输入框 - 带标签
+        // 手机号/学号输入框 - 带标签（聚焦边框变蓝）
         Column({ space: 8 }) {
           Text('手机号 / 学号')
             .fontSize(14)
-            .fontColor('#666666')
+            .fontColor($r('app.color.text_secondary'))
             .width('100%')
 
           Row() {
             Image($r('app.media.ic_account'))
               .width(20)
               .height(20)
-              .fillColor('#999999')
+              .fillColor(this.isIdFocused ? $r('app.color.primary') : $r('app.color.text_secondary'))
               .margin({ right: 10 })
 
             TextInput({ placeholder: '请输入您的账号' })
               .fontSize(16)
-              .fontColor('#333333')
+              .fontColor($r('app.color.text_primary'))
               .backgroundColor(Color.Transparent)
               .border({ width: 0 })
               .layoutWeight(1)
               .onChange((value: string) => { this.studentId = value; })
+              .onFocus(() => { this.isIdFocused = true; })
+              .onBlur(() => { this.isIdFocused = false; })
           }
           .height(48)
           .padding({ left: 16, right: 16 })
           .borderRadius(8)
           .backgroundColor($r('app.color.card_white'))
-          .border({ width: 1, color: '#E0E0E0', radius: 8 })
+          .border({ width: 1, color: this.isIdFocused ? $r('app.color.primary') : $r('app.color.border'), radius: 8 })
         }
         .width('100%')
         .alignItems(HorizontalAlign.Start)
 
-        // 密码输入框 - 带标签
+        // 密码输入框 - 带标签（聚焦边框变蓝）
         Column({ space: 8 }) {
           Row() {
             Text('密码')
               .fontSize(14)
-              .fontColor('#666666')
+              .fontColor($r('app.color.text_secondary'))
 
             Blank()
 
@@ -173,29 +177,31 @@ struct Login {
             Image($r('app.media.ic_lock'))
               .width(20)
               .height(20)
-              .fillColor('#999999')
+              .fillColor(this.isPwdFocused ? $r('app.color.primary') : $r('app.color.text_secondary'))
               .margin({ right: 10 })
 
             TextInput({ placeholder: '请输入您的密码' })
               .fontSize(16)
-              .fontColor('#333333')
+              .fontColor($r('app.color.text_primary'))
               .backgroundColor(Color.Transparent)
               .border({ width: 0 })
               .layoutWeight(1)
               .type(this.showPassword ? InputType.Normal : InputType.Password)
               .onChange((value: string) => { this.password = value; })
+              .onFocus(() => { this.isPwdFocused = true; })
+              .onBlur(() => { this.isPwdFocused = false; })
 
             // 显示/隐藏密码
             SymbolGlyph(this.showPassword ? $r('sys.symbol.eye') : $r('sys.symbol.eye_slash'))
               .fontSize(20)
-              .fontColor([this.showPassword ? $r('app.color.primary') : '#999999'])
+              .fontColor([this.showPassword ? $r('app.color.primary') : $r('app.color.text_secondary')])
               .onClick(() => { this.showPassword = !this.showPassword; })
           }
           .height(48)
           .padding({ left: 16, right: 16 })
           .borderRadius(8)
           .backgroundColor($r('app.color.card_white'))
-          .border({ width: 1, color: '#E0E0E0', radius: 8 })
+          .border({ width: 1, color: this.isPwdFocused ? $r('app.color.primary') : $r('app.color.border'), radius: 8 })
         }
         .width('100%')
         .alignItems(HorizontalAlign.Start)
@@ -222,7 +228,7 @@ struct Login {
       Column({ space: 12 }) {
         Text('第三方登录')
           .fontSize(12)
-          .fontColor('#999999')
+          .fontColor($r('app.color.text_secondary'))
 
         Row({ space: 20 }) {
           // 微信图标
@@ -254,7 +260,7 @@ struct Login {
       Row() {
         Text('还没有账号？')
           .fontSize(14)
-          .fontColor('#666666')
+          .fontColor($r('app.color.text_secondary'))
         Text('立即注册')
           .fontSize(14)
           .fontColor($r('app.color.primary'))

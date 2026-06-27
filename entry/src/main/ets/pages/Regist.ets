@@ -21,6 +21,10 @@ struct Regist {
   @State isCodeSending: boolean = false;
   @State countdown: number = 60;
   @State codeVisible: boolean = false;  // 是否显示验证码提示文字
+  @State isPhoneFocused: boolean = false;
+  @State isCodeFocused: boolean = false;
+  @State isPwdFocused: boolean = false;
+  @State isConfirmPwdFocused: boolean = false;
 
   private timer: number = -1;
   private context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
@@ -174,12 +178,12 @@ struct Regist {
 
       // 表单区域
       Column({ space: 16 }) {
-        // 手机号输入框
+        // 手机号输入框（聚焦边框变蓝）
         Row() {
           Image($r('app.media.ic_account'))
             .width(20)
             .height(20)
-            .fillColor($r('app.color.text_secondary'))
+            .fillColor(this.isPhoneFocused ? $r('app.color.primary') : $r('app.color.text_secondary'))
             .margin({ right: 8 })
           TextInput({ placeholder: '请输入手机号' })
             .fontSize(26)
@@ -190,17 +194,19 @@ struct Regist {
             .type(InputType.Number)
             .maxLength(11)
             .onChange((value: string) => { this.phone = value; })
+            .onFocus(() => { this.isPhoneFocused = true; })
+            .onBlur(() => { this.isPhoneFocused = false; })
         }
         .height(48)
         .padding({ left: 16, right: 16 })
         .borderRadius(8)
         .backgroundColor($r('app.color.card_white'))
-        .border({ width: 1, color: $r('app.color.border'), radius: 8 })
+        .border({ width: 1, color: this.isPhoneFocused ? $r('app.color.primary') : $r('app.color.border'), radius: 8 })
 
-        // 验证码输入框 + 获取验证码按钮
+        // 验证码输入框 + 获取验证码按钮（聚焦边框变蓝）
         Row() {
           SymbolGlyph($r('sys.symbol.message'))
-            .fontColor([$r('app.color.text_secondary')])
+            .fontColor([this.isCodeFocused ? $r('app.color.primary') : $r('app.color.text_secondary')])
             .fontSize(20)
             .margin({ right: 8 })
           TextInput({ placeholder: '输入6位验证码' })
@@ -212,6 +218,8 @@ struct Regist {
             .type(InputType.Number)
             .maxLength(6)
             .onChange((value: string) => { this.inputCode = value; })
+            .onFocus(() => { this.isCodeFocused = true; })
+            .onBlur(() => { this.isCodeFocused = false; })
 
           // 获取验证码按钮
           Button(this.codeBtnText)
@@ -228,7 +236,7 @@ struct Regist {
         .padding({ left: 16, right: 8 })
         .borderRadius(8)
         .backgroundColor($r('app.color.card_white'))
-        .border({ width: 1, color: $r('app.color.border'), radius: 8 })
+        .border({ width: 1, color: this.isCodeFocused ? $r('app.color.primary') : $r('app.color.border'), radius: 8 })
 
         // B方案：显示本地生成的验证码
         if (this.codeVisible) {
@@ -238,12 +246,12 @@ struct Regist {
             .fontWeight(600)
         }
 
-        // 密码输入框
+        // 密码输入框（聚焦边框变蓝）
         Row() {
           Image($r('app.media.ic_lock'))
             .width(20)
             .height(20)
-            .fillColor($r('app.color.text_secondary'))
+            .fillColor(this.isPwdFocused ? $r('app.color.primary') : $r('app.color.text_secondary'))
             .margin({ right: 8 })
           TextInput({ placeholder: '请输入6-20位密码' })
             .fontSize(26)
@@ -253,6 +261,8 @@ struct Regist {
             .layoutWeight(1)
             .type(this.showPassword ? InputType.Normal : InputType.Password)
             .onChange((value: string) => { this.password = value; })
+            .onFocus(() => { this.isPwdFocused = true; })
+            .onBlur(() => { this.isPwdFocused = false; })
 
           // 密码显隐按钮
           if (this.showPassword) {
@@ -271,14 +281,14 @@ struct Regist {
         .padding({ left: 16, right: 16 })
         .borderRadius(8)
         .backgroundColor($r('app.color.card_white'))
-        .border({ width: 1, color: $r('app.color.border'), radius: 8 })
+        .border({ width: 1, color: this.isPwdFocused ? $r('app.color.primary') : $r('app.color.border'), radius: 8 })
 
-        // 确认密码输入框
+        // 确认密码输入框（聚焦边框变蓝）
         Row() {
           Image($r('app.media.ic_lock'))
             .width(20)
             .height(20)
-            .fillColor($r('app.color.text_secondary'))
+            .fillColor(this.isConfirmPwdFocused ? $r('app.color.primary') : $r('app.color.text_secondary'))
             .margin({ right: 8 })
           TextInput({ placeholder: '请再次输入密码' })
             .fontSize(26)
@@ -288,6 +298,8 @@ struct Regist {
             .layoutWeight(1)
             .type(this.showConfirmPassword ? InputType.Normal : InputType.Password)
             .onChange((value: string) => { this.confirmPassword = value; })
+            .onFocus(() => { this.isConfirmPwdFocused = true; })
+            .onBlur(() => { this.isConfirmPwdFocused = false; })
 
           if (this.showConfirmPassword) {
             SymbolGlyph($r('sys.symbol.eye'))
@@ -305,7 +317,7 @@ struct Regist {
         .padding({ left: 16, right: 16 })
         .borderRadius(8)
         .backgroundColor($r('app.color.card_white'))
-        .border({ width: 1, color: $r('app.color.border'), radius: 8 })
+        .border({ width: 1, color: this.isConfirmPwdFocused ? $r('app.color.primary') : $r('app.color.border'), radius: 8 })
       }
       .width('100%')
       .padding({ top: 32, left: 20, right: 20 })
