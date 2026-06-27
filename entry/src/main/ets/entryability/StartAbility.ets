@@ -3,6 +3,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { preferences } from '@kit.ArkData';
 import { TransientTaskUtil } from '../common/utils/TransientTaskUtil';
+import { UserDao } from '../common/database/UserDao';
 
 const DOMAIN = 0x0000;
 const PREF_NAME = 'school_app_prefs';
@@ -133,10 +134,10 @@ export default class StartAbility extends UIAbility {
 
     // 导航到首页（已登录用户，设置用户信息后加载）
     this.context.eventHub.on('navigateToIndex', () => {
-      const savedUserId = this.getSavedUserId();
-      const savedUsername = this.getSavedUsername();
+      const savedUserId = UserDao.getCurrentUserIdSync(this.context);
+      const user = UserDao.findByIdSync(this.context, savedUserId);
       AppStorage.setOrCreate('userId', savedUserId);
-      AppStorage.setOrCreate('username', savedUsername);
+      AppStorage.setOrCreate('username', user.username);
       this.loadPage('pages/Index');
     });
 
@@ -206,27 +207,4 @@ export default class StartAbility extends UIAbility {
     }
   }
 
-  // 获取已保存的用户ID
-  private getSavedUserId(): string {
-    try {
-      if (this.pref) {
-        return this.pref.getSync('saved_user_id', '') as string;
-      }
-    } catch (err) {
-      hilog.error(DOMAIN, 'testTag', 'Failed to get saved userId');
-    }
-    return '';
-  }
-
-  // 获取已保存的用户名
-  private getSavedUsername(): string {
-    try {
-      if (this.pref) {
-        return this.pref.getSync('saved_username', '') as string;
-      }
-    } catch (err) {
-      hilog.error(DOMAIN, 'testTag', 'Failed to get saved username');
-    }
-    return '';
-  }
 }

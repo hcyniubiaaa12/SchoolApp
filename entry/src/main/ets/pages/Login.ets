@@ -1,8 +1,8 @@
 // Login.ets - 登录页（StartAbility内）
-import { common, Want } from '@kit.AbilityKit';
-import { preferences } from '@kit.ArkData';
+import { common } from '@kit.AbilityKit';
 import { router } from '@kit.ArkUI';
 import promptAction from '@ohos.promptAction';
+import { UserDao } from '../common/database/UserDao';
 
 @Entry
 @Component
@@ -30,7 +30,7 @@ struct Login {
     return this.studentId.length > 0 && this.password.length > 0;
   }
 
-  private doLogin(): void {
+  private async doLogin(): Promise<void> {
     if (!this.studentId) {
       promptAction.showToast({ message: '请输入学号' });
       return;
@@ -46,30 +46,22 @@ struct Login {
     let isValid = false;
 
     if (!isDemoAccount) {
-      // 2. 非演示账号：从 Preferences 校验已注册用户
-      try {
-        const pref = preferences.getPreferencesSync(this.context, { name: 'school_app_prefs' });
-        const savedUserId = pref.getSync('saved_user_id', '') as string;
-        const savedPassword = pref.getSync('saved_password', '') as string;
-
-        if (savedUserId !== this.studentId) {
+      // 2. 非演示账号：通过 UserDao 校验
+      const ok = await UserDao.login(this.context, this.studentId, this.password);
+      if (!ok) {
+        // 尝试查用户是否存在
+        const user = UserDao.findByIdSync(this.context, this.studentId);
+        if (user.userId !== this.studentId) {
           promptAction.showToast({ message: '该账号未注册，请先注册' });
           return;
         }
-        if (this.password !== savedPassword) {
-          promptAction.showToast({ message: '密码错误，请重试' });
-          return;
-        }
-        isValid = true;
-        // 已注册用户的 username 从上次保存的记录取
-        username = pref.getSync('saved_username', this.studentId) as string;
-      } catch (err) {
-        console.error('>>> [Login] 读取注册信息失败: ' + JSON.stringify(err));
-        promptAction.showToast({ message: '登录验证失败，请重试' });
+        promptAction.showToast({ message: '密码错误，请重试' });
         return;
       }
+      isValid = true;
+      username = UserDao.findByIdSync(this.context, this.studentId).username;
     } else {
-      // 演示账号：存储用户信息到本地（兼容后续逻辑）
+      // 演示账号：直接通过
       isValid = true;
     }
 
@@ -77,23 +69,14 @@ struct Login {
       return;
     }
 
-    // 保存用户信息到本地存储
-    try {
-      const pref = preferences.getPreferencesSync(this.context, { name: 'school_app_prefs' });
-      pref.putSync('saved_user_id', this.studentId);
-      pref.putSync('saved_username', username);
-      pref.flushSync();
-      console.log('>>> [Login] 用户信息已保存 - userId: ' + this.studentId + ', username: ' + username);
-    } catch (err) {
-      console.error('>>> [Login] 保存用户信息失败: ' + JSON.stringify(err));
-    }
+    // 保存登录态和 AppStorage
+    await UserDao.setLoggedIn(this.context, true);
+    await UserDao.setCurrentUserId(this.context, this.studentId);
+    AppStorage.setOrCreate('userId', this.studentId);
+    AppStorage.setOrCreate('username', username);
 
     // 标记登录状态（兼容 StartAbility eventHub）
     this.context.eventHub.emit('markLoginStatus', true);
-
-    // 设置 AppStorage 供 Index 页面读取
-    AppStorage.setOrCreate('userId', this.studentId);
-    AppStorage.setOrCreate('username', username);
 
     // 直接跳转首页（清空路由栈，避免 Navigation 嵌套冲突）
     try {

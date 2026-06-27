@@ -1,11 +1,9 @@
 export const PREFERENCES_NAME: string = 'school_app_prefs';
 export const KEY_FIRST_LAUNCH: string = 'is_first_launch_lab';
 
-// 用户信息存储键（登录/注册后持久化）
-export const KEY_SAVED_USER_ID: string = 'saved_user_id';
-export const KEY_SAVED_USERNAME: string = 'saved_username';
-export const KEY_SAVED_PASSWORD: string = 'saved_password';
+// 用户信息存储键（UserDao JSON 多用户存储）
 export const KEY_IS_LOGGED_IN: string = 'is_logged_in';
+export const KEY_CURRENT_USER_ID: string = 'current_user_id';
 
 export const KV_STORE_ID: string = 'settings_store';
 export const KEY_THEME_MODE: string = 'theme_mode';

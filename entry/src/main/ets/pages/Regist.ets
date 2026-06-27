@@ -1,9 +1,9 @@
 // Regist.ets - 注册页（StartAbility内）
 // P0 改造：手机号 + 本地验证码(B方案) + 密码 + 确认密码
-import { common, Want } from '@kit.AbilityKit';
-import { preferences } from '@kit.ArkData';
+import { common } from '@kit.AbilityKit';
 import { router } from '@kit.ArkUI';
 import promptAction from '@ohos.promptAction';
+import { UserDao } from '../common/database/UserDao';
 
 @Entry
 @Component
@@ -73,7 +73,7 @@ struct Regist {
   }
 
   // 注册成功后跳转到 MainAbility，保存用户信息
-  private doRegister(): void {
+  private async doRegister(): Promise<void> {
     if (!this.phone) {
       promptAction.showToast({ message: '请输入手机号' });
       return;
@@ -102,23 +102,28 @@ struct Regist {
 
     const username = this.phone.substring(0, 3) + '****' + this.phone.substring(7);
 
-    // 保存用户信息到本地 Preferences（修复漏存问题）
+    // 通过 UserDao 保存用户信息
     try {
-      const pref = preferences.getPreferencesSync(this.context, { name: 'school_app_prefs' });
-      pref.putSync('saved_user_id', this.phone);
-      pref.putSync('saved_username', username);
-      pref.putSync('saved_password', this.password);
-      pref.putSync('is_logged_in', true);
-      pref.flushSync();
+      await UserDao.save(this.context, {
+        userId: this.phone,
+        username: username,
+        password: this.password,
+        phone: this.phone,
+        college: '',
+        major: '',
+        avatar: ''
+      });
       console.log('>>> [Regist] 用户信息已保存 - userId: ' + this.phone + ', username: ' + username);
     } catch (err) {
       console.error('>>> [Regist] 保存用户信息失败: ' + JSON.stringify(err));
+      promptAction.showToast({ message: '注册失败，请重试' });
+      return;
     }
 
-    // 标记登录状态
+    // 标记登录态 + AppStorage
+    await UserDao.setLoggedIn(this.context, true);
+    await UserDao.setCurrentUserId(this.context, this.phone);
     this.context.eventHub.emit('markLoginStatus', true);
-
-    // 设置 AppStorage 供 Index 读取
     AppStorage.setOrCreate('userId', this.phone);
     AppStorage.setOrCreate('username', username);
 

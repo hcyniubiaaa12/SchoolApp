@@ -3,11 +3,8 @@
  * 修改昵称/学院/专业/密码，头像更换（本地存储）
  */
 import { router } from '@kit.ArkUI';
-import { preferences } from '@kit.ArkData';
 import promptAction from '@ohos.promptAction';
-import {
-  KEY_SAVED_USERNAME, KEY_SAVED_PASSWORD, PREFERENCES_NAME
-} from '../../common/constants/StorageKeys';
+import { UserDao } from '../../common/database/UserDao';
 
 @Entry
 @Component
@@ -25,9 +22,13 @@ struct ProfileEditPage {
   }
 
   private loadUserInfo(): void {
+    const userId: string = AppStorage.get('userId') as string ?? '';
+    if (!userId) { return; }
     try {
-      const pref = preferences.getPreferencesSync(getContext(this), { name: PREFERENCES_NAME });
-      this.nickname = pref.getSync(KEY_SAVED_USERNAME, '用户') as string;
+      const user = UserDao.findByIdSync(getContext(this), userId);
+      this.nickname = user.username;
+      this.college = user.college;
+      this.major = user.major;
     } catch (err) {
       console.error('[ProfileEditPage] 读取用户信息失败: ' + JSON.stringify(err));
     }
@@ -38,10 +39,15 @@ struct ProfileEditPage {
       promptAction.showToast({ message: '昵称不能为空' });
       return;
     }
+    const userId: string = AppStorage.get('userId') as string ?? '';
+    if (!userId) { return; }
     try {
-      const pref = preferences.getPreferencesSync(getContext(this), { name: PREFERENCES_NAME });
-      pref.putSync(KEY_SAVED_USERNAME, this.nickname.trim());
-      pref.flushSync();
+      UserDao.updateProfile(getContext(this), userId, {
+        username: this.nickname.trim(),
+        college: this.college,
+        major: this.major
+      });
+      AppStorage.setOrCreate('username', this.nickname.trim());
       promptAction.showToast({ message: '保存成功' });
       router.back();
     } catch (err) {
@@ -49,7 +55,7 @@ struct ProfileEditPage {
     }
   }
 
-  private changePassword(): void {
+  private async changePassword(): Promise<void> {
     if (this.oldPassword === '' || this.newPassword === '' || this.confirmPassword === '') {
       promptAction.showToast({ message: '请完整填写密码信息' });
       return;
@@ -58,21 +64,18 @@ struct ProfileEditPage {
       promptAction.showToast({ message: '两次输入的新密码不一致' });
       return;
     }
-    try {
-      const pref = preferences.getPreferencesSync(getContext(this), { name: PREFERENCES_NAME });
-      const savedPwd: string = pref.getSync(KEY_SAVED_PASSWORD, '') as string;
-      if (savedPwd !== '' && this.oldPassword !== savedPwd) {
-        promptAction.showToast({ message: '原密码错误' });
-        return;
-      }
-      pref.putSync(KEY_SAVED_PASSWORD, this.newPassword);
-      pref.flushSync();
+    const userId: string = AppStorage.get('userId') as string ?? '';
+    if (!userId) { return; }
+    const result = await UserDao.updatePassword(getContext(this), userId, this.oldPassword, this.newPassword);
+    if (result === 'wrong_pwd') {
+      promptAction.showToast({ message: '原密码错误' });
+    } else if (result === 'not_found') {
+      promptAction.showToast({ message: '未设置密码，请直接修改' });
+    } else {
       promptAction.showToast({ message: '密码修改成功' });
       this.oldPassword = '';
       this.newPassword = '';
       this.confirmPassword = '';
-    } catch (err) {
-      promptAction.showToast({ message: '密码修改失败: ' + JSON.stringify(err) });
     }
   }
 
@@ -174,6 +177,7 @@ struct ProfileEditPage {
       Text(label).fontSize(24).fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C').width('100%')
       TextInput({ placeholder: '请输入' + label, text: value })
         .height(48).fontSize(26)
+        .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
         .placeholderColor('#86909C')
         .backgroundColor(this.isDarkMode ? '#1A1A2E' : '#F5F7FA').borderRadius(8)
         .onChange((val: string) => { onChange(val); })
@@ -187,6 +191,7 @@ struct ProfileEditPage {
       Text(label).fontSize(24).fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C').width('100%')
       TextInput({ placeholder: '请输入' + label, text: value })
         .height(48).fontSize(26).type(InputType.Password)
+        .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
         .placeholderColor('#86909C')
         .backgroundColor(this.isDarkMode ? '#1A1A2E' : '#F5F7FA').borderRadius(8)
         .onChange((val: string) => { onChange(val); })
