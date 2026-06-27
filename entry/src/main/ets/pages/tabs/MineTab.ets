@@ -258,29 +258,25 @@ export struct MineTab {
                     .fontSize(this.fsSmall)
                     .fontColor($r('app.color.warm_orange'))
                     .margin({ right: 8 })
-                    .onClick(() => {
-                      this.cacheSize = '0.0MB';
-                      promptAction.showToast({ message: '缓存清理完成' });
-                    })
                 } else {
                   Text('>')
                     .fontSize(this.fsSmall)
                     .fontColor(this.darkSecondary)
-                    .onClick(() => {
-                      if (item.name === '字体大小') {
-                        if (this.onSettingClick) {
-                          this.onSettingClick();
-                        }
-                      } else if (item.name === '通知设置') {
-                        promptAction.showToast({ message: '通知设置页开发中' });
-                      }
-                    })
                 }
               }
               .width('100%')
               .height(48)
               .padding({ left: 16, right: 16 })
               .alignItems(VerticalAlign.Center)
+              .onClick(() => {
+                if (item.name === '字体大小') {
+                  if (this.onSettingClick) {
+                    this.onSettingClick();
+                  }
+                } else if (item.name === '通知设置') {
+                  promptAction.showToast({ message: '通知设置页开发中' });
+                }
+              })
             }, (item: FunctionItem) => item.name)
           }
           .width('100%')

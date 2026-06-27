@@ -6,7 +6,6 @@ import promptAction from '@ohos.promptAction';
 import { KVStoreUtil } from '../common/utils/KVStoreUtil';
 import {
   DEFAULT_FONT_SIZE,
-  DEFAULT_THEME_MODE,
   MAX_FONT_SIZE,
   MIN_FONT_SIZE
 } from '../common/constants/StorageKeys';
@@ -401,13 +400,12 @@ struct ProfilePage {
 struct SettingPage {
   @Prop pageType: string = 'setting';
   pathStack: NavPathStack = new NavPathStack();
-  @State themeMode: string = DEFAULT_THEME_MODE;
+  @StorageLink('isDarkMode') isDarkMode: boolean = false;
   @State fontSize: number = DEFAULT_FONT_SIZE;
   private context: Context = getContext(this) as Context;
 
   async aboutToAppear() {
     if (this.pageType === 'setting') {
-      this.themeMode = await KVStoreUtil.getThemeMode(this.context);
       this.fontSize = await KVStoreUtil.getFontSize(this.context);
       AppStorage.Set('fontScale', this.fontSize / DEFAULT_FONT_SIZE);
     }
@@ -416,18 +414,19 @@ struct SettingPage {
   build() {
     NavDestination() {
       Column() {
+        // 导航栏（响应深色模式）
         Row() {
           Image($r('app.media.ic_back'))
-            .width(24).height(24).fillColor('#1D2129')
+            .width(24).height(24).fillColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
             .onClick(() => { this.pathStack.pop(); })
           Blank()
           Text(this.pageType === 'setting' ? '设置' : '帮助中心')
-            .fontSize(30).fontWeight(600).fontColor('#1D2129')
+            .fontSize(30).fontWeight(600).fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
           Blank()
           Row().width(24)
         }
         .width('100%').height(56).padding({ left: 20, right: 20 })
-        .backgroundColor('#FFFFFF').alignItems(VerticalAlign.Center)
+        .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF').alignItems(VerticalAlign.Center)
 
         Column({ space: 16 }) {
           if (this.pageType === 'setting') {
@@ -439,7 +438,7 @@ struct SettingPage {
         .padding(16)
         .layoutWeight(1)
       }
-      .width('100%').height('100%').backgroundColor(AppStorage.Get('isDarkMode') as boolean ? '#1A1A2E' : '#F5F7FA')
+      .width('100%').height('100%').backgroundColor(this.isDarkMode ? '#1A1A2E' : '#F5F7FA')
     }
     .hideTitleBar(true)
     .onReady((context: NavDestinationContext) => {
@@ -451,42 +450,42 @@ struct SettingPage {
   buildSettingContent() {
     Column({ space: 16 }) {
       Text('通用设置')
-        .fontSize(32).fontWeight(700).fontColor('#1677FF')
+        .fontSize(32).fontWeight(700).fontColor($r('app.color.primary'))
 
       Column({ space: 16 }) {
+        // 主题模式选择
         Column({ space: 12 }) {
-          Text('主题模式').fontSize(26).fontColor('#1D2129')
+          Text('主题模式').fontSize(26).fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
           Row({ space: 12 }) {
             Button('浅色')
               .layoutWeight(1)
               .height(40)
-              .fontColor(this.themeMode === 'light' ? '#FFFFFF' : '#1677FF')
-              .backgroundColor(this.themeMode === 'light' ? '#1677FF' : '#E8F3FF')
+              .fontColor(!this.isDarkMode ? '#FFFFFF' : '#1677FF')
+              .backgroundColor(!this.isDarkMode ? '#1677FF' : '#3A3A5C')
               .borderRadius(20)
               .onClick(() => {
-                this.themeMode = 'light';
+                AppStorage.Set('isDarkMode', false);
                 KVStoreUtil.setThemeMode(this.context, 'light');
-			  AppStorage.Set('isDarkMode', false);
               })
             Button('深色')
               .layoutWeight(1)
               .height(40)
-              .fontColor(this.themeMode === 'dark' ? '#FFFFFF' : '#1677FF')
-              .backgroundColor(this.themeMode === 'dark' ? '#1677FF' : '#E8F3FF')
+              .fontColor(this.isDarkMode ? '#FFFFFF' : '#1677FF')
+              .backgroundColor(this.isDarkMode ? '#1677FF' : '#3A3A5C')
               .borderRadius(20)
               .onClick(() => {
-                this.themeMode = 'dark';
+                AppStorage.Set('isDarkMode', true);
                 KVStoreUtil.setThemeMode(this.context, 'dark');
-			  AppStorage.Set('isDarkMode', true);
               })
           }
           .width('100%')
         }
 
-        Divider().color('#E5E6EB')
+        Divider().color(this.isDarkMode ? '#3A3A5C' : '#E5E6EB')
 
+        // 字体大小
         Column({ space: 12 }) {
-          Text(`字体大小：${this.fontSize}`).fontSize(26).fontColor('#1D2129')
+          Text('字体大小：' + this.fontSize.toString()).fontSize(26).fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
           Slider({
             value: this.fontSize,
             min: MIN_FONT_SIZE,
@@ -503,45 +502,43 @@ struct SettingPage {
             })
         }
 
-        Divider().color('#E5E6EB')
+        Divider().color(this.isDarkMode ? '#3A3A5C' : '#E5E6EB')
 
+        // 关于我们
         Row() {
-          Text('关于我们').fontSize(26).fontColor('#1D2129').layoutWeight(1)
-          Text('>').fontSize(24).fontColor('#86909C')
+          Text('关于我们').fontSize(26).fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129').layoutWeight(1)
+          Text('>').fontSize(24).fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
         }
-        .width('100%').height(48).alignItems(VerticalAlign.Center)
+        .width('100%').height(48).padding({ left: 16, right: 16 })
+        .alignItems(VerticalAlign.Center)
       }
-      .width('100%').padding(16).backgroundColor('#FFFFFF').borderRadius(8)
+      .width('100%').padding(16).backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF').borderRadius(8)
     }
+    .width('100%')
   }
 
   @Builder
   buildHelpContent() {
     Column({ space: 16 }) {
-      Text('帮助中心')
-        .fontSize(32).fontWeight(700).fontColor('#1677FF')
-
-      Column({ space: 12 }) {
-        this.buildHelpItem('如何修改个人信息？', '进入"我的"页面，点击头像区域即可编辑个人信息。')
-        this.buildHelpItem('如何查看课程表？', '在首页点击"课程表"快捷入口，或切换到"学习助手"Tab查看。')
-        this.buildHelpItem('忘记密码怎么办？', '在登录页点击"忘记密码"，通过手机验证码重置密码。')
-        this.buildHelpItem('如何联系客服？', '您可以通过"意见反馈"功能提交问题，我们会尽快回复。')
-      }
+      Text('帮助中心').fontSize(32).fontWeight(700).fontColor($r('app.color.primary'))
+      this.buildHelpItem('1. 如何查看课程表？', '点击「学习助手」Tab → 课程表标签，支持左右切换周次查看。')
+      this.buildHelpItem('2. 怎么发布失物招领？', '点击「生活服务」Tab → 失物招领 → 右上发布信息按钮。')
+      this.buildHelpItem('3. 如何切换深色模式？', '我的 → 设置 → 主题模式，可选择浅色/深色。')
+      this.buildHelpItem('4. 数据会丢失吗？', '所有数据存储在本地，卸载APP会清除数据，请提前备份。')
     }
+    .width('100%')
   }
 
   @Builder
   buildHelpItem(question: string, answer: string) {
     Column({ space: 8 }) {
-      Text(question).fontSize(26).fontWeight(600).fontColor('#1D2129')
-      Text(answer).fontSize(24).fontColor('#86909C').lineHeight(22)
+      Text(question).fontSize(26).fontWeight(600).fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
+      Text(answer).fontSize(24).fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C').lineHeight(22)
     }
-    .width('100%').padding(16).backgroundColor('#FFFFFF').borderRadius(8)
+    .width('100%').padding(16).backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF').borderRadius(8)
     .alignItems(HorizontalAlign.Start)
   }
 }
-
-// ============ 数据类型定义 ============
 
 interface FunctionItemData {
   name: string;
