@@ -49,9 +49,12 @@ struct Index {
     console.log('>>> [Index] 页面显示 - userId: ' + this.userId + ', username: ' + this.username);
     // 首次启动：导入初始数据到 RDB
     DataInitializer.seedIfEmpty(this.context);
-    // 加载深色模式偏好
+    // 加载深色模式偏好（先默认浅色，再异步读取覆盖）
+    AppStorage.Set('isDarkMode', false);
     KVStoreUtil.getThemeMode(this.context).then((mode: string) => {
-      AppStorage.Set('isDarkMode', mode === 'dark');
+      if (mode === 'dark') {
+        AppStorage.Set('isDarkMode', true);
+      }
     });
     // 初始化字体缩放
     KVStoreUtil.getFontSize(this.context).then((size: number) => {
