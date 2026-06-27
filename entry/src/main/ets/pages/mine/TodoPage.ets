@@ -31,6 +31,7 @@ struct TodoPage {
   @State newTodoCategory: string = '学习';
   @State batchMode: boolean = false;
   @State selectedIds: string[] = [];
+  @StorageLink('isDarkMode') isDarkMode: boolean = false;
 
   private filters: string[] = ['全部', '学习', '生活', '其他'];
   private categories: string[] = ['学习', '生活', '其他'];
@@ -52,16 +53,7 @@ struct TodoPage {
       const ctx: Context = getContext(this);
       const pref = await this.getPref(ctx);
       const json: string = await pref.get(KEY_TODO_DATA, '') as string;
-      if (json === '') {
-        // 首次：使用演示数据
-        this.todos = [
-          { id: 't1', content: '提交数据结构课程设计报告', category: '学习', isCompleted: false, remindTime: '2026-06-28 23:59', createTime: '2026-06-20' },
-          { id: 't2', content: '购买实验器材', category: '生活', isCompleted: false, remindTime: '2026-06-26 18:00', createTime: '2026-06-19' },
-          { id: 't3', content: '复习高等数学期末考试', category: '学习', isCompleted: true, remindTime: '2026-07-01 08:00', createTime: '2026-06-15' },
-          { id: 't4', content: '参加社团例会', category: '其他', isCompleted: false, remindTime: '2026-06-27 19:00', createTime: '2026-06-14' },
-        ];
-        await this.saveTodos();
-      } else {
+      if (json !== '') {
         this.todos = JSON.parse(json) as TodoItem[];
       }
     } catch (err) {
@@ -208,11 +200,11 @@ struct TodoPage {
       // 导航栏
       Row() {
         Image($r('app.media.ic_back'))
-          .width(24).height(24).fillColor('#1D2129')
+          .width(24).height(24).fillColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
           .onClick(() => { router.back(); })
         Blank()
         Text('我的待办')
-          .fontSize(30).fontWeight(600).fontColor('#1D2129')
+          .fontSize(30).fontWeight(600).fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
           .layoutWeight(1).textAlign(TextAlign.Center)
         Blank()
         Text(this.batchMode ? '取消' : '批量')
@@ -225,7 +217,7 @@ struct TodoPage {
           })
       }
       .width('100%').height(56).padding({ left: 16, right: 20 })
-      .backgroundColor($r('app.color.card_white')).alignItems(VerticalAlign.Center)
+      .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF').alignItems(VerticalAlign.Center)
 
       // 概况
       Row() {
@@ -237,7 +229,7 @@ struct TodoPage {
             Text('完成')
               .fontSize(22).fontColor($r('app.color.fresh_green'))
               .onClick(() => { this.batchComplete(); })
-            Text('|').fontSize(22).fontColor($r('app.color.border'))
+            Text('|').fontSize(22).fontColor(this.isDarkMode ? '#333344' : '#E5E6EB')
             Text('删除')
               .fontSize(22).fontColor($r('app.color.warm_orange'))
               .onClick(() => { this.batchDelete(); })
@@ -245,7 +237,7 @@ struct TodoPage {
         }
       }
       .width('100%').padding({ left: 20, right: 20, top: 8, bottom: 8 })
-      .backgroundColor($r('app.color.warm_orange'))
+      .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
 
       // 分类筛选
       Scroll() {
@@ -253,9 +245,9 @@ struct TodoPage {
           ForEach(this.filters, (filter: string) => {
             Text(filter)
               .fontSize(22)
-              .fontColor(this.currentFilter === filter ? $r('app.color.card_white') : '#1D2129')
+              .fontColor(this.currentFilter === filter ? Color.White : (this.isDarkMode ? '#E8E8E8' : '#1D2129'))
               .padding({ left: 16, right: 16, top: 6, bottom: 6 })
-              .backgroundColor(this.currentFilter === filter ? $r('app.color.primary') : $r('app.color.background'))
+              .backgroundColor(this.currentFilter === filter ? $r('app.color.primary') : (this.isDarkMode ? '#3A3A5C' : $r('app.color.background')))
               .borderRadius(20)
               .onClick(() => { this.currentFilter = filter; })
           }, (filter: string) => filter)
@@ -264,24 +256,25 @@ struct TodoPage {
       }
       .scrollBar(BarState.Off)
       .scrollable(ScrollDirection.Horizontal)
-      .backgroundColor($r('app.color.card_white'))
+      .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
 
       // 新增待办输入区
       if (this.showAddInput) {
         Column({ space: 12 }) {
           TextInput({ placeholder: '输入待办内容', text: this.newTodoContent })
             .height(48).fontSize(26)
-            .placeholderColor($r('app.color.text_secondary'))
-            .backgroundColor($r('app.color.background')).borderRadius(8)
+            .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
+            .placeholderColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
+            .backgroundColor(this.isDarkMode ? '#1A1A2E' : '#F5F7FA').borderRadius(8)
             .onChange((val: string) => { this.newTodoContent = val; })
 
           Row({ space: 12 }) {
             ForEach(this.categories, (cat: string) => {
               Text(cat)
                 .fontSize(22)
-                .fontColor(this.newTodoCategory === cat ? $r('app.color.card_white') : '#1D2129')
+                .fontColor(this.newTodoCategory === cat ? Color.White : (this.isDarkMode ? '#E8E8E8' : '#1D2129'))
                 .padding({ left: 12, right: 12, top: 4, bottom: 4 })
-                .backgroundColor(this.newTodoCategory === cat ? $r('app.color.primary') : $r('app.color.background'))
+                .backgroundColor(this.newTodoCategory === cat ? $r('app.color.primary') : (this.isDarkMode ? '#3A3A5C' : $r('app.color.background')))
                 .borderRadius(12)
                 .onClick(() => { this.newTodoCategory = cat; })
             }, (cat: string) => cat)
@@ -290,13 +283,13 @@ struct TodoPage {
 
           Button('添加')
             .width('100%').height(44)
-            .fontSize(24).fontColor($r('app.color.card_white'))
+            .fontSize(24).fontColor(Color.White)
             .backgroundColor($r('app.color.primary')).borderRadius(8)
             .onClick(() => { this.addTodo(); })
         }
         .width('100%')
         .padding(16)
-        .backgroundColor($r('app.color.card_white'))
+        .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
       }
 
       // 待办列表
@@ -307,7 +300,7 @@ struct TodoPage {
               SymbolGlyph($r('sys.symbol.checkmark_circle'))
                 .fontSize(48)
               Text('暂无待办事项')
-                .fontSize(26).fontColor($r('app.color.text_secondary'))
+                .fontSize(26).fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
             }
             .width('100%').height(200)
             .justifyContent(FlexAlign.Center).alignItems(HorizontalAlign.Center)
@@ -332,7 +325,8 @@ struct TodoPage {
                   Column({ space: 4 }) {
                     Text(item.content)
                       .fontSize(26)
-                      .fontColor(item.isCompleted ? $r('app.color.text_secondary') : '#1D2129')
+                      .width('100%')
+                      .fontColor(item.isCompleted ? (this.isDarkMode ? '#A0A0A0' : '#86909C') : (this.isDarkMode ? '#E8E8E8' : '#1D2129'))
                       .decoration({ type: item.isCompleted ? TextDecorationType.LineThrough : TextDecorationType.None })
                       .layoutWeight(1)
                       .maxLines(2)
@@ -341,18 +335,18 @@ struct TodoPage {
                     Row({ space: 8 }) {
                       Text(item.category)
                         .fontSize(20)
-                        .fontColor($r('app.color.card_white'))
+                        .fontColor(Color.White)
                         .padding({ left: 6, right: 6, top: 2, bottom: 2 })
                         .backgroundColor(this.getCategoryColor(item.category))
                         .borderRadius(4)
 
                       if (item.remindTime !== '') {
                         Text('⏰' + item.remindTime)
-                          .fontSize(20).fontColor($r('app.color.text_secondary'))
+                          .fontSize(20).fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
                       }
 
                       Text(item.createTime)
-                        .fontSize(20).fontColor($r('app.color.text_secondary'))
+                        .fontSize(20).fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
                     }
                     .width('100%')
                   }
@@ -366,9 +360,9 @@ struct TodoPage {
                   }
                 }
                 .width('100%').padding(12)
-                .backgroundColor($r('app.color.card_white'))
+                .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
                 .borderRadius(8)
-                .shadow({ radius: 4, color: $r('app.color.shadow'), offsetX: 0, offsetY: 1 })
+                .shadow({ radius: 4, color: this.isDarkMode ? '#00000033' : '#1A000000', offsetX: 0, offsetY: 1 })
                 .alignItems(VerticalAlign.Center)
               }
             }, (item: TodoItem) => item.id)
@@ -384,7 +378,7 @@ struct TodoPage {
       if (!this.showAddInput) {
         Button('+ 新增待办')
           .width('90%').height(48)
-          .fontSize(26).fontColor($r('app.color.card_white'))
+          .fontSize(26).fontColor(Color.White)
           .backgroundColor($r('app.color.primary')).borderRadius(8)
           .margin({ bottom: 16 })
           .onClick(() => {
@@ -393,6 +387,6 @@ struct TodoPage {
       }
     }
     .width('100%').height('100%')
-    .backgroundColor($r('app.color.background'))
+    .backgroundColor(this.isDarkMode ? '#1A1A2E' : '#F5F7FA')
   }
 }

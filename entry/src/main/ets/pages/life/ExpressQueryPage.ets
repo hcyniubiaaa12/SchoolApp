@@ -19,6 +19,7 @@ struct ExpressQueryPage {
   @State hasSearched: boolean = false;
   @State expressSteps: ExpressStep[] = [];
   @State carrier: string = '';
+  @StorageLink('isDarkMode') isDarkMode: boolean = false;
 
   private searchExpress(): void {
     const num: string = this.trackingNumber.trim();
@@ -49,16 +50,16 @@ struct ExpressQueryPage {
       // 导航栏
       Row() {
         Image($r('app.media.ic_back'))
-          .width(24).height(24).fillColor($r('app.color.text_primary'))
+          .width(24).height(24).fillColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
           .onClick(() => { router.back(); })
         Blank()
         Text('快递查询')
-          .fontSize(30).fontWeight(600).fontColor($r('app.color.text_primary'))
+          .fontSize(30).fontWeight(600).fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
         Blank()
         Row().width(24)
       }
       .width('100%').height(56).padding({ left: 16, right: 20 })
-      .backgroundColor($r('app.color.card_white')).alignItems(VerticalAlign.Center)
+      .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF').alignItems(VerticalAlign.Center)
 
       Scroll() {
         Column({ space: 16 }) {
@@ -66,20 +67,21 @@ struct ExpressQueryPage {
           Row({ space: 12 }) {
             TextInput({ placeholder: '请输入快递单号', text: this.trackingNumber })
               .layoutWeight(1).height(48).fontSize(26)
-              .placeholderColor($r('app.color.text_secondary'))
-              .backgroundColor($r('app.color.background')).borderRadius(8)
+              .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
+              .placeholderColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
+              .backgroundColor(this.isDarkMode ? '#1A1A2E' : '#F5F7FA').borderRadius(8)
               .onChange((val: string) => { this.trackingNumber = val; })
 
             Button('查询')
               .height(48).width(80)
-              .fontSize(24).fontColor($r('app.color.card_white'))
+              .fontSize(24).fontColor(Color.White)
               .backgroundColor($r('app.color.primary')).borderRadius(8)
               .onClick(() => { this.searchExpress(); })
           }
           .width('100%').padding({ left: 20, right: 20 })
 
           Text('提示：当前为模拟查询，仅演示界面效果')
-            .fontSize(22).fontColor($r('app.color.text_secondary'))
+            .fontSize(22).fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
             .width('100%').padding({ left: 20, right: 20 })
 
           if (this.hasSearched) {
@@ -89,9 +91,9 @@ struct ExpressQueryPage {
                 Text('📦').fontSize(40)
                 Column({ space: 4 }) {
                   Text(this.carrier)
-                    .fontSize(26).fontWeight(600).fontColor($r('app.color.text_primary'))
+                    .fontSize(26).fontWeight(600).fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
                   Text('单号：' + this.trackingNumber)
-                    .fontSize(22).fontColor($r('app.color.text_secondary'))
+                    .fontSize(22).fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
                     .maxLines(1)
                     .textOverflow({ overflow: TextOverflow.Ellipsis })
                 }
@@ -101,17 +103,17 @@ struct ExpressQueryPage {
 
               if (this.expressSteps.length > 0) {
                 Text('最新状态：' + this.expressSteps[0].status)
-                  .fontSize(24).fontColor('#00B42A')
+                  .fontSize(24).fontColor($r('app.color.fresh_green'))
               }
             }
             .width('100%').padding(16)
-            .backgroundColor($r('app.color.card_white')).borderRadius(8)
-            .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
+            .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF').borderRadius(8)
+            .shadow({ radius: 4, color: this.isDarkMode ? '#00000033' : '#1A000000', offsetX: 0, offsetY: 1 })
 
             // 物流详情
             Column({ space: 12 }) {
               Text('物流详情')
-                .fontSize(26).fontWeight(600).fontColor($r('app.color.text_primary'))
+                .fontSize(26).fontWeight(600).fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
 
               Column({ space: 0 }) {
                 ForEach(this.expressSteps, (step: ExpressStep, index: number) => {
@@ -123,7 +125,7 @@ struct ExpressQueryPage {
                         Column() {
                           Circle()
                             .width(12).height(12)
-                            .fill(step.isCurrent ? $r('app.color.primary') : '#00B42A')
+                            .fill(step.isCurrent ? $r('app.color.primary') : $r('app.color.fresh_green'))
                         }
                         .height('50%')
                         .justifyContent(FlexAlign.End)
@@ -133,10 +135,10 @@ struct ExpressQueryPage {
                         Column() {
                           Circle()
                             .width(12).height(12)
-                            .fill(step.isCurrent ? $r('app.color.primary') : '#00B42A')
+                            .fill(step.isCurrent ? $r('app.color.primary') : $r('app.color.fresh_green'))
                           Column()
                             .width(2).height('100%')
-                            .backgroundColor($r('app.color.border'))
+                            .backgroundColor(this.isDarkMode ? '#333344' : '#E5E6EB')
                         }
                         .alignItems(HorizontalAlign.Center)
                       }
@@ -146,14 +148,14 @@ struct ExpressQueryPage {
                     Column({ space: 4 }) {
                       Text(step.status)
                         .fontSize(26)
-                        .fontColor(step.isCurrent ? $r('app.color.primary') : $r('app.color.text_primary'))
+                        .fontColor(step.isCurrent ? $r('app.color.primary') : (this.isDarkMode ? '#E8E8E8' : '#1D2129'))
                         .fontWeight(step.isCurrent ? 700 : 400)
 
                       Text(step.location)
-                        .fontSize(22).fontColor($r('app.color.text_secondary'))
+                        .fontSize(22).fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
 
                       Text(step.time)
-                        .fontSize(22).fontColor($r('app.color.text_secondary'))
+                        .fontSize(22).fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
                     }
                     .alignItems(HorizontalAlign.Start)
                     .margin({ left: 12 })
@@ -166,8 +168,8 @@ struct ExpressQueryPage {
               }
             }
             .width('100%').padding(16)
-            .backgroundColor($r('app.color.card_white')).borderRadius(8)
-            .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
+            .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF').borderRadius(8)
+            .shadow({ radius: 4, color: this.isDarkMode ? '#00000033' : '#1A000000', offsetX: 0, offsetY: 1 })
           }
         }
         .width('100%')
@@ -177,6 +179,6 @@ struct ExpressQueryPage {
       .scrollBar(BarState.Auto)
     }
     .width('100%').height('100%')
-    .backgroundColor($r('app.color.background'))
+    .backgroundColor(this.isDarkMode ? '#1A1A2E' : '#F5F7FA')
   }
 }

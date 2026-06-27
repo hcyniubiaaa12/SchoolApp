@@ -28,6 +28,7 @@ struct FavoritePage {
   @State favorites: FavoriteItem[] = [];
   @State currentFilter: string = '全部';
   @State isLoading: boolean = true;
+  @StorageLink('isDarkMode') isDarkMode: boolean = false;
 
   private filters: string[] = ['全部', '图书', '美食'];
 
@@ -127,17 +128,17 @@ struct FavoritePage {
       // 导航栏
       Row() {
         Image($r('app.media.ic_back'))
-          .width(24).height(24).fillColor($r('app.color.text_primary'))
+          .width(24).height(24).fillColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
           .onClick(() => { router.back(); })
         Blank()
         Text('我的收藏')
-          .fontSize(30).fontWeight(600).fontColor($r('app.color.text_primary'))
+          .fontSize(30).fontWeight(600).fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
           .layoutWeight(1).textAlign(TextAlign.Center)
         Blank()
         Row().width(24)
       }
       .width('100%').height(56).padding({ left: 16, right: 20 })
-      .backgroundColor($r('app.color.card_white')).alignItems(VerticalAlign.Center)
+      .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF').alignItems(VerticalAlign.Center)
 
       // 分类筛选
       Scroll() {
@@ -145,9 +146,9 @@ struct FavoritePage {
           ForEach(this.filters, (filter: string) => {
             Text(filter)
               .fontSize(22)
-              .fontColor(this.currentFilter === filter ? $r('app.color.card_white') : $r('app.color.text_primary'))
+              .fontColor(this.currentFilter === filter ? Color.White : (this.isDarkMode ? '#E8E8E8' : '#1D2129'))
               .padding({ left: 16, right: 16, top: 6, bottom: 6 })
-              .backgroundColor(this.currentFilter === filter ? $r('app.color.primary') : $r('app.color.background'))
+              .backgroundColor(this.currentFilter === filter ? $r('app.color.primary') : (this.isDarkMode ? '#3A3A5C' : $r('app.color.background')))
               .borderRadius(20)
               .onClick(() => {
                 this.currentFilter = filter;
@@ -158,14 +159,14 @@ struct FavoritePage {
       }
       .scrollBar(BarState.Off)
       .scrollable(ScrollDirection.Horizontal)
-      .backgroundColor($r('app.color.card_white'))
+      .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
 
       // 收藏列表
       Scroll() {
         if (this.isLoading) {
           Column() {
             Text('加载中...')
-              .fontSize(26).fontColor($r('app.color.text_secondary'))
+              .fontSize(26).fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
           }
           .width('100%').height(200)
           .justifyContent(FlexAlign.Center)
@@ -176,17 +177,17 @@ struct FavoritePage {
               Column({ space: 16 }) {
                 SymbolGlyph($r('sys.symbol.heart'))
                   .fontSize(48)
-                  .fontColor([$r('app.color.text_secondary')])
+                  .fontColor([this.isDarkMode ? '#A0A0A0' : '#86909C'])
                 Text('暂无收藏内容')
-                  .fontSize(26).fontColor($r('app.color.text_secondary'))
+                  .fontSize(26).fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
                 Row({ space: 4 }) {
                   Text('在图书馆或美食页点击')
-                    .fontSize(22).fontColor($r('app.color.text_secondary'))
+                    .fontSize(22).fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
                   SymbolGlyph($r('sys.symbol.heart_fill'))
                     .fontSize(22)
                     .fontColor([$r('app.color.primary')])
                   Text('收藏吧')
-                    .fontSize(22).fontColor($r('app.color.text_secondary'))
+                    .fontSize(22).fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
                 }
                 .justifyContent(FlexAlign.Center)
                 .alignItems(VerticalAlign.Center)
@@ -216,7 +217,7 @@ struct FavoritePage {
                     Row({ space: 8 }) {
                       Text(item.title)
                         .fontSize(26).fontWeight(600)
-                        .fontColor($r('app.color.text_primary'))
+                        .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
                         .layoutWeight(1)
                         .maxLines(1)
                         .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -233,7 +234,7 @@ struct FavoritePage {
                     Row() {
                       Text(item.summary)
                         .fontSize(22)
-                        .fontColor($r('app.color.text_secondary'))
+                        .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
                         .layoutWeight(1)
                         .maxLines(1)
                         .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -246,16 +247,16 @@ struct FavoritePage {
 
                   SymbolGlyph($r('sys.symbol.trash'))
                     .fontSize(22)
-                    .fontColor([$r('app.color.text_secondary')])
+                    .fontColor([this.isDarkMode ? '#A0A0A0' : '#86909C'])
                     .onClick(() => {
                       this.deleteItem(item);
                     })
                 }
                 .width('100%')
                 .padding(12)
-                .backgroundColor($r('app.color.card_white'))
+                .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
                 .borderRadius(8)
-                .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
+                .shadow({ radius: 4, color: this.isDarkMode ? '#00000033' : '#1A000000', offsetX: 0, offsetY: 1 })
                 .alignItems(VerticalAlign.Center)
               }, (item: FavoriteItem) => item.id)
             }
@@ -268,6 +269,6 @@ struct FavoritePage {
       .scrollBar(BarState.Auto)
     }
     .width('100%').height('100%')
-    .backgroundColor($r('app.color.background'))
+    .backgroundColor(this.isDarkMode ? '#1A1A2E' : '#F5F7FA')
   }
 }

@@ -29,6 +29,7 @@ struct LostFoundPublishPage {
   @State errorMessage: string = '';
   @State selectedDate: Date = new Date();
   @State selectedTime: Date = new Date();
+  @StorageLink('isDarkMode') isDarkMode: boolean = false;
 
   // 编辑模式
   private editId: string = '';
@@ -192,16 +193,16 @@ struct LostFoundPublishPage {
       // 导航栏
       Row() {
         Image($r('app.media.ic_back'))
-          .width(24).height(24).fillColor('#1D2129')
+          .width(24).height(24).fillColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
           .onClick(() => { router.back(); })
         Blank()
         Text(this.isEditMode ? '编辑信息' : '发布信息')
-          .fontSize(30).fontWeight(600).fontColor('#1D2129')
+          .fontSize(30).fontWeight(600).fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
         Blank()
         Row().width(24)
       }
       .width('100%').height(56).padding({ left: 16, right: 20 })
-      .backgroundColor('#FFFFFF').alignItems(VerticalAlign.Center)
+      .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF').alignItems(VerticalAlign.Center)
 
       // 表单内容
       Scroll() {
@@ -209,7 +210,7 @@ struct LostFoundPublishPage {
           // —— 类型选择 ——
           Column({ space: 8 }) {
             Text('发布类型')
-              .fontSize(26).fontWeight(600).fontColor('#1D2129')
+              .fontSize(26).fontWeight(600).fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
             Row({ space: 16 }) {
               ForEach(this.typeOptions, (opt: TypeOption) => {
                 Row({ space: 6 }) {
@@ -217,7 +218,7 @@ struct LostFoundPublishPage {
                     .checked(this.publishType === opt.value)
                     .onChange(() => { this.publishType = opt.value; })
                   Text(opt.label)
-                    .fontSize(26).fontColor('#1D2129')
+                    .fontSize(26).fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
                 }
                 .alignItems(VerticalAlign.Center)
                 .onClick(() => { this.publishType = opt.value; })
@@ -225,19 +226,19 @@ struct LostFoundPublishPage {
             }
           }
           .width('100%').padding(16)
-          .backgroundColor('#FFFFFF').borderRadius(8)
+          .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF').borderRadius(8)
 
           // —— 分类 ——
           Column({ space: 8 }) {
             Text('物品分类')
-              .fontSize(26).fontWeight(600).fontColor('#1D2129')
+              .fontSize(26).fontWeight(600).fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
             Flex({ wrap: FlexWrap.Wrap }) {
               ForEach(this.categoryOptions, (opt: CategoryOption) => {
                 Text(opt.label)
                   .fontSize(24)
-                  .fontColor(this.category === opt.label ? '#FFFFFF' : '#1D2129')
+                  .fontColor(this.category === opt.label ? Color.White : (this.isDarkMode ? '#E8E8E8' : '#1D2129'))
                   .padding({ left: 16, right: 16, top: 6, bottom: 6 })
-                  .backgroundColor(this.category === opt.label ? '#1677FF' : '#F5F7FA')
+                  .backgroundColor(this.category === opt.label ? $r('app.color.primary') : (this.isDarkMode ? '#3A3A5C' : $r('app.color.background')))
                   .borderRadius(16)
                   .margin({ right: 8, bottom: 8 })
                   .onClick(() => { this.category = opt.label; })
@@ -245,56 +246,58 @@ struct LostFoundPublishPage {
             }
           }
           .width('100%').padding(16)
-          .backgroundColor('#FFFFFF').borderRadius(8)
+          .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF').borderRadius(8)
 
           // —— 表单输入 ——
           Column({ space: 16 }) {
             // 物品名
             Column({ space: 6 }) {
               Text('物品名称 *')
-                .fontSize(24).fontColor('#1D2129')
+                .fontSize(24).fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
               TextInput({ placeholder: '请输入物品名称' })
                 .height(48).fontSize(26)
-                .placeholderColor('#86909C')
-                .backgroundColor('#F5F7FA').borderRadius(8)
+                .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
+                .placeholderColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
+                .backgroundColor(this.isDarkMode ? '#1A1A2E' : '#F5F7FA').borderRadius(8)
                 .onChange((val: string) => { this.itemName = val; })
             }
 
             // 地点
             Column({ space: 6 }) {
               Text('丢失/拾取地点 *')
-                .fontSize(24).fontColor('#1D2129')
+                .fontSize(24).fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
               TextInput({ placeholder: '如：二食堂一楼、图书馆三楼' })
                 .height(48).fontSize(26)
-                .placeholderColor('#86909C')
-                .backgroundColor('#F5F7FA').borderRadius(8)
+                .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
+                .placeholderColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
+                .backgroundColor(this.isDarkMode ? '#1A1A2E' : '#F5F7FA').borderRadius(8)
                 .onChange((val: string) => { this.location = val; })
             }
 
             // 时间（DatePicker + TimePicker 选择）
             Column({ space: 6 }) {
               Text('时间 *')
-                .fontSize(24).fontColor('#1D2129')
+                .fontSize(24).fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
               Row({ space: 12 }) {
                 // 日期选择
                 Column() {
                   Text(this.time.split(' ')[0] || this.time)
-                    .fontSize(26).fontColor('#1677FF')
+                    .fontSize(26).fontColor($r('app.color.primary'))
                     .padding({ top: 12, bottom: 12, left: 16, right: 16 })
                 }
                 .height(48)
-                .backgroundColor('#F5F7FA').borderRadius(8)
+                .backgroundColor(this.isDarkMode ? '#1A1A2E' : '#F5F7FA').borderRadius(8)
                 .layoutWeight(1)
                 .onClick(() => { this.showDatePicker(); })
 
                 // 时间选择
                 Column() {
                   Text(this.time.split(' ')[1] || '')
-                    .fontSize(26).fontColor('#1677FF')
+                    .fontSize(26).fontColor($r('app.color.primary'))
                     .padding({ top: 12, bottom: 12, left: 16, right: 16 })
                 }
                 .height(48)
-                .backgroundColor('#F5F7FA').borderRadius(8)
+                .backgroundColor(this.isDarkMode ? '#1A1A2E' : '#F5F7FA').borderRadius(8)
                 .layoutWeight(1)
                 .onClick(() => { this.showTimePicker(); })
               }
@@ -303,34 +306,36 @@ struct LostFoundPublishPage {
             // 描述
             Column({ space: 6 }) {
               Text('详细描述')
-                .fontSize(24).fontColor('#1D2129')
+                .fontSize(24).fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
               TextArea({ placeholder: '请输入详细描述，如物品特征、颜色、品牌等' })
                 .height(120).fontSize(26)
-                .placeholderColor('#86909C')
-                .backgroundColor('#F5F7FA').borderRadius(8)
+                .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
+                .placeholderColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
+                .backgroundColor(this.isDarkMode ? '#1A1A2E' : '#F5F7FA').borderRadius(8)
                 .onChange((val: string) => { this.description = val; })
             }
 
             // 联系电话
             Column({ space: 6 }) {
               Text('联系电话')
-                .fontSize(24).fontColor('#1D2129')
+                .fontSize(24).fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
               TextInput({ placeholder: '请输入联系电话' })
                 .height(48).fontSize(26)
-                .placeholderColor('#86909C')
-                .backgroundColor('#F5F7FA').borderRadius(8)
+                .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
+                .placeholderColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
+                .backgroundColor(this.isDarkMode ? '#1A1A2E' : '#F5F7FA').borderRadius(8)
                 .onChange((val: string) => { this.contactPhone = val; })
             }
           }
           .width('100%').padding(16)
-          .backgroundColor('#FFFFFF').borderRadius(8)
+          .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF').borderRadius(8)
 
           // —— 提交按钮 ——
           Button(this.isSubmitting ? (this.isEditMode ? '修改中...' : '发布中...')
             : (this.isEditMode ? '保存修改' : '发布'))
             .width('100%').height(48)
-            .fontSize(26).fontColor('#FFFFFF')
-            .backgroundColor(this.isFormValid ? '#1677FF' : '#C6E2FF')
+            .fontSize(26).fontColor(Color.White)
+            .backgroundColor(this.isFormValid ? $r('app.color.primary') : $r('app.color.button_inactive_bg'))
             .borderRadius(8)
             .enabled(!this.isSubmitting)
             .onClick(() => { this.submitPublish(); })
@@ -338,13 +343,13 @@ struct LostFoundPublishPage {
           // 错误提示（可视，不会消失）
           if (this.errorMessage !== '') {
             Text(this.errorMessage)
-              .fontSize(22).fontColor('#FF7D00').width('100%')
+              .fontSize(22).fontColor($r('app.color.warm_orange')).width('100%')
               .textAlign(TextAlign.Center).margin({ top: 4 })
           }
 
           // 底部提示
           Text('请确认信息真实有效，虚假信息将被删除')
-            .fontSize(22).fontColor('#86909C')
+            .fontSize(22).fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
             .width('100%').textAlign(TextAlign.Center)
         }
         .width('100%')
@@ -354,6 +359,6 @@ struct LostFoundPublishPage {
       .scrollBar(BarState.Auto)
     }
     .width('100%').height('100%')
-    .backgroundColor('#F5F7FA')
+    .backgroundColor(this.isDarkMode ? '#1A1A2E' : '#F5F7FA')
   }
 }
