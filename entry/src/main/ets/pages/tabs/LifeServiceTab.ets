@@ -305,6 +305,7 @@ export struct LifeServiceTab {
     .padding({ top: 16, bottom: 16 })
     .backgroundColor(this.currentEntry === this.getEntryIndex(entry.name) ? $r('app.color.primary_light') : (this.isDarkMode ? '#252540' : $r('app.color.card_white')))
     .borderRadius(8)
+    .border({ width: { top: 3 }, color: entry.color })
     .onClick(() => {
       this.currentEntry = this.getEntryIndex(entry.name);
     })
@@ -352,13 +353,12 @@ export struct LifeServiceTab {
       } else {
         ForEach(this.lostFoundList, (item: LostFoundRow) => {
           Row() {
-            // 缩略图 64x64
+            // 缩略图 64x64（失物=橙底，拾物=蓝底）
             Stack() {
               Circle()
                 .width(64)
                 .height(64)
-                .fill(item.type === 'lost' ? $r('app.color.warm_orange') : $r('app.color.primary_light'))
-                .opacity(item.type === 'lost' ? 0.1 : 1)
+                .fill(item.type === 'lost' ? $r('app.color.card_bg_orange') : $r('app.color.card_bg_blue'))
               if (item.type === 'lost') {
                 SymbolGlyph($r('sys.symbol.magnifyingglass'))
                   .fontSize(this.fsMid)
@@ -382,7 +382,7 @@ export struct LifeServiceTab {
                     .fontSize(20)
                     .fontColor($r('app.color.warm_orange'))
                     .padding({ left: 6, right: 6, top: 2, bottom: 2 })
-                    .backgroundColor('#FFF3E0')
+                    .backgroundColor($r('app.color.card_bg_orange'))
                     .borderRadius(4)
                 }
               }
@@ -413,7 +413,8 @@ export struct LifeServiceTab {
           .padding(12)
           .backgroundColor(this.isDarkMode ? '#252540' : $r('app.color.card_white'))
           .borderRadius(8)
-          .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
+          .border({ width: { top: 3 }, color: $r('app.color.warm_orange') })
+          .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
           .alignItems(VerticalAlign.Center)
           .onClick(() => { this.viewDetail(item); })
         }, (item: LostFoundRow) => item.id)
@@ -439,14 +440,13 @@ export struct LifeServiceTab {
       } else {
         ForEach(this.foodList, (food: FoodRow) => {
           Row() {
-            // 美食图占位
+            // 美食图占位（橙色背景）
             Stack() {
               Circle()
                 .width(64)
                 .height(64)
-                .fill($r('app.color.warm_orange'))
-                .opacity(0.1)
-              Text('🍽️')
+                .fill($r('app.color.card_bg_orange'))
+              SymbolGlyph($r('sys.symbol.fork_knife'))
                 .fontSize(this.fsMid)
             }
 
@@ -503,7 +503,8 @@ export struct LifeServiceTab {
           .padding(12)
           .backgroundColor(this.isDarkMode ? '#252540' : $r('app.color.card_white'))
           .borderRadius(8)
-          .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
+          .border({ width: { top: 3 }, color: $r('app.color.warm_orange') })
+          .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
           .alignItems(VerticalAlign.Center)
         }, (food: FoodRow) => food.id)
       }
@@ -651,7 +652,8 @@ export struct LifeServiceTab {
     .padding({ left: 20, right: 20, bottom: 32 })
     .backgroundColor(this.isDarkMode ? '#252540' : $r('app.color.card_white'))
     .borderRadius(8)
-    .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
+    .border({ width: { top: 3 }, color: $r('app.color.primary') })
+    .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
     .alignItems(HorizontalAlign.Center)
   }
 
@@ -711,7 +713,8 @@ export struct LifeServiceTab {
     .padding({ top: 32, bottom: 32 })
     .backgroundColor(this.isDarkMode ? '#252540' : $r('app.color.card_white'))
     .borderRadius(8)
-    .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
+    .border({ width: { top: 3 }, color: $r('app.color.primary') })
+    .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
     .onClick(() => {
       this.navigateToTool(name);
     })
