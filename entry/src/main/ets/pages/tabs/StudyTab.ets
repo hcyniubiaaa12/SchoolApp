@@ -583,35 +583,21 @@ export struct StudyTab {
 
         // 成绩列表（按绩点排序，卡片式）
         ForEach(this.getSortedScores(), (score: ScoreRow) => {
-          Column() {
+          Column({ space: 8 }) {
+            // 第一行：课程名 + 分数/绩点（右侧垂直排列，顶部对齐确保不被截断）
             Row() {
-              Column({ space: 4 }) {
-                Text(score.courseName)
-                  .fontSize(this.fsBody)
-                  .fontWeight(600)
-                  .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
-                  .maxLines(1)
-                  .textOverflow({ overflow: TextOverflow.Ellipsis })
+              Text(score.courseName)
+                .fontSize(this.fsBody)
+                .fontWeight(600)
+                .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
+                .maxLines(1)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+                .layoutWeight(1)
 
-                Row({ space: 8 }) {
-                  Text(score.semester)
-                    .fontSize(this.fsTiny)
-                    .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
-                  Text('·')
-                    .fontSize(this.fsTiny)
-                    .fontColor($r('app.color.divider_light'))
-                  Text(score.examTime)
-                    .fontSize(this.fsTiny)
-                    .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
-                }
-              }
-              .layoutWeight(1)
-              .alignItems(HorizontalAlign.Start)
-
-              // 分数 + 绩点，分开两行显示
+              // 分数 + 绩点垂直排列，右侧顶部对齐
               Column({ space: 2 }) {
                 Text(score.score.toString())
-                  .fontSize(this.fsMid)
+                  .fontSize(32)
                   .fontWeight(700)
                   .fontColor(score.score >= 90 ? $r('app.color.fresh_green') : score.score >= 80 ? $r('app.color.primary') : $r('app.color.warm_orange'))
                 Text('绩点 ' + score.gpa.toFixed(1))
@@ -619,7 +605,22 @@ export struct StudyTab {
                   .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
               }
               .alignItems(HorizontalAlign.End)
-              .width(70)
+              .margin({ left: 12 })
+            }
+            .width('100%')
+            .alignItems(VerticalAlign.Top)
+
+            // 第二行：学期 · 考试时间
+            Row({ space: 8 }) {
+              Text(score.semester)
+                .fontSize(this.fsTiny)
+                .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
+              Text('·')
+                .fontSize(this.fsTiny)
+                .fontColor($r('app.color.divider_light'))
+              Text(score.examTime)
+                .fontSize(this.fsTiny)
+                .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
             }
             .width('100%')
 
@@ -635,7 +636,6 @@ export struct StudyTab {
             .height(4)
             .backgroundColor(this.isDarkMode ? '#3A3A5C' : '#F0F0F5')
             .borderRadius(2)
-            .margin({ top: 8 })
           }
           .width('100%')
           .padding(16)
@@ -657,13 +657,13 @@ export struct StudyTab {
   @Builder
   buildLibrarySearch() {
     Column() {
-      // 搜索栏固定在顶部
+      // 搜索栏固定在顶部（圆角24与首页搜索栏统一风格）
       Row() {
         TextInput({ placeholder: '请输入图书名称/作者/ISBN', text: this.bookSearchText })
           .height(44)
           .fontSize(this.fsSmall)
           .placeholderColor('#86909C')
-          .borderRadius(8)
+          .borderRadius(24)
           .backgroundColor(this.isDarkMode ? '#1A1A2E' : '#F5F7FA')
           .layoutWeight(1)
           .onChange((value: string) => {
@@ -671,11 +671,11 @@ export struct StudyTab {
           })
 
         Button('搜索')
-          .height(44)
+          .height(40)
           .fontSize(this.fsSmall)
           .fontColor('#FFFFFF')
           .backgroundColor($r('app.color.primary'))
-          .borderRadius(8)
+          .borderRadius(20)
           .margin({ left: 12 })
           .onClick(() => {
             this.doBookSearch();
@@ -716,18 +716,18 @@ export struct StudyTab {
   @Builder
   buildBookCard(book: BookRow) {
     Row({ space: 12 }) {
-      // 封面占位（蓝色背景）
+      // 封面占位（蓝色背景，缩小为56与九宫格统一）
       Stack() {
         Circle()
-          .width(72)
-          .height(72)
+          .width(56)
+          .height(56)
           .fill($r('app.color.card_bg_blue'))
         Image($r('app.media.ic_book'))
-          .width(32)
-          .height(32)
+          .width(28)
+          .height(28)
       }
 
-      Column({ space: 4 }) {
+      Column({ space: 6 }) {
         Text(book.title)
           .fontSize(this.fsBody)
           .fontWeight(600)
@@ -741,22 +741,24 @@ export struct StudyTab {
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
 
-        Row({ space: 8 }) {
+        Row() {
           Text(book.location)
             .fontSize(this.fsTiny)
             .fontColor($r('app.color.primary'))
             .maxLines(1)
-
-          Blank()
+            .layoutWeight(1)
+            .textOverflow({ overflow: TextOverflow.Ellipsis })
 
           if (book.availableCount > 0) {
             Text('可借 ' + book.availableCount.toString() + '/' + book.totalCount.toString())
               .fontSize(this.fsTiny)
               .fontColor($r('app.color.fresh_green'))
+              .margin({ left: 8 })
           } else {
             Text('已借完')
               .fontSize(this.fsTiny)
               .fontColor($r('app.color.warm_orange'))
+              .margin({ left: 8 })
           }
         }
         .width('100%')
@@ -767,6 +769,7 @@ export struct StudyTab {
       // 收藏按钮
       SymbolGlyph(this.isBookFavorited(book.id) ? $r('sys.symbol.heart_fill') : $r('sys.symbol.heart'))
         .fontSize(this.fsSmall)
+        .margin({ left: 8 })
         .onClick(() => {
           this.toggleBookFavorite(book.id);
         })
@@ -777,7 +780,7 @@ export struct StudyTab {
     .borderRadius(8)
     .border({ width: { top: 3 }, color: $r('app.color.primary') })
     .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
-    .alignItems(VerticalAlign.Center)
+    .alignItems(VerticalAlign.Top)
     .onClick(() => {
       router.pushUrl({ url: 'pages/study/BookDetailPage', params: { bookId: book.id } }).catch((err: Error) => { console.error('[StudyTab] 跳转图书详情失败: ' + err.message); });
     })

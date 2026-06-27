@@ -112,7 +112,7 @@ struct SearchPage {
         .padding(20)
         .layoutWeight(1)
       } else {
-        // 搜索结果
+        // 搜索结果列表（统计+卡片都在 Scroll 内，间距固定 12，紧贴搜索栏）
         Scroll() {
           Column({ space: 12 }) {
             Text('找到 ' + this.results.length.toString() + ' 个结果')
@@ -134,54 +134,44 @@ struct SearchPage {
               .alignItems(HorizontalAlign.Center)
             } else {
               ForEach(this.results, (item: SearchResultItem) => {
-                Row() {
-                  // 分类色左竖条
-                  Row()
-                    .width(3)
-                    .height(48)
-                    .backgroundColor(this.getTypeColor(item.type))
-                    .borderRadius(2)
-                    .margin({ right: 12 })
-
-                  Column({ space: 4 }) {
-                    Row({ space: 8 }) {
-                      Text(item.title)
-                        .fontSize(26)
-                        .fontWeight(600)
-                        .fontColor($r('app.color.text_primary'))
-                        .layoutWeight(1)
-                        .maxLines(1)
-                        .textOverflow({ overflow: TextOverflow.Ellipsis })
-
-                      Text(item.type)
-                        .fontSize(20)
-                        .fontColor(this.getTypeColor(item.type))
-                        .padding({ left: 8, right: 8, top: 2, bottom: 2 })
-                        .backgroundColor(this.getTypeBgColor(item.type))
-                        .borderRadius(4)
-                    }
-                    .width('100%')
-
-                    Text(item.subTitle)
-                      .fontSize(22)
-                      .fontColor($r('app.color.text_secondary'))
+                Column({ space: 4 }) {
+                  Row({ space: 8 }) {
+                    Text(item.title)
+                      .fontSize(26)
+                      .fontWeight(600)
+                      .fontColor($r('app.color.text_primary'))
+                      .layoutWeight(1)
                       .maxLines(1)
                       .textOverflow({ overflow: TextOverflow.Ellipsis })
+
+                    Text(item.type)
+                      .fontSize(20)
+                      .fontColor(this.getTypeColor(item.type))
+                      .padding({ left: 8, right: 8, top: 2, bottom: 2 })
+                      .backgroundColor(this.getTypeBgColor(item.type))
+                      .borderRadius(4)
                   }
-                  .layoutWeight(1)
-                  .alignItems(HorizontalAlign.Start)
+                  .width('100%')
+
+                  Text(item.subTitle)
+                    .fontSize(22)
+                    .fontColor($r('app.color.text_secondary'))
+                    .maxLines(1)
+                    .textOverflow({ overflow: TextOverflow.Ellipsis })
                 }
                 .width('100%')
                 .padding(16)
                 .backgroundColor($r('app.color.card_white'))
                 .borderRadius(8)
+                .border({ width: { top: 3 }, color: this.getTypeColor(item.type) })
                 .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
-                .alignItems(VerticalAlign.Center)
+                .alignItems(HorizontalAlign.Start)
               }, (item: SearchResultItem, index: number) => item.title + index.toString())
             }
           }
           .width('100%')
           .padding({ left: 20, right: 20, top: 12, bottom: 24 })
+          .alignItems(HorizontalAlign.Start)
         }
         .layoutWeight(1)
         .scrollBar(BarState.Auto)
