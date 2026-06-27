@@ -44,6 +44,7 @@ export struct HomeTab {
   onWeatherClick?: () => void;
   onQuickEntryClick?: (entry: QuickEntryItem) => void;
   onTabChange?: (index: number) => void;
+  onMoreAnnouncement?: () => void;
 
   // 九宫格 9 入口（3×3）
   private quickEntries: QuickEntryItem[] = [
@@ -268,6 +269,11 @@ export struct HomeTab {
             Text('更多 >')
               .fontSize(this.fsSmall)
               .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
+              .onClick(() => {
+                if (this.onMoreAnnouncement) {
+                  this.onMoreAnnouncement();
+                }
+              })
           }
           .width('100%')
           .margin({ bottom: 12 })
@@ -315,115 +321,7 @@ export struct HomeTab {
         .borderRadius(8)
         .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
 
-        // 6. 今日课程卡片
-        Column() {
-          Row() {
-            Text('今日课程')
-              .fontSize(this.fsMid)
-              .fontWeight(600)
-              .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
-            Text('（2）')
-              .fontSize(this.fsSmall)
-              .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
-            Blank()
-            Text('完整课程 >')
-              .fontSize(this.fsSmall)
-              .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
-          }
-          .width('100%')
-          .margin({ bottom: 12 })
-
-          // 课程 1
-          Row() {
-            Text('10:00')
-              .fontSize(this.fsSmall)
-              .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
-              .width(60)
-              .textAlign(TextAlign.Center)
-
-            Column() {
-              Circle().width(8).height(8).fill($r('app.color.warm_orange'))
-              Row().width(2).height(30).backgroundColor($r('app.color.border'))
-            }
-            .alignItems(HorizontalAlign.Center)
-            .margin({ left: 8, right: 12 })
-
-            Column({ space: 4 }) {
-              Text('高级人工智能')
-                .fontSize(this.fsBody)
-                .fontWeight(500)
-                .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
-                .maxLines(1)
-                .textOverflow({ overflow: TextOverflow.Ellipsis })
-              Text('信软楼302（数字多媒体教室）')
-                .fontSize(this.fsSmall)
-                .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
-                .maxLines(1)
-                .textOverflow({ overflow: TextOverflow.Ellipsis })
-            }
-            .alignItems(HorizontalAlign.Start)
-            .layoutWeight(1)
-
-            Text('必修')
-              .fontSize(this.fsTiny)
-              .fontColor($r('app.color.warm_orange'))
-              .padding({ left: 8, right: 8, top: 2, bottom: 2 })
-              .borderRadius(4)
-              .backgroundColor('#FFF3E0')
-          }
-          .width('100%')
-          .padding({ top: 8, bottom: 8 })
-
-          Divider().color($r('app.color.border'))
-
-          // 课程 2
-          Row() {
-            Text('14:00')
-              .fontSize(this.fsSmall)
-              .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
-              .width(60)
-              .textAlign(TextAlign.Center)
-
-            Column() {
-              Circle().width(8).height(8).fill($r('app.color.fresh_green'))
-              Row().width(2).height(30).backgroundColor($r('app.color.border'))
-            }
-            .alignItems(HorizontalAlign.Center)
-            .margin({ left: 8, right: 12 })
-
-            Column({ space: 4 }) {
-              Text('创业管理学')
-                .fontSize(this.fsBody)
-                .fontWeight(500)
-                .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
-                .maxLines(1)
-                .textOverflow({ overflow: TextOverflow.Ellipsis })
-              Text('公教楼508')
-                .fontSize(this.fsSmall)
-                .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
-                .maxLines(1)
-                .textOverflow({ overflow: TextOverflow.Ellipsis })
-            }
-            .alignItems(HorizontalAlign.Start)
-            .layoutWeight(1)
-
-            Text('选修')
-              .fontSize(this.fsTiny)
-              .fontColor($r('app.color.fresh_green'))
-              .padding({ left: 8, right: 8, top: 2, bottom: 2 })
-              .borderRadius(4)
-              .backgroundColor('#E6FFE6')
-          }
-          .width('100%')
-          .padding({ top: 8, bottom: 8 })
-        }
-        .width('100%')
-        .padding(16)
-        .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
-        .borderRadius(8)
-        .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
-
-        // 7. 天气提醒卡片
+        // 6. 天气提醒卡片
         Row() {
           SymbolGlyph($r('sys.symbol.sun_max'))
             .fontSize(48)

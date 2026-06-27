@@ -165,6 +165,9 @@ struct Index {
                   promptAction.showToast({ message: '打开天气页失败' });
                   console.error('[Index] weather page error: ' + err.message);
                 });
+            },
+            onMoreAnnouncement: () => {
+              this.currentTab = 1;
             }
           })
         }
