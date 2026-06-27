@@ -4,11 +4,37 @@
  */
 import { router } from '@kit.ArkUI';
 import promptAction from '@ohos.promptAction';
+import { JsonStoreUtil } from '../../common/utils/JsonStoreUtil';
+import { AnnouncementItem } from '../../common/model/Announcement';
+import { NewsItem } from '../../common/model/News';
+import { SongItem } from '../../common/model/Music';
+import { LostFoundItem } from '../../common/model/LostFound';
+import { CourseDao, CourseRow } from '../../common/database/CourseDao';
+import { ScoreDao, ScoreRow } from '../../common/database/ScoreDao';
+import { BookDao, BookRow } from '../../common/database/BookDao';
+import { LostFoundDao, LostFoundRow } from '../../common/database/LostFoundDao';
+import { FoodDao, FoodRow } from '../../common/database/FoodDao';
+import { WeatherDao, WeatherRow } from '../../common/database/WeatherDao';
+
+interface MaterialItem {
+  name: string;
+  type: string;
+}
+
+interface MaterialFolder {
+  id: string;
+  folderName: string;
+  icon: string;
+  items: MaterialItem[];
+}
 
 interface SearchResultItem {
+  id: string;
   title: string;
   subTitle: string;
   type: string;
+  searchableText: string;
+  routeUrl: string;
 }
 
 @Entry
@@ -17,19 +43,157 @@ struct SearchPage {
   @State searchText: string = '';
   @State results: SearchResultItem[] = [];
   @State hasSearched: boolean = false;
+  @State isLoading: boolean = false;
+  @State searchScopeText: string = '搜索范围：公告、资讯、课程、成绩、图书、美食、失物招领、学习资料、音乐、天气';
+  private allData: SearchResultItem[] = [];
 
-  // 模拟全量数据
-  private allData: SearchResultItem[] = [
-    { title: '关于2026年春季学期期末考试安排的通知', subTitle: '校长办公室 · 2026-06-20', type: '公告' },
-    { title: '高级人工智能', subTitle: '信软楼302 · 李明教授', type: '课程' },
-    { title: '高等数学实践', subTitle: '公教楼205 · 王芳老师', type: '课程' },
-    { title: '数据结构课程设计', subTitle: '实验楼404 · 赵强老师', type: '课程' },
-    { title: '深入理解计算机系统', subTitle: '图书馆三楼A区-301 · 可借3/5', type: '图书' },
-    { title: '算法导论', subTitle: '图书馆三楼B区-205 · 可借5/8', type: '图书' },
-    { title: '红烧牛肉面', subTitle: '二食堂 · 面食窗口', type: '美食' },
-    { title: '麻辣香锅', subTitle: '一食堂 · 川味窗口', type: '美食' },
-    { title: '蓝色校园卡遗失', subTitle: '二食堂一楼 · 2026-06-24', type: '失物' },
-  ];
+  aboutToAppear(): void {
+    this.loadSearchData();
+  }
+
+  private async loadSearchData(): Promise<void> {
+    this.isLoading = true;
+    const ctx: Context = getContext(this);
+    const list: SearchResultItem[] = [];
+    try {
+      await this.appendRdbData(ctx, list);
+      await this.appendJsonData(list);
+      this.allData = list;
+    } catch (e) {
+      console.error('[SearchPage] 加载搜索数据失败: ' + JSON.stringify(e));
+    }
+    this.isLoading = false;
+  }
+
+  private async appendRdbData(ctx: Context, list: SearchResultItem[]): Promise<void> {
+    const courses: CourseRow[] = await CourseDao.queryAll(ctx);
+    for (let i = 0; i < courses.length; i++) {
+      const item: CourseRow = courses[i];
+      list.push(this.createResult(item.id, item.name,
+        item.location + ' · ' + item.teacher + ' · 第' + item.startWeek.toString() + '-' + item.endWeek.toString() + '周',
+        '课程', item.name + ' ' + item.teacher + ' ' + item.location + ' ' + item.courseType + ' ' + item.remark, ''));
+    }
+
+    const scores: ScoreRow[] = await ScoreDao.queryAll(ctx);
+    for (let i = 0; i < scores.length; i++) {
+      const item: ScoreRow = scores[i];
+      list.push(this.createResult(item.id, item.courseName,
+        '成绩 ' + item.score.toString() + ' · 绩点 ' + item.gpa.toString() + ' · ' + item.semester,
+        '成绩', item.courseName + ' ' + item.semester + ' ' + item.examTime + ' ' + item.score.toString(), ''));
+    }
+
+    const books: BookRow[] = await BookDao.queryAll(ctx);
+    for (let i = 0; i < books.length; i++) {
+      const item: BookRow = books[i];
+      list.push(this.createResult(item.id, item.title,
+        item.author + ' · ' + item.location + ' · 可借' + item.availableCount.toString() + '/' + item.totalCount.toString(),
+        '图书', item.title + ' ' + item.author + ' ' + item.publisher + ' ' + item.isbn + ' ' + item.location + ' ' + item.summary,
+        'pages/study/BookDetailPage'));
+    }
+
+    const foods: FoodRow[] = await FoodDao.queryAll(ctx);
+    for (let i = 0; i < foods.length; i++) {
+      const item: FoodRow = foods[i];
+      list.push(this.createResult(item.id, item.name,
+        item.canteen + ' · ' + item.signatureDish + ' · ' + item.rating.toString() + '星',
+        '美食', item.name + ' ' + item.canteen + ' ' + item.signatureDish + ' ' + item.tags, ''));
+    }
+
+    const lostItems: LostFoundRow[] = await LostFoundDao.queryAll(ctx);
+    for (let i = 0; i < lostItems.length; i++) {
+      const item: LostFoundRow = lostItems[i];
+      list.push(this.createResult(item.id, item.itemName,
+        this.getLostFoundTypeName(item.type) + ' · ' + item.location + ' · ' + item.time,
+        '失物', item.itemName + ' ' + item.category + ' ' + item.location + ' ' + item.description + ' ' + item.type + ' ' + item.status, ''));
+    }
+
+    const weatherList: WeatherRow[] = await WeatherDao.queryAll(ctx);
+    for (let i = 0; i < weatherList.length; i++) {
+      const item: WeatherRow = weatherList[i];
+      list.push(this.createResult(item.id, item.dateText + ' ' + item.weather,
+        item.weekDay + ' · ' + item.tempLow.toString() + '-' + item.tempHigh.toString() + '℃',
+        '天气', item.dateText + ' ' + item.weekDay + ' ' + item.weather, 'pages/common/WeatherDetailPage'));
+    }
+  }
+
+  private async appendJsonData(list: SearchResultItem[]): Promise<void> {
+    const announcements: AnnouncementItem[] | null = await JsonStoreUtil.read<AnnouncementItem[]>('announcements.json');
+    if (announcements) {
+      for (let i = 0; i < announcements.length; i++) {
+        const item: AnnouncementItem = announcements[i];
+        list.push(this.createResult(item.id, item.title, item.source + ' · ' + item.publishTime,
+          '公告', item.title + ' ' + item.summary + ' ' + item.content + ' ' + item.category + ' ' + item.source, ''));
+      }
+    }
+
+    const newsList: NewsItem[] | null = await JsonStoreUtil.read<NewsItem[]>('news.json');
+    if (newsList) {
+      for (let i = 0; i < newsList.length; i++) {
+        const item: NewsItem = newsList[i];
+        list.push(this.createResult(item.id, item.title, item.source + ' · ' + item.publishTime,
+          '资讯', item.title + ' ' + item.summary + ' ' + item.content + ' ' + item.source, 'pages/campus/NewsDetailPage'));
+      }
+    }
+
+    const materials: MaterialFolder[] | null = await JsonStoreUtil.read<MaterialFolder[]>('study_materials.json');
+    if (materials) {
+      for (let i = 0; i < materials.length; i++) {
+        const folder: MaterialFolder = materials[i];
+        list.push(this.createResult(folder.id, folder.folderName, '学习资料文件夹',
+          '资料', folder.folderName + ' ' + this.getMaterialText(folder), ''));
+        for (let j = 0; j < folder.items.length; j++) {
+          const item: MaterialItem = folder.items[j];
+          list.push(this.createResult(folder.id + '_' + j.toString(), item.name, folder.folderName + ' · ' + item.type,
+            '资料', item.name + ' ' + item.type + ' ' + folder.folderName, ''));
+        }
+      }
+    }
+
+    const songs: SongItem[] | null = await JsonStoreUtil.read<SongItem[]>('music.json');
+    if (songs) {
+      for (let i = 0; i < songs.length; i++) {
+        const item: SongItem = songs[i];
+        list.push(this.createResult(item.id, item.title, item.artist + ' · ' + item.album,
+          '音乐', item.title + ' ' + item.artist + ' ' + item.album, 'pages/life/MusicListPage'));
+      }
+    }
+
+    const rawLostItems: LostFoundItem[] | null = await JsonStoreUtil.read<LostFoundItem[]>('lostfound.json');
+    if (rawLostItems) {
+      for (let i = 0; i < rawLostItems.length; i++) {
+        const item: LostFoundItem = rawLostItems[i];
+        list.push(this.createResult(item.id, item.itemName, this.getLostFoundTypeName(item.type) + ' · ' + item.location + ' · ' + item.time,
+          '失物', item.itemName + ' ' + item.category + ' ' + item.location + ' ' + item.description + ' ' + item.type + ' ' + item.status, ''));
+      }
+    }
+  }
+
+  private createResult(id: string, title: string, subTitle: string, type: string, searchableText: string, routeUrl: string): SearchResultItem {
+    return {
+      id: id,
+      title: title,
+      subTitle: subTitle,
+      type: type,
+      searchableText: (title + ' ' + subTitle + ' ' + searchableText).toLowerCase(),
+      routeUrl: routeUrl
+    };
+  }
+
+  private getMaterialText(folder: MaterialFolder): string {
+    let text: string = '';
+    for (let i = 0; i < folder.items.length; i++) {
+      const item: MaterialItem = folder.items[i];
+      text += ' ' + item.name + ' ' + item.type;
+    }
+    return text;
+  }
+
+  private getLostFoundTypeName(type: string): string {
+    if (type === 'found') {
+      return '拾物';
+    }
+    return '失物';
+  }
 
   private doSearch(): void {
     const keyword: string = this.searchText.trim().toLowerCase();
@@ -37,16 +201,35 @@ struct SearchPage {
       promptAction.showToast({ message: '请输入搜索内容' });
       return;
     }
+    if (this.isLoading) {
+      promptAction.showToast({ message: '搜索数据加载中，请稍后再试' });
+      return;
+    }
     const matched: SearchResultItem[] = [];
     for (let i = 0; i < this.allData.length; i++) {
       const item: SearchResultItem = this.allData[i];
-      if (item.title.toLowerCase().includes(keyword) ||
-          item.subTitle.toLowerCase().includes(keyword)) {
+      if (item.searchableText.includes(keyword)) {
         matched.push(item);
       }
     }
     this.results = matched;
     this.hasSearched = true;
+  }
+
+  private openResult(item: SearchResultItem): void {
+    if (item.routeUrl === 'pages/study/BookDetailPage') {
+      router.pushUrl({ url: item.routeUrl, params: { bookId: item.id } });
+      return;
+    }
+    if (item.routeUrl === 'pages/campus/NewsDetailPage') {
+      router.pushUrl({ url: item.routeUrl, params: { newsId: item.id } });
+      return;
+    }
+    if (item.routeUrl !== '') {
+      router.pushUrl({ url: item.routeUrl });
+      return;
+    }
+    promptAction.showToast({ message: item.type + '结果暂不支持跳转详情' });
   }
 
   build() {
@@ -120,6 +303,19 @@ struct SearchPage {
           .width('100%')
           .scrollable(ScrollDirection.Horizontal)
           .scrollBar(BarState.Off)
+
+          Text(this.searchScopeText)
+            .fontSize(22)
+            .fontColor($r('app.color.text_secondary'))
+            .width('100%')
+            .maxLines(2)
+            .textOverflow({ overflow: TextOverflow.Ellipsis })
+
+          if (this.isLoading) {
+            Text('正在加载本地搜索数据...')
+              .fontSize(22)
+              .fontColor($r('app.color.primary'))
+          }
         }
         .width('100%')
         .padding({ left: 20, right: 20, top: 20, bottom: 20 })
@@ -178,7 +374,10 @@ struct SearchPage {
               .border({ width: { top: 3 }, color: this.getTypeColor(item.type) })
               .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
               .alignItems(HorizontalAlign.Start)
-            }, (item: SearchResultItem, index: number) => item.title + index.toString())
+              .onClick(() => {
+                this.openResult(item);
+              })
+            }, (item: SearchResultItem, index: number) => item.type + item.id + index.toString())
           }
         }
         .width('100%')
@@ -193,20 +392,20 @@ struct SearchPage {
 
   // 搜索类型对应的分类色
   private getTypeColor(type: string): Resource {
-    if (type === '公告' || type === '课程' || type === '图书') {
+    if (type === '公告' || type === '课程' || type === '图书' || type === '资讯' || type === '资料' || type === '天气') {
       return $r('app.color.primary');
     }
-    if (type === '美食' || type === '失物') {
+    if (type === '美食' || type === '失物' || type === '音乐') {
       return $r('app.color.warm_orange');
     }
     return $r('app.color.text_secondary');
   }
 
   private getTypeBgColor(type: string): Resource {
-    if (type === '公告' || type === '课程' || type === '图书') {
+    if (type === '公告' || type === '课程' || type === '图书' || type === '资讯' || type === '资料' || type === '天气') {
       return $r('app.color.card_bg_blue');
     }
-    if (type === '美食' || type === '失物') {
+    if (type === '美食' || type === '失物' || type === '音乐') {
       return $r('app.color.card_bg_orange');
     }
     return $r('app.color.background');
