@@ -296,34 +296,26 @@ export struct StudyTab {
         .padding({ left: 20, right: 20 })
         .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
 
-        // 功能标签栏
+        // 功能标签栏（胶囊样式：选中蓝底白字）
         Row() {
           ForEach(this.tags, (tag: TagItem, index: number) => {
-            Column({ space: 6 }) {
-              Text(tag.name)
-                .fontSize(this.fsTiny)
-                .fontColor(this.currentTagIndex === index ? $r('app.color.primary') : this.isDarkMode ? '#A0A0A0' : '#86909C')
-                .fontWeight(this.currentTagIndex === index ? 600 : 400)
-                .maxLines(1)
-                .textOverflow({ overflow: TextOverflow.Ellipsis })
-              Row()
-                .width(34)
-                .height(2)
-                .backgroundColor(this.currentTagIndex === index ? $r('app.color.primary') : '#00FFFFFF')
-                .borderRadius(1)
-            }
-            .layoutWeight(1)
-            .height(48)
-            .justifyContent(FlexAlign.Center)
-            .alignItems(HorizontalAlign.Center)
-            .onClick(() => {
-              this.currentTagIndex = index;
-            })
+            Text(tag.name)
+              .fontSize(this.fsTiny)
+              .fontColor(this.currentTagIndex === index ? '#FFFFFF' : this.isDarkMode ? '#E8E8E8' : '#1D2129')
+              .fontWeight(this.currentTagIndex === index ? 600 : 400)
+              .padding({ left: 12, right: 12, top: 6, bottom: 6 })
+              .backgroundColor(this.currentTagIndex === index ? $r('app.color.primary') : this.isDarkMode ? '#3A3A5C' : '#F5F7FA')
+              .borderRadius(8)
+              .maxLines(1)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
+              .onClick(() => {
+                this.currentTagIndex = index;
+              })
           }, (tag: TagItem, index: number) => tag.name + index.toString())
         }
         .width('100%')
+        .padding({ left: 20, right: 20, top: 12, bottom: 12 })
         .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
-        .border({ width: { bottom: 1 }, color: '#E5E6EB' })
 
         // 标签内容区
         if (this.currentTagIndex === 0) {
@@ -354,7 +346,7 @@ export struct StudyTab {
   buildCourseTable() {
     Scroll() {
       Column({ space: 16 }) {
-        // 周次切换
+        // 周次切换（蓝色顶部色条）
         Row() {
           Text('上一周')
             .fontSize(this.fsSmall)
@@ -392,7 +384,8 @@ export struct StudyTab {
         .padding(16)
         .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
         .borderRadius(8)
-        .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
+        .border({ width: { top: 3 }, color: $r('app.color.primary') })
+        .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
         .alignItems(VerticalAlign.Center)
 
         // 周一至周日纵向课程视图
@@ -526,39 +519,57 @@ export struct StudyTab {
   buildScoreQuery() {
     Scroll() {
       Column({ space: 16 }) {
-        // 学号/姓名 + 平均绩点概览
-        Row() {
-          Column({ space: 4 }) {
-            Text('计算机科学与技术 · 张三')
-              .fontSize(this.fsBody)
+        // 成绩概览（绿色顶部色条 + 绿色圆点）
+        Column() {
+          Row() {
+            Circle()
+              .width(6)
+              .height(6)
+              .fill($r('app.color.fresh_green'))
+            Text('成绩概览')
+              .fontSize(this.fsMid)
               .fontWeight(600)
               .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
-              .maxLines(1)
-              .textOverflow({ overflow: TextOverflow.Ellipsis })
-            Text('平均绩点: ' + this.getAverageGpa())
+              .margin({ left: 6 })
+            Blank()
+            Text('刷新成绩')
               .fontSize(this.fsSmall)
-              .fontColor($r('app.color.primary'))
-              .maxLines(1)
+              .fontColor('#FFFFFF')
+              .padding({ left: 16, right: 16, top: 8, bottom: 8 })
+              .backgroundColor($r('app.color.primary'))
+              .borderRadius(8)
+              .onClick(() => {
+                this.loadScores();
+                promptAction.showToast({ message: '成绩已刷新' });
+              })
           }
-          .layoutWeight(1)
+          .width('100%')
 
-          Text('刷新成绩')
-            .fontSize(this.fsSmall)
-            .fontColor('#FFFFFF')
-            .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-            .backgroundColor($r('app.color.primary'))
-            .borderRadius(8)
-            .onClick(() => {
-              this.loadScores();
-              promptAction.showToast({ message: '成绩已刷新' });
-            })
+          Row({ space: 8 }) {
+            Column({ space: 4 }) {
+              Text('计算机科学与技术 · 张三')
+                .fontSize(this.fsBody)
+                .fontWeight(600)
+                .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
+                .maxLines(1)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+              Text('平均绩点: ' + this.getAverageGpa())
+                .fontSize(this.fsSmall)
+                .fontColor($r('app.color.primary'))
+                .maxLines(1)
+            }
+            .layoutWeight(1)
+            .alignItems(HorizontalAlign.Start)
+            .margin({ top: 8 })
+          }
+          .width('100%')
         }
         .width('100%')
         .padding(16)
         .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
         .borderRadius(8)
-        .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
-        .alignItems(VerticalAlign.Center)
+        .border({ width: { top: 3 }, color: $r('app.color.fresh_green') })
+        .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
 
         // 成绩列表（按绩点排序）
         ForEach(this.getSortedScores(), (score: ScoreRow) => {
@@ -671,12 +682,12 @@ export struct StudyTab {
   @Builder
   buildBookCard(book: BookRow) {
     Row({ space: 12 }) {
-      // 封面占位
+      // 封面占位（蓝色背景）
       Stack() {
         Circle()
           .width(72)
           .height(72)
-          .fill($r('app.color.primary_light'))
+          .fill($r('app.color.card_bg_blue'))
         Image($r('app.media.ic_book'))
           .width(32)
           .height(32)
@@ -730,7 +741,8 @@ export struct StudyTab {
     .padding(12)
     .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
     .borderRadius(8)
-    .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
+    .border({ width: { top: 3 }, color: $r('app.color.primary') })
+    .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
     .alignItems(VerticalAlign.Center)
     .onClick(() => {
       router.pushUrl({ url: 'pages/study/BookDetailPage', params: { bookId: book.id } }).catch((err: Error) => { console.error('[StudyTab] 跳转图书详情失败: ' + err.message); });
@@ -849,7 +861,8 @@ export struct StudyTab {
     .width('100%')
     .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
     .borderRadius(8)
-    .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
+    .border({ width: { top: 3 }, color: $r('app.color.primary') })
+    .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
   }
 
   // ===== 课程详情弹窗 =====
@@ -874,7 +887,7 @@ export struct StudyTab {
         }
         .width('100%')
 
-        Divider().color('#E5E6EB')
+        Divider().color($r('app.color.divider_light'))
 
         Text(this.getSelectedCourse().name)
           .fontSize(32)
