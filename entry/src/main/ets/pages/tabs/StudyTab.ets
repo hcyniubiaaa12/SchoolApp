@@ -221,6 +221,11 @@ export struct StudyTab {
     return (sum / this.scores.length).toFixed(2);
   }
 
+  private getScoreBarWidth(score: number): number {
+    // 分数条宽度：60分=60%, 100分=100%，线性映射
+    return Math.max(10, Math.min(100, score));
+  }
+
   // —— 图书馆检索 ——
 
   private doBookSearch(): void {
@@ -576,45 +581,69 @@ export struct StudyTab {
         .border({ width: { top: 3 }, color: $r('app.color.fresh_green') })
         .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
 
-        // 成绩列表（按绩点排序）
+        // 成绩列表（按绩点排序，卡片式）
         ForEach(this.getSortedScores(), (score: ScoreRow) => {
-          Row() {
-            Column({ space: 4 }) {
-              Text(score.courseName)
-                .fontSize(this.fsBody)
-                .fontWeight(600)
-                .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
-                .maxLines(1)
-                .textOverflow({ overflow: TextOverflow.Ellipsis })
-              Row({ space: 8 }) {
-                Text(score.semester)
-                  .fontSize(this.fsTiny)
-                  .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
-                Text(score.examTime)
+          Column() {
+            Row() {
+              Column({ space: 4 }) {
+                Text(score.courseName)
+                  .fontSize(this.fsBody)
+                  .fontWeight(600)
+                  .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
+                  .maxLines(1)
+                  .textOverflow({ overflow: TextOverflow.Ellipsis })
+
+                Row({ space: 8 }) {
+                  Text(score.semester)
+                    .fontSize(this.fsTiny)
+                    .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
+                  Text('·')
+                    .fontSize(this.fsTiny)
+                    .fontColor($r('app.color.divider_light'))
+                  Text(score.examTime)
+                    .fontSize(this.fsTiny)
+                    .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
+                }
+              }
+              .layoutWeight(1)
+              .alignItems(HorizontalAlign.Start)
+
+              // 分数 + 绩点，分开两行显示
+              Column({ space: 2 }) {
+                Text(score.score.toString())
+                  .fontSize(this.fsMid)
+                  .fontWeight(700)
+                  .fontColor(score.score >= 90 ? $r('app.color.fresh_green') : score.score >= 80 ? $r('app.color.primary') : $r('app.color.warm_orange'))
+                Text('绩点 ' + score.gpa.toFixed(1))
                   .fontSize(this.fsTiny)
                   .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
               }
+              .alignItems(HorizontalAlign.End)
+              .width(70)
             }
-            .layoutWeight(1)
-            .alignItems(HorizontalAlign.Start)
+            .width('100%')
 
-            Column({ space: 2 }) {
-              Text(score.score.toString())
-                .fontSize(this.fsMid)
-                .fontWeight(700)
-                .fontColor(score.score >= 90 ? $r('app.color.fresh_green') : score.score >= 80 ? $r('app.color.primary') : $r('app.color.warm_orange'))
-              Text('绩点 ' + score.gpa.toFixed(1))
-                .fontSize(this.fsTiny)
-                .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
+            // 分数条
+            Row() {
+              Row()
+                .width(this.getScoreBarWidth(score.score) + '%')
+                .height(4)
+                .backgroundColor(score.score >= 90 ? $r('app.color.fresh_green') : score.score >= 80 ? $r('app.color.primary') : $r('app.color.warm_orange'))
+                .borderRadius(2)
             }
-            .alignItems(HorizontalAlign.Center)
-            .width(80)
+            .width('100%')
+            .height(4)
+            .backgroundColor(this.isDarkMode ? '#3A3A5C' : '#F0F0F5')
+            .borderRadius(2)
+            .margin({ top: 8 })
           }
           .width('100%')
           .padding(16)
           .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
           .borderRadius(8)
-          .shadow({ radius: 8, color: '#1A000000', offsetX: 0, offsetY: 2 })
+          .border({ width: { top: 3 }, color: score.score >= 90 ? $r('app.color.fresh_green') : score.score >= 80 ? $r('app.color.primary') : $r('app.color.warm_orange') })
+          .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
+          .alignItems(HorizontalAlign.Start)
         }, (score: ScoreRow) => score.id)
       }
       .width('100%')

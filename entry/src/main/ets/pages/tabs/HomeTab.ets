@@ -103,33 +103,14 @@ export struct HomeTab {
   build() {
     Scroll() {
       Column({ space: 16 }) {
-        // 1. 导航栏（规范：标题「校园助手」30sp 鸿蒙蓝 600 + 右侧消息铃铛）
+        // 1. 导航栏
         Row() {
           Text('校园助手')
             .fontSize(this.fsTitle)
             .fontWeight(600)
             .fontColor($r('app.color.primary'))
-            .layoutWeight(1)
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
-
-          // 铃铛图标 + 红点
-          Stack() {
-            SymbolGlyph($r('sys.symbol.bell'))
-              .fontSize(this.fsSmall)
-            Circle()
-              .width(8)
-              .height(8)
-              .fill($r('app.color.warm_orange'))
-              .position({ x: 18, y: 0 })
-          }
-          .width(36)
-          .height(36)
-          .onClick(() => {
-            if (this.onMessageClick) {
-              this.onMessageClick();
-            }
-          })
         }
         .width('100%')
         .height(56)

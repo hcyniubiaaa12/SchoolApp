@@ -135,6 +135,14 @@ struct SearchPage {
             } else {
               ForEach(this.results, (item: SearchResultItem) => {
                 Row() {
+                  // 分类色左竖条
+                  Row()
+                    .width(3)
+                    .height(48)
+                    .backgroundColor(this.getTypeColor(item.type))
+                    .borderRadius(2)
+                    .margin({ right: 12 })
+
                   Column({ space: 4 }) {
                     Row({ space: 8 }) {
                       Text(item.title)
@@ -147,9 +155,9 @@ struct SearchPage {
 
                       Text(item.type)
                         .fontSize(20)
-                        .fontColor($r('app.color.primary'))
-                        .padding({ left: 6, right: 6, top: 2, bottom: 2 })
-                        .backgroundColor('#E8F3FF')
+                        .fontColor(this.getTypeColor(item.type))
+                        .padding({ left: 8, right: 8, top: 2, bottom: 2 })
+                        .backgroundColor(this.getTypeBgColor(item.type))
                         .borderRadius(4)
                     }
                     .width('100%')
@@ -167,7 +175,8 @@ struct SearchPage {
                 .padding(16)
                 .backgroundColor($r('app.color.card_white'))
                 .borderRadius(8)
-                .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
+                .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
+                .alignItems(VerticalAlign.Center)
               }, (item: SearchResultItem, index: number) => item.title + index.toString())
             }
           }
@@ -181,6 +190,27 @@ struct SearchPage {
     .width('100%')
     .height('100%')
     .backgroundColor($r('app.color.background'))
+  }
+
+  // 搜索类型对应的分类色
+  private getTypeColor(type: string): Resource {
+    if (type === '公告' || type === '课程' || type === '图书') {
+      return $r('app.color.primary');
+    }
+    if (type === '美食' || type === '失物') {
+      return $r('app.color.warm_orange');
+    }
+    return $r('app.color.text_secondary');
+  }
+
+  private getTypeBgColor(type: string): Resource {
+    if (type === '公告' || type === '课程' || type === '图书') {
+      return $r('app.color.card_bg_blue');
+    }
+    if (type === '美食' || type === '失物') {
+      return $r('app.color.card_bg_orange');
+    }
+    return $r('app.color.background');
   }
 
   @Builder
