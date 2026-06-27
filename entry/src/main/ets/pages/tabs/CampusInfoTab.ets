@@ -63,20 +63,13 @@ interface MapBuilding {
 
 @Component
 export struct CampusInfoTab {
-  @StorageLink('isDarkMode') @Watch('onDarkChange') isDarkMode: boolean = false;
-  @State darkPrimary: string = '#1D2129';
-  @State darkSecondary: string = '#86909C';
+  @StorageLink('isDarkMode') isDarkMode: boolean = false;
   @StorageLink('fontScale') @Watch('onFontScaleChange') fontScale: number = 1.0;
   @State fsTitle: number = 30;
   @State fsMid: number = 28;
   @State fsBody: number = 26;
   @State fsSmall: number = 24;
   @State fsTiny: number = 22;
-
-  private onDarkChange(): void {
-    this.darkPrimary = this.isDarkMode ? '#E8E8E8' : '#1D2129';
-    this.darkSecondary = this.isDarkMode ? '#A0A0A0' : '#86909C';
-  }
 
   private onFontScaleChange(): void {
     this.fsTitle = Math.round(30 * this.fontScale);
@@ -167,7 +160,7 @@ export struct CampusInfoTab {
           Text('校园信息')
             .fontSize(this.fsTitle)
             .fontWeight(600)
-            .fontColor(this.darkPrimary)
+            .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
         }
@@ -182,7 +175,7 @@ export struct CampusInfoTab {
             ForEach(this.tags, (tag: TagItem, index: number) => {
               Text(tag.name)
                 .fontSize(this.fsTiny)
-                .fontColor(this.currentTagIndex === index ? '#FFFFFF' : this.darkPrimary)
+                .fontColor(this.currentTagIndex === index ? '#FFFFFF' : this.isDarkMode ? '#E8E8E8' : '#1D2129')
                 .padding({ left: 16, right: 16, top: 6, bottom: 6 })
                 .backgroundColor(this.currentTagIndex === index ? $r('app.color.primary') : (this.isDarkMode ? '#3A3A5C' : $r('app.color.background')))
                 .borderRadius(20)
@@ -249,7 +242,7 @@ export struct CampusInfoTab {
                   Text(item.title)
                     .fontSize(this.fsBody)
                     .fontWeight(600)
-                    .fontColor(this.darkPrimary)
+                    .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
                     .maxLines(1)
                     .textOverflow({ overflow: TextOverflow.Ellipsis })
                     .layoutWeight(1)
@@ -264,13 +257,13 @@ export struct CampusInfoTab {
 
                 Text(item.source + ' · ' + item.publishTime)
                   .fontSize(this.fsTiny)
-                  .fontColor(this.darkSecondary)
+                  .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
 
                 Text(item.summary)
                   .fontSize(this.fsSmall)
-                  .fontColor(this.darkSecondary)
+                  .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
                   .maxLines(2)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
               }
@@ -320,19 +313,19 @@ export struct CampusInfoTab {
                 Text(item.title)
                   .fontSize(this.fsBody)
                   .fontWeight(600)
-                  .fontColor(this.darkPrimary)
+                  .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
 
                 Text(item.source + ' · ' + item.publishTime)
                   .fontSize(this.fsTiny)
-                  .fontColor(this.darkSecondary)
+                  .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
 
                 Text(item.summary)
                   .fontSize(this.fsSmall)
-                  .fontColor(this.darkSecondary)
+                  .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
                   .maxLines(2)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
               }
@@ -370,7 +363,7 @@ export struct CampusInfoTab {
               Text(item.title)
                 .fontSize(this.fsBody)
                 .fontWeight(600)
-                .fontColor(this.darkPrimary)
+                .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
                 .layoutWeight(1)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -386,7 +379,7 @@ export struct CampusInfoTab {
 
             Text(item.organizer + ' · ' + item.time)
               .fontSize(this.fsTiny)
-              .fontColor(this.darkSecondary)
+              .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
               .maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
 
@@ -401,7 +394,7 @@ export struct CampusInfoTab {
 
             Text(item.summary)
               .fontSize(this.fsSmall)
-              .fontColor(this.darkSecondary)
+              .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
               .maxLines(2)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
           }
@@ -430,7 +423,7 @@ export struct CampusInfoTab {
             Text(item.title)
               .fontSize(this.fsBody)
               .fontWeight(600)
-              .fontColor(this.darkPrimary)
+              .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
               .width('100%')
               .maxLines(2)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -453,21 +446,21 @@ export struct CampusInfoTab {
                   .fontSize(this.fsSmall)
                 Text(item.time)
                   .fontSize(this.fsTiny)
-                  .fontColor(this.darkSecondary)
+                  .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
               }
               Row({ space: 4 }) {
                 SymbolGlyph($r('sys.symbol.pin'))
                   .fontSize(this.fsSmall)
                 Text(item.location)
                   .fontSize(this.fsTiny)
-                  .fontColor(this.darkSecondary)
+                  .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
               }
             }
             .width('100%')
 
             Text(item.summary)
               .fontSize(this.fsSmall)
-              .fontColor(this.darkSecondary)
+              .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
               .maxLines(2)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
           }
@@ -514,7 +507,7 @@ export struct CampusInfoTab {
               }
               Text(b.name)
                 .fontSize(18)
-                .fontColor(this.darkPrimary)
+                .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
                 .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
                 .padding({ left: 4, right: 4 })
                 .borderRadius(2)
@@ -538,7 +531,7 @@ export struct CampusInfoTab {
               .fontColor($r('app.color.primary'))
             Text(this.buildings[this.selectedBuilding].description)
               .fontSize(this.fsSmall)
-              .fontColor(this.darkSecondary)
+              .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
               .maxLines(3)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
           }
@@ -596,11 +589,11 @@ export struct CampusInfoTab {
                     .fill(this.selectedBuilding === index ? $r('app.color.primary_light') : $r('app.color.background'))
                   Text(b.name.substring(0, 1))
                     .fontSize(this.fsTiny)
-                    .fontColor(this.selectedBuilding === index ? '#1677FF' : this.darkSecondary)
+                    .fontColor(this.selectedBuilding === index ? '#1677FF' : this.isDarkMode ? '#A0A0A0' : '#86909C')
                 }
                 Text(b.name)
                   .fontSize(20)
-                  .fontColor(this.selectedBuilding === index ? '#1677FF' : this.darkSecondary)
+                  .fontColor(this.selectedBuilding === index ? '#1677FF' : this.isDarkMode ? '#A0A0A0' : '#86909C')
                   .maxLines(1)
               }
               .alignItems(HorizontalAlign.Center)
@@ -661,7 +654,7 @@ export struct CampusInfoTab {
       }
       Text(message)
         .fontSize(this.fsMid)
-        .fontColor(this.darkSecondary)
+        .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
     }
     .width('100%')
     .height(300)
@@ -681,7 +674,7 @@ export struct CampusInfoTab {
             Text('公告详情')
               .fontSize(this.fsMid)
               .fontWeight(700)
-              .fontColor(this.darkPrimary)
+              .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
               .layoutWeight(1)
             Text('关闭')
               .fontSize(this.fsSmall)
@@ -697,7 +690,7 @@ export struct CampusInfoTab {
           Text(this.selectedAnnouncement!.title)
             .fontSize(32)
             .fontWeight(700)
-            .fontColor(this.darkPrimary)
+            .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
             .width('100%')
             .maxLines(3)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -708,7 +701,7 @@ export struct CampusInfoTab {
               .fontColor($r('app.color.primary'))
             Text(this.selectedAnnouncement!.publishTime)
               .fontSize(this.fsTiny)
-              .fontColor(this.darkSecondary)
+              .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
           }
           .width('100%')
 
@@ -723,7 +716,7 @@ export struct CampusInfoTab {
 
           Text(this.selectedAnnouncement!.content)
             .fontSize(this.fsBody)
-            .fontColor(this.darkPrimary)
+            .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
             .lineHeight(22)
             .width('100%')
 

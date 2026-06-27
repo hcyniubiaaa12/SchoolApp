@@ -37,20 +37,13 @@ interface MaterialItem {
 
 @Component
 export struct StudyTab {
-  @StorageLink('isDarkMode') @Watch('onDarkChange') isDarkMode: boolean = false;
-  @State darkPrimary: string = '#1D2129';
-  @State darkSecondary: string = '#86909C';
+  @StorageLink('isDarkMode') isDarkMode: boolean = false;
   @StorageLink('fontScale') @Watch('onFontScaleChange') fontScale: number = 1.0;
   @State fsTitle: number = 30;
   @State fsMid: number = 28;
   @State fsBody: number = 26;
   @State fsSmall: number = 24;
   @State fsTiny: number = 22;
-
-  private onDarkChange(): void {
-    this.darkPrimary = this.isDarkMode ? '#E8E8E8' : '#1D2129';
-    this.darkSecondary = this.isDarkMode ? '#A0A0A0' : '#86909C';
-  }
 
   private onFontScaleChange(): void {
     this.fsTitle = Math.round(30 * this.fontScale);
@@ -294,7 +287,7 @@ export struct StudyTab {
           Text('学习助手')
             .fontSize(this.fsTitle)
             .fontWeight(600)
-            .fontColor(this.darkPrimary)
+            .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
         }
@@ -309,7 +302,7 @@ export struct StudyTab {
             Column({ space: 6 }) {
               Text(tag.name)
                 .fontSize(this.fsTiny)
-                .fontColor(this.currentTagIndex === index ? $r('app.color.primary') : this.darkSecondary)
+                .fontColor(this.currentTagIndex === index ? $r('app.color.primary') : this.isDarkMode ? '#A0A0A0' : '#86909C')
                 .fontWeight(this.currentTagIndex === index ? 600 : 400)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -365,7 +358,7 @@ export struct StudyTab {
         Row() {
           Text('上一周')
             .fontSize(this.fsSmall)
-            .fontColor(this.currentWeek === 1 ? this.darkSecondary : $r('app.color.primary'))
+            .fontColor(this.currentWeek === 1 ? this.isDarkMode ? '#A0A0A0' : '#86909C' : $r('app.color.primary'))
             .width(80)
             .textAlign(TextAlign.Start)
             .onClick(() => {
@@ -378,7 +371,7 @@ export struct StudyTab {
             Text('2026 年第 ' + this.currentWeek.toString() + ' 周')
               .fontSize(this.fsBody)
               .fontWeight(600)
-              .fontColor(this.darkPrimary)
+              .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
               .maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
           }
@@ -388,7 +381,7 @@ export struct StudyTab {
 
           Text('下一周')
             .fontSize(this.fsSmall)
-            .fontColor(this.currentWeek === 20 ? this.darkSecondary : $r('app.color.primary'))
+            .fontColor(this.currentWeek === 20 ? this.isDarkMode ? '#A0A0A0' : '#86909C' : $r('app.color.primary'))
             .width(80)
             .textAlign(TextAlign.End)
             .onClick(() => {
@@ -421,12 +414,12 @@ export struct StudyTab {
               Text(day.name)
                 .fontSize(this.fsMid)
                 .fontWeight(600)
-                .fontColor(this.darkPrimary)
+                .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
                 .layoutWeight(1)
 
               Text(this.getDayCourseCount(day.dayIndex).toString() + ' 门课')
                 .fontSize(this.fsSmall)
-                .fontColor(this.darkSecondary)
+                .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
             }
             .width('100%')
             .alignItems(VerticalAlign.Center)
@@ -439,7 +432,7 @@ export struct StudyTab {
               Row() {
                 Text('今日无课程，好好休息吧～')
                   .fontSize(this.fsSmall)
-                  .fontColor(this.darkSecondary)
+                  .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
                   .layoutWeight(1)
                   .textAlign(TextAlign.Center)
               }
@@ -473,10 +466,10 @@ export struct StudyTab {
         Text(course.startTime)
           .fontSize(this.fsSmall)
           .fontWeight(600)
-          .fontColor(this.darkPrimary)
+          .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
         Text(course.endTime)
           .fontSize(this.fsTiny)
-          .fontColor(this.darkSecondary)
+          .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
       }
       .width(68)
       .alignItems(HorizontalAlign.Center)
@@ -492,7 +485,7 @@ export struct StudyTab {
           Text(course.name)
             .fontSize(this.fsBody)
             .fontWeight(600)
-            .fontColor(this.darkPrimary)
+            .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
             .layoutWeight(1)
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -507,12 +500,12 @@ export struct StudyTab {
 
         Text(course.location)
           .fontSize(this.fsSmall)
-          .fontColor(this.darkSecondary)
+          .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
         Text(course.teacher + ' · ' + course.credit + ' 学分')
           .fontSize(this.fsTiny)
-          .fontColor(this.darkSecondary)
+          .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
       }
@@ -539,7 +532,7 @@ export struct StudyTab {
             Text('计算机科学与技术 · 张三')
               .fontSize(this.fsBody)
               .fontWeight(600)
-              .fontColor(this.darkPrimary)
+              .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
               .maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
             Text('平均绩点: ' + this.getAverageGpa())
@@ -574,16 +567,16 @@ export struct StudyTab {
               Text(score.courseName)
                 .fontSize(this.fsBody)
                 .fontWeight(600)
-                .fontColor(this.darkPrimary)
+                .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
               Row({ space: 8 }) {
                 Text(score.semester)
                   .fontSize(this.fsTiny)
-                  .fontColor(this.darkSecondary)
+                  .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
                 Text(score.examTime)
                   .fontSize(this.fsTiny)
-                  .fontColor(this.darkSecondary)
+                  .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
               }
             }
             .layoutWeight(1)
@@ -596,7 +589,7 @@ export struct StudyTab {
                 .fontColor(score.score >= 90 ? $r('app.color.fresh_green') : score.score >= 80 ? $r('app.color.primary') : $r('app.color.warm_orange'))
               Text('绩点 ' + score.gpa.toFixed(1))
                 .fontSize(this.fsTiny)
-                .fontColor(this.darkSecondary)
+                .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
             }
             .alignItems(HorizontalAlign.Center)
             .width(80)
@@ -654,7 +647,7 @@ export struct StudyTab {
             Row() {
               Text('未找到匹配的图书')
                 .fontSize(this.fsBody)
-                .fontColor(this.darkSecondary)
+                .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
             }
             .width('100%')
             .height(200)
@@ -693,13 +686,13 @@ export struct StudyTab {
         Text(book.title)
           .fontSize(this.fsBody)
           .fontWeight(600)
-          .fontColor(this.darkPrimary)
+          .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
 
         Text(book.author + ' | ' + book.publisher)
           .fontSize(this.fsTiny)
-          .fontColor(this.darkSecondary)
+          .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
 
@@ -766,7 +759,7 @@ export struct StudyTab {
                 .fontColor($r('app.color.primary'))
               Text('学习资料功能将在后续版本开放')
                 .fontSize(this.fsSmall)
-                .fontColor(this.darkSecondary)
+                .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
                 .textAlign(TextAlign.Center)
                 .maxLines(2)
             }
@@ -802,7 +795,7 @@ export struct StudyTab {
         Text(folder.folderName)
           .fontSize(this.fsBody)
           .fontWeight(600)
-          .fontColor(this.darkPrimary)
+          .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
           .layoutWeight(1)
 
         Text(this.expandedMaterialId === folder.id ? '收起' : '展开')
@@ -833,7 +826,7 @@ export struct StudyTab {
 
               Text(item.name)
                 .fontSize(this.fsSmall)
-                .fontColor(this.darkPrimary)
+                .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
                 .layoutWeight(1)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -870,7 +863,7 @@ export struct StudyTab {
           Text('课程详情')
             .fontSize(this.fsMid)
             .fontWeight(700)
-            .fontColor(this.darkPrimary)
+            .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
             .layoutWeight(1)
           Text('关闭')
             .fontSize(this.fsSmall)
@@ -945,11 +938,11 @@ export struct StudyTab {
     Row() {
       Text(label)
         .fontSize(this.fsSmall)
-        .fontColor(this.darkSecondary)
+        .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
         .width(56)
       Text(value)
         .fontSize(this.fsBody)
-        .fontColor(this.darkPrimary)
+        .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
         .layoutWeight(1)
         .maxLines(2)
         .textOverflow({ overflow: TextOverflow.Ellipsis })

@@ -16,20 +16,13 @@ interface FunctionItem {
 
 @Component
 export struct MineTab {
-  @StorageLink('isDarkMode') @Watch('onDarkChange') isDarkMode: boolean = false;
-  @State darkPrimary: string = '#1D2129';
-  @State darkSecondary: string = '#86909C';
+  @StorageLink('isDarkMode') isDarkMode: boolean = false;
   @StorageLink('fontScale') @Watch('onFontScaleChange') fontScale: number = 1.0;
   @State fsTitle: number = 30;
   @State fsMid: number = 28;
   @State fsBody: number = 26;
   @State fsSmall: number = 24;
   @State fsTiny: number = 22;
-
-  private onDarkChange(): void {
-    this.darkPrimary = this.isDarkMode ? '#E8E8E8' : '#1D2129';
-    this.darkSecondary = this.isDarkMode ? '#A0A0A0' : '#86909C';
-  }
 
   private onFontScaleChange(): void {
     this.fsTitle = Math.round(30 * this.fontScale);
@@ -100,7 +93,7 @@ export struct MineTab {
         Text('我的')
           .fontSize(this.fsTitle)
           .fontWeight(600)
-          .fontColor(this.darkPrimary)
+          .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
           .layoutWeight(1)
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -144,17 +137,17 @@ export struct MineTab {
               Text(this.username)
                 .fontSize(this.fsMid)
                 .fontWeight(700)
-                .fontColor(this.darkPrimary)
+                .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
               Text(`学号: ${this.userId}`)
                 .fontSize(this.fsSmall)
-                .fontColor(this.darkSecondary)
+                .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
               Text(`${this.major}`)
                 .fontSize(this.fsTiny)
-                .fontColor(this.darkSecondary)
+                .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
             }
@@ -163,7 +156,7 @@ export struct MineTab {
 
             Text('>')
               .fontSize(this.fsSmall)
-              .fontColor(this.darkSecondary)
+              .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
           }
           .width('100%')
           .padding(20)
@@ -191,13 +184,13 @@ export struct MineTab {
 
                 Text(item.name)
                   .fontSize(this.fsBody)
-                  .fontColor(this.darkPrimary)
+                  .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
                   .margin({ left: 12 })
                   .layoutWeight(1)
 
                 Text('>')
                   .fontSize(this.fsSmall)
-                  .fontColor(this.darkSecondary)
+                  .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
               }
               .width('100%')
               .height(48)
@@ -240,7 +233,7 @@ export struct MineTab {
 
                 Text(item.name)
                   .fontSize(this.fsBody)
-                  .fontColor(this.darkPrimary)
+                  .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
                   .margin({ left: 12 })
                   .layoutWeight(1)
 
@@ -261,7 +254,7 @@ export struct MineTab {
                 } else {
                   Text('>')
                     .fontSize(this.fsSmall)
-                    .fontColor(this.darkSecondary)
+                    .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
                 }
               }
               .width('100%')
@@ -301,13 +294,13 @@ export struct MineTab {
           Column({ space: 4 }) {
             Text('高校校园助手 V1.0.0')
               .fontSize(this.fsSmall)
-              .fontColor(this.darkSecondary)
+              .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
             Text('校园助手开发团队')
               .fontSize(this.fsTiny)
-              .fontColor(this.darkSecondary)
+              .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
             Text('© 2026 All Rights Reserved')
               .fontSize(this.fsTiny)
-              .fontColor(this.darkSecondary)
+              .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
           }
           .width('100%')
           .alignItems(HorizontalAlign.Center)

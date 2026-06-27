@@ -27,9 +27,7 @@ interface SongItem {
 
 @Component
 export struct LifeServiceTab {
-  @StorageLink('isDarkMode') @Watch('onDarkChange') isDarkMode: boolean = false;
-  @State darkPrimary: string = '#1D2129';
-  @State darkSecondary: string = '#86909C';
+  @StorageLink('isDarkMode') isDarkMode: boolean = false;
   @StorageLink('fontScale') @Watch('onFontScaleChange') fontScale: number = 1.0;
   @State fsTitle: number = 30;
   @State fsMid: number = 28;
@@ -46,10 +44,6 @@ export struct LifeServiceTab {
   @State isPlaying: boolean = false;
   @State progressValue: number = 0;
 
-  private onDarkChange(): void {
-    this.darkPrimary = this.isDarkMode ? '#E8E8E8' : '#1D2129';
-    this.darkSecondary = this.isDarkMode ? '#A0A0A0' : '#86909C';
-  }
 
   private onFontScaleChange(): void {
     this.fsTitle = Math.round(30 * this.fontScale);
@@ -170,7 +164,7 @@ export struct LifeServiceTab {
         } else {
           SymbolGlyph($r('sys.symbol.star'))
             .fontSize(18)
-            .fontColor([this.darkSecondary])
+            .fontColor([this.isDarkMode ? '#A0A0A0' : '#86909C'])
         }
       }, (i: number) => i.toString())
     }
@@ -228,7 +222,7 @@ export struct LifeServiceTab {
         Text('生活服务')
           .fontSize(this.fsTitle)
           .fontWeight(600)
-          .fontColor(this.darkPrimary)
+          .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
       }
@@ -301,7 +295,7 @@ export struct LifeServiceTab {
       }
       Text(entry.name)
         .fontSize(this.fsTiny)
-        .fontColor(this.currentEntry === this.getEntryIndex(entry.name) ? $r('app.color.primary') : this.darkPrimary)
+        .fontColor(this.currentEntry === this.getEntryIndex(entry.name) ? $r('app.color.primary') : this.isDarkMode ? '#E8E8E8' : '#1D2129')
         .fontWeight(this.currentEntry === this.getEntryIndex(entry.name) ? 600 : 400)
         .maxLines(1)
         .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -349,7 +343,7 @@ export struct LifeServiceTab {
         Row() {
           Text('暂无信息')
             .fontSize(this.fsSmall)
-            .fontColor(this.darkSecondary)
+            .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
         }
         .width('100%')
         .height(100)
@@ -379,7 +373,7 @@ export struct LifeServiceTab {
                 Text(item.itemName)
                   .fontSize(this.fsBody)
                   .fontWeight(600)
-                  .fontColor(this.darkPrimary)
+                  .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
 
@@ -396,7 +390,7 @@ export struct LifeServiceTab {
 
               Text(item.location + ' · ' + item.time)
                 .fontSize(this.fsTiny)
-                .fontColor(this.darkSecondary)
+                .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
             }
@@ -437,7 +431,7 @@ export struct LifeServiceTab {
         Row() {
           Text('暂无美食信息')
             .fontSize(this.fsSmall)
-            .fontColor(this.darkSecondary)
+            .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
         }
         .width('100%')
         .height(100)
@@ -461,7 +455,7 @@ export struct LifeServiceTab {
                 Text(food.name)
                   .fontSize(this.fsBody)
                   .fontWeight(600)
-                  .fontColor(this.darkPrimary)
+                  .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
                   .layoutWeight(1)
@@ -476,7 +470,7 @@ export struct LifeServiceTab {
                 } else {
                   SymbolGlyph($r('sys.symbol.heart'))
                     .fontSize(this.fsTiny)
-                    .fontColor([this.darkSecondary])
+                    .fontColor([this.isDarkMode ? '#A0A0A0' : '#86909C'])
                     .onClick(() => {
                       this.toggleFoodFavorite(food.id);
                     })
@@ -486,7 +480,7 @@ export struct LifeServiceTab {
 
               Text(food.canteen)
                 .fontSize(this.fsTiny)
-                .fontColor(this.darkSecondary)
+                .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
 
@@ -495,7 +489,7 @@ export struct LifeServiceTab {
 
                 Text(food.signatureDish)
                   .fontSize(this.fsTiny)
-                  .fontColor(this.darkSecondary)
+                  .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
               }
@@ -526,7 +520,7 @@ export struct LifeServiceTab {
         Row() {
           Text('暂无音乐，请添加本地音频文件')
             .fontSize(this.fsSmall)
-            .fontColor(this.darkSecondary)
+            .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
         }
         .width('100%')
         .height(200)
@@ -541,7 +535,7 @@ export struct LifeServiceTab {
             .fill($r('app.color.primary_light'))
           Text('🎵')
             .fontSize(72)
-            .fontColor(this.darkPrimary)
+            .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
         }
         .width('100%')
         .padding({ top: 24 })
@@ -550,7 +544,7 @@ export struct LifeServiceTab {
         Text(this.getCurrentSong().title)
           .fontSize(this.fsMid)
           .fontWeight(700)
-          .fontColor(this.darkPrimary)
+          .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
           .width('100%')
           .textAlign(TextAlign.Center)
           .maxLines(1)
@@ -558,7 +552,7 @@ export struct LifeServiceTab {
 
         Text(this.getCurrentSong().artist)
           .fontSize(this.fsSmall)
-          .fontColor(this.darkSecondary)
+          .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
           .width('100%')
           .textAlign(TextAlign.Center)
           .maxLines(1)
@@ -567,7 +561,7 @@ export struct LifeServiceTab {
         Row({ space: 8 }) {
           Text(this.formatDuration(this.progressValue))
             .fontSize(this.fsTiny)
-            .fontColor(this.darkSecondary)
+            .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
 
           Slider({
             value: this.progressValue,
@@ -586,7 +580,7 @@ export struct LifeServiceTab {
 
           Text(this.formatDuration(this.getCurrentSong().duration))
             .fontSize(this.fsTiny)
-            .fontColor(this.darkSecondary)
+            .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
         }
         .width('100%')
         .padding({ left: 20, right: 20 })
@@ -708,7 +702,7 @@ export struct LifeServiceTab {
         .fontSize(40)
       Text(name)
         .fontSize(this.fsBody)
-        .fontColor(this.darkPrimary)
+        .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
         .maxLines(1)
         .textOverflow({ overflow: TextOverflow.Ellipsis })
     }

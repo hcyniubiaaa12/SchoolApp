@@ -20,9 +20,7 @@ interface AnnouncementItem {
 
 @Component
 export struct HomeTab {
-  @StorageLink('isDarkMode') @Watch('onDarkChange') isDarkMode: boolean = false;
-  @State darkPrimary: string = '#1D2129';
-  @State darkSecondary: string = '#86909C';
+  @StorageLink('isDarkMode') isDarkMode: boolean = false;
   @StorageLink('fontScale') @Watch('onFontScaleChange') fontScale: number = 1.0;
   @State fsTitle: number = 30;
   @State fsMid: number = 28;
@@ -30,10 +28,6 @@ export struct HomeTab {
   @State fsSmall: number = 24;
   @State fsTiny: number = 22;
 
-  private onDarkChange(): void {
-    this.darkPrimary = this.isDarkMode ? '#E8E8E8' : '#1D2129';
-    this.darkSecondary = this.isDarkMode ? '#A0A0A0' : '#86909C';
-  }
 
   // 字体缩放值变化时更新所有字体大小
   private onFontScaleChange(): void {
@@ -136,7 +130,7 @@ export struct HomeTab {
             .margin({ right: 8 })
           Text('搜索校园信息/课程/美食')
             .fontSize(this.fsSmall)
-            .fontColor(this.darkSecondary)
+            .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
             .layoutWeight(1)
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -241,7 +235,7 @@ export struct HomeTab {
                   }
                   Text(this.getEntryName(rowIdx * 3 + colIdx))
                     .fontSize(this.fsSmall)
-                    .fontColor(this.darkPrimary)
+                    .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
                     .maxLines(1)
                 }
                 .layoutWeight(1)
@@ -273,7 +267,7 @@ export struct HomeTab {
             Blank()
             Text('更多 >')
               .fontSize(this.fsSmall)
-              .fontColor(this.darkSecondary)
+              .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
           }
           .width('100%')
           .margin({ bottom: 12 })
@@ -291,15 +285,15 @@ export struct HomeTab {
                 Column({ space: 4 }) {
                   Text(item.title)
                     .fontSize(this.fsBody)
-                    .fontColor(this.darkPrimary)
+                    .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
                     .maxLines(1)
                     .textOverflow({ overflow: TextOverflow.Ellipsis })
                   Text(item.time)
                     .fontSize(this.fsTiny)
-                    .fontColor(this.darkSecondary)
+                    .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
                   Text(item.content)
                     .fontSize(this.fsSmall)
-                    .fontColor(this.darkSecondary)
+                    .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
                     .maxLines(1)
                     .textOverflow({ overflow: TextOverflow.Ellipsis })
                 }
@@ -327,14 +321,14 @@ export struct HomeTab {
             Text('今日课程')
               .fontSize(this.fsMid)
               .fontWeight(600)
-              .fontColor(this.darkPrimary)
+              .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
             Text('（2）')
               .fontSize(this.fsSmall)
-              .fontColor(this.darkSecondary)
+              .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
             Blank()
             Text('完整课程 >')
               .fontSize(this.fsSmall)
-              .fontColor(this.darkSecondary)
+              .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
           }
           .width('100%')
           .margin({ bottom: 12 })
@@ -343,7 +337,7 @@ export struct HomeTab {
           Row() {
             Text('10:00')
               .fontSize(this.fsSmall)
-              .fontColor(this.darkPrimary)
+              .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
               .width(60)
               .textAlign(TextAlign.Center)
 
@@ -358,12 +352,12 @@ export struct HomeTab {
               Text('高级人工智能')
                 .fontSize(this.fsBody)
                 .fontWeight(500)
-                .fontColor(this.darkPrimary)
+                .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
               Text('信软楼302（数字多媒体教室）')
                 .fontSize(this.fsSmall)
-                .fontColor(this.darkSecondary)
+                .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
             }
@@ -386,7 +380,7 @@ export struct HomeTab {
           Row() {
             Text('14:00')
               .fontSize(this.fsSmall)
-              .fontColor(this.darkPrimary)
+              .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
               .width(60)
               .textAlign(TextAlign.Center)
 
@@ -401,12 +395,12 @@ export struct HomeTab {
               Text('创业管理学')
                 .fontSize(this.fsBody)
                 .fontWeight(500)
-                .fontColor(this.darkPrimary)
+                .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
               Text('公教楼508')
                 .fontSize(this.fsSmall)
-                .fontColor(this.darkSecondary)
+                .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
             }
@@ -439,12 +433,12 @@ export struct HomeTab {
             Text('晴 28°C')
               .fontSize(32)
               .fontWeight(600)
-              .fontColor(this.darkPrimary)
+              .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
               .maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
             Text('深圳 · 紫外线较强')
               .fontSize(this.fsSmall)
-              .fontColor(this.darkSecondary)
+              .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
               .maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
           }
@@ -453,7 +447,7 @@ export struct HomeTab {
 
           Text('未来3天 >')
             .fontSize(this.fsSmall)
-            .fontColor(this.darkSecondary)
+            .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
         }
         .width('100%')
         .padding(16)
