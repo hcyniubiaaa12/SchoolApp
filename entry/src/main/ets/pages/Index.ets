@@ -232,10 +232,10 @@ struct Index {
   buildTabBar(title: string, index: number, symbol: Resource) {
     Column({ space: 2 }) {
       SymbolGlyph(symbol)
-        .fontSize(24)
+        .fontSize(22)
         .fontColor(this.currentTab === index ? ['#1677FF'] : [this.isDarkMode ? '#A0A0A0' : '#86909C'])
       Text(title)
-        .fontSize(20)
+        .fontSize(18)
         .fontColor(this.currentTab === index ? '#1677FF' : (this.isDarkMode ? '#A0A0A0' : '#86909C'))
         .maxLines(1)
         .textOverflow({ overflow: TextOverflow.Clip })
@@ -482,7 +482,7 @@ struct SettingPage {
           .width('100%')
         }
 
-        Divider().color(this.isDarkMode ? '#3A3A5C' : '#E5E6EB')
+        Divider().color(this.isDarkMode ? '#3A3A5C' : $r('app.color.divider_light'))
 
         // 字体大小
         Column({ space: 12 }) {
@@ -503,7 +503,7 @@ struct SettingPage {
             })
         }
 
-        Divider().color(this.isDarkMode ? '#3A3A5C' : '#E5E6EB')
+        Divider().color(this.isDarkMode ? '#3A3A5C' : $r('app.color.divider_light'))
 
         // 关于我们
         Row() {

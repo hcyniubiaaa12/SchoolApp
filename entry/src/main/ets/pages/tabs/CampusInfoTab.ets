@@ -187,9 +187,10 @@ export struct CampusInfoTab {
           .width('100%')
           .padding({ left: 20, right: 20, top: 12, bottom: 12 })
         }
-        .scrollBar(BarState.Off)
+        .scrollBar(BarState.Auto)
         .scrollable(ScrollDirection.Horizontal)
         .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
+        .padding({ bottom: 8 })
 
         // 内容区
         if (this.currentTagIndex === 0) {

@@ -296,25 +296,30 @@ export struct StudyTab {
         .padding({ left: 20, right: 20 })
         .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
 
-        // 功能标签栏（胶囊样式：选中蓝底白字）
-        Row() {
-          ForEach(this.tags, (tag: TagItem, index: number) => {
-            Text(tag.name)
-              .fontSize(this.fsTiny)
-              .fontColor(this.currentTagIndex === index ? '#FFFFFF' : this.isDarkMode ? '#E8E8E8' : '#1D2129')
-              .fontWeight(this.currentTagIndex === index ? 600 : 400)
-              .padding({ left: 12, right: 12, top: 6, bottom: 6 })
-              .backgroundColor(this.currentTagIndex === index ? $r('app.color.primary') : this.isDarkMode ? '#3A3A5C' : '#F5F7FA')
-              .borderRadius(8)
-              .maxLines(1)
-              .textOverflow({ overflow: TextOverflow.Ellipsis })
-              .onClick(() => {
-                this.currentTagIndex = index;
-              })
-          }, (tag: TagItem, index: number) => tag.name + index.toString())
+        // 功能标签栏（胶囊样式：选中蓝底白字，横向可滑动）
+        Scroll() {
+          Row({ space: 8 }) {
+            ForEach(this.tags, (tag: TagItem, index: number) => {
+              Text(tag.name)
+                .fontSize(this.fsTiny)
+                .fontColor(this.currentTagIndex === index ? '#FFFFFF' : this.isDarkMode ? '#E8E8E8' : '#1D2129')
+                .fontWeight(this.currentTagIndex === index ? 600 : 400)
+                .padding({ left: 16, right: 16, top: 6, bottom: 6 })
+                .backgroundColor(this.currentTagIndex === index ? $r('app.color.primary') : this.isDarkMode ? '#3A3A5C' : '#F5F7FA')
+                .borderRadius(8)
+                .maxLines(1)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+                .onClick(() => {
+                  this.currentTagIndex = index;
+                })
+            }, (tag: TagItem, index: number) => tag.name + index.toString())
+          }
+          .padding({ left: 20, right: 20 })
         }
+        .scrollBar(BarState.Auto)
+        .scrollable(ScrollDirection.Horizontal)
         .width('100%')
-        .padding({ left: 20, right: 20, top: 12, bottom: 12 })
+        .padding({ top: 12, bottom: 12 })
         .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
 
         // 标签内容区
