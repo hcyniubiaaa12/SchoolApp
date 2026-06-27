@@ -14,6 +14,9 @@
 # Claude Code local workspace files
 .claude/
 
+# Brainstorming visual companion artifacts
+.superpowers/
+
 # Word source documents
 *.doc
 *.docx

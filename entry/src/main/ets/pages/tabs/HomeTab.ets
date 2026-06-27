@@ -46,16 +46,16 @@ export struct HomeTab {
   onTabChange?: (index: number) => void;
   onMoreAnnouncement?: () => void;
 
-  // 九宫格 9 入口（3×3）
+  // 九宫格 9 入口（3×3），color 按分类统一：蓝=学术/工具，橙=生活/娱乐，绿=完成
   private quickEntries: QuickEntryItem[] = [
     { name: '校园公告', icon: '📢', symbol: $r('sys.symbol.bell'), color: '#1677FF' },
-    { name: '课程表', icon: '📅', symbol: $r('sys.symbol.calendar'), color: '#FF7D00' },
-    { name: '成绩查询', icon: '📊', color: '#00B42A' },
+    { name: '课程表', icon: '📅', symbol: $r('sys.symbol.calendar'), color: '#1677FF' },
+    { name: '成绩查询', icon: '📊', color: '#1677FF' },
     { name: '失物招领', icon: '🔍', symbol: $r('sys.symbol.magnifyingglass'), color: '#FF7D00' },
     { name: '校园地图', icon: '🗺️', symbol: $r('sys.symbol.map'), color: '#1677FF' },
-    { name: '图书馆', icon: '', image: $r('app.media.ic_book'), color: '#00B42A' },
+    { name: '图书馆', icon: '', image: $r('app.media.ic_book'), color: '#1677FF' },
     { name: '校园美食', icon: '🍽️', color: '#FF7D00' },
-    { name: '音乐播放', icon: '🎵', color: '#1677FF' },
+    { name: '音乐播放', icon: '🎵', color: '#FF7D00' },
     { name: '待办提醒', icon: '📝', color: '#00B42A' }
   ];
 
@@ -86,6 +86,18 @@ export struct HomeTab {
 
   private getEntrySymbol(index: number): Resource | undefined {
     return this.quickEntries[index].symbol;
+  }
+
+  // 根据入口分类返回背景色：蓝=学术，橙=生活，绿=完成
+  private getEntryBgColor(index: number): Resource {
+    const name = this.quickEntries[index].name;
+    if (['校园公告', '课程表', '成绩查询', '校园地图', '图书馆'].indexOf(name) !== -1) {
+      return $r('app.color.card_bg_blue');
+    }
+    if (['失物招领', '校园美食', '音乐播放'].indexOf(name) !== -1) {
+      return $r('app.color.card_bg_orange');
+    }
+    return $r('app.color.card_bg_green');
   }
 
   build() {
@@ -210,28 +222,43 @@ export struct HomeTab {
         .width('100%')
         .height(120)
 
-        // 4. 九宫格快捷入口 — 3×3
-        // 注：builder 内不能用 const，所以用辅助方法 + 直接数组索引
+        // 4. 九宫格快捷入口 — 3×3 带分类色彩标识
         Column() {
+          // 标题：蓝色小圆点 + 快捷入口
+          Row() {
+            Circle()
+              .width(6)
+              .height(6)
+              .fill($r('app.color.primary'))
+            Text('快捷入口')
+              .fontSize(this.fsMid)
+              .fontWeight(600)
+              .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
+              .margin({ left: 6 })
+          }
+          .width('100%')
+          .margin({ bottom: 8 })
+
           ForEach([0, 1, 2] as number[], (rowIdx: number) => {
             Row() {
               ForEach([0, 1, 2] as number[], (colIdx: number) => {
                 Column({ space: 8 }) {
                   Stack() {
                     Circle()
-                      .width(64)
-                      .height(64)
-                      .fill(this.getEntryColor(rowIdx * 3 + colIdx) + '1A')
+                      .width(56)
+                      .height(56)
+                      .fill(this.getEntryBgColor(rowIdx * 3 + colIdx))
                     if (this.getEntryImage(rowIdx * 3 + colIdx)) {
                       Image(this.getEntryImage(rowIdx * 3 + colIdx)!)
-                        .width(32)
-                        .height(32)
+                        .width(28)
+                        .height(28)
                     } else if (this.getEntrySymbol(rowIdx * 3 + colIdx)) {
                       SymbolGlyph(this.getEntrySymbol(rowIdx * 3 + colIdx)!)
-                        .fontSize(32)
+                        .fontSize(28)
+                        .fontColor([this.getEntryColor(rowIdx * 3 + colIdx)])
                     } else {
                       Text(this.getEntryIcon(rowIdx * 3 + colIdx))
-                        .fontSize(32)
+                        .fontSize(28)
                     }
                   }
                   Text(this.getEntryName(rowIdx * 3 + colIdx))
@@ -241,7 +268,7 @@ export struct HomeTab {
                 }
                 .layoutWeight(1)
                 .alignItems(HorizontalAlign.Center)
-                .padding({ top: 8, bottom: 8 })
+                .padding({ top: 4, bottom: 4 })
                 .onClick(() => {
                   if (this.onQuickEntryClick) {
                     this.onQuickEntryClick(this.quickEntries[rowIdx * 3 + colIdx]);
@@ -253,18 +280,24 @@ export struct HomeTab {
           }, (rowIdx: number) => rowIdx.toString())
         }
         .width('100%')
-        .padding({ top: 12, bottom: 12 })
+        .padding(16)
         .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
         .borderRadius(8)
+        .border({ width: { top: 3 }, color: $r('app.color.primary') })
         .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
 
-        // 5. 校园公告卡片
+        // 5. 校园公告卡片（灰色顶部色条 + 灰色圆点标题）
         Column() {
           Row() {
+            Circle()
+              .width(6)
+              .height(6)
+              .fill($r('app.color.text_secondary'))
             Text('校园公告')
               .fontSize(this.fsMid)
               .fontWeight(600)
-              .fontColor($r('app.color.primary'))
+              .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
+              .margin({ left: 6 })
             Blank()
             Text('更多 >')
               .fontSize(this.fsSmall)
@@ -278,14 +311,14 @@ export struct HomeTab {
           .width('100%')
           .margin({ bottom: 12 })
 
-          // 3 条公告：使用 Explicit interface + key generator
+          // 3 条公告：灰色左侧竖条 + 柔和分隔线
           ForEach(this.announcements, (item: AnnouncementItem, index: number) => {
             Column() {
               Row({ space: 8 }) {
                 Row()
                   .width(3)
                   .height('100%')
-                  .backgroundColor($r('app.color.primary'))
+                  .backgroundColor($r('app.color.text_secondary'))
                   .borderRadius(2)
 
                 Column({ space: 4 }) {
@@ -310,7 +343,7 @@ export struct HomeTab {
               .padding({ top: 8, bottom: 8 })
 
               if (index < 2) {
-                Divider().color($r('app.color.border')).margin({ left: 11 })
+                Divider().color($r('app.color.divider_light')).margin({ left: 15 })
               }
             }
           }, (item: AnnouncementItem, index: number) => item.title + index.toString())
@@ -319,45 +352,64 @@ export struct HomeTab {
         .padding(16)
         .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
         .borderRadius(8)
+        .border({ width: { top: 3 }, color: $r('app.color.text_secondary') })
         .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
 
-        // 6. 天气提醒卡片
-        Row() {
-          SymbolGlyph($r('sys.symbol.sun_max'))
-            .fontSize(48)
-            .margin({ right: 12 })
-
-          Column({ space: 4 }) {
-            Text('晴 28°C')
-              .fontSize(32)
+        // 6. 天气提醒卡片（蓝色顶部色条 + 蓝色圆点标题）
+        Column() {
+          Row() {
+            Circle()
+              .width(6)
+              .height(6)
+              .fill($r('app.color.primary'))
+            Text('天气提醒')
+              .fontSize(this.fsMid)
               .fontWeight(600)
               .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
-              .maxLines(1)
-              .textOverflow({ overflow: TextOverflow.Ellipsis })
-            Text('深圳 · 紫外线较强')
+              .margin({ left: 6 })
+          }
+          .width('100%')
+          .margin({ bottom: 8 })
+
+          Row() {
+            SymbolGlyph($r('sys.symbol.sun_max'))
+              .fontSize(48)
+              .margin({ right: 12 })
+
+            Column({ space: 4 }) {
+              Text('晴 28°C')
+                .fontSize(32)
+                .fontWeight(600)
+                .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
+                .maxLines(1)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+              Text('深圳 · 紫外线较强')
+                .fontSize(this.fsSmall)
+                .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
+                .maxLines(1)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+            }
+            .alignItems(HorizontalAlign.Start)
+            .layoutWeight(1)
+
+            Text('未来3天 >')
               .fontSize(this.fsSmall)
               .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
-              .maxLines(1)
-              .textOverflow({ overflow: TextOverflow.Ellipsis })
           }
-          .alignItems(HorizontalAlign.Start)
-          .layoutWeight(1)
-
-          Text('未来3天 >')
-            .fontSize(this.fsSmall)
-            .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
+          .width('100%')
+          .alignItems(VerticalAlign.Center)
+          .onClick(() => {
+            if (this.onWeatherClick) {
+              this.onWeatherClick();
+            }
+          })
         }
         .width('100%')
         .padding(16)
         .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
         .borderRadius(8)
+        .border({ width: { top: 3 }, color: $r('app.color.primary') })
         .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
-        .alignItems(VerticalAlign.Center)
-        .onClick(() => {
-          if (this.onWeatherClick) {
-            this.onWeatherClick();
-          }
-        })
       }
       .padding({ left: 20, right: 20, bottom: 16 })
       .alignItems(HorizontalAlign.Start)

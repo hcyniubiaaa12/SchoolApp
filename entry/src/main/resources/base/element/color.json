@@ -63,6 +63,22 @@
     {
       "name": "shadow",
       "value": "#1A000000"
+    },
+    {
+      "name": "card_bg_blue",
+      "value": "#E8F4FF"
+    },
+    {
+      "name": "card_bg_orange",
+      "value": "#FFF3E8"
+    },
+    {
+      "name": "card_bg_green",
+      "value": "#E8FFEC"
+    },
+    {
+      "name": "divider_light",
+      "value": "#F0F0F5"
     }
   ]
 }
