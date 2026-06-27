@@ -260,6 +260,8 @@ struct Regist {
             .border({ width: 0 })
             .layoutWeight(1)
             .type(this.showPassword ? InputType.Normal : InputType.Password)
+            // 关闭系统自带密码眼睛，避免与右侧手写 SymbolGlyph 眼睛重复显示
+            .showPasswordIcon(false)
             .onChange((value: string) => { this.password = value; })
             .onFocus(() => { this.isPwdFocused = true; })
             .onBlur(() => { this.isPwdFocused = false; })
@@ -297,6 +299,8 @@ struct Regist {
             .border({ width: 0 })
             .layoutWeight(1)
             .type(this.showConfirmPassword ? InputType.Normal : InputType.Password)
+            // 关闭系统自带密码眼睛，避免与右侧手写 SymbolGlyph 眼睛重复显示
+            .showPasswordIcon(false)
             .onChange((value: string) => { this.confirmPassword = value; })
             .onFocus(() => { this.isConfirmPwdFocused = true; })
             .onBlur(() => { this.isConfirmPwdFocused = false; })
