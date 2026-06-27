@@ -46,7 +46,7 @@ export struct HomeTab {
   onTabChange?: (index: number) => void;
   onMoreAnnouncement?: () => void;
 
-  // 九宫格 9 入口（3×3），color 按分类统一：蓝=学术/工具，橙=生活/娱乐，绿=完成
+  // 3×4 快捷入口（12 个），color 按分类统一：蓝=学术/工具，橙=生活/娱乐，绿=完成
   private quickEntries: QuickEntryItem[] = [
     { name: '校园公告', icon: '📢', symbol: $r('sys.symbol.bell'), color: '#1677FF' },
     { name: '课程表', icon: '📅', symbol: $r('sys.symbol.calendar'), color: '#1677FF' },
@@ -56,10 +56,16 @@ export struct HomeTab {
     { name: '图书馆', icon: '', image: $r('app.media.ic_book'), color: '#1677FF' },
     { name: '校园美食', icon: '🍽️', color: '#FF7D00' },
     { name: '音乐播放', icon: '🎵', color: '#FF7D00' },
-    { name: '待办提醒', icon: '📝', color: '#00B42A' }
+    { name: '待办提醒', icon: '📝', color: '#00B42A' },
+    { name: '校园工具', icon: '🔧', symbol: $r('sys.symbol.calculator'), color: '#00B42A' },
+    { name: '校园资讯', icon: '📰', symbol: $r('sys.symbol.doc_text'), color: '#1677FF' },
+    { name: '更多功能', icon: '➕', color: '#86909C' }
   ];
 
   // 模拟公告数据（使用命名接口）
+
+  // 今日课程数据
+  private todayCourses: string = '高级人工智能 8:00-9:30 信软楼302 / 数据结构实践 10:00-11:30 实验楼404';
 
   private announcements: AnnouncementItem[] = [
     { title: '关于2026年春季学期期末考试安排的通知', time: '2026-04-28', content: '各学院、各位同学：2026年春季学期期末考试将于...' },
@@ -91,7 +97,7 @@ export struct HomeTab {
   // 根据入口分类返回背景色：蓝=学术，橙=生活，绿=完成
   private getEntryBgColor(index: number): Resource {
     const name = this.quickEntries[index].name;
-    if (['校园公告', '课程表', '成绩查询', '校园地图', '图书馆'].indexOf(name) !== -1) {
+    if (['校园公告', '课程表', '成绩查询', '校园地图', '图书馆', '校园资讯'].indexOf(name) !== -1) {
       return $r('app.color.card_bg_blue');
     }
     if (['失物招领', '校园美食', '音乐播放'].indexOf(name) !== -1) {
@@ -194,6 +200,54 @@ export struct HomeTab {
             }
             .width('100%')
             .height(120)
+
+            Stack() {
+              Column()
+                .width('100%')
+                .height('100%')
+                .borderRadius(8)
+                .linearGradient({
+                  direction: GradientDirection.Right,
+                  colors: [['#00B42A', 0], ['#52C41A', 1]]
+                })
+              Column({ space: 8 }) {
+                Text('学术讲座：AI前沿技术')
+                  .fontSize(this.fsMid)
+                  .fontWeight(700)
+                  .fontColor('#FFFFFF')
+                Text('6月30日信软楼报告厅')
+                  .fontSize(this.fsSmall)
+                  .fontColor('#FFFFFFCC')
+              }
+              .alignItems(HorizontalAlign.Start)
+              .padding({ left: 20 })
+            }
+            .width('100%')
+            .height(120)
+
+            Stack() {
+              Column()
+                .width('100%')
+                .height('100%')
+                .borderRadius(8)
+                .linearGradient({
+                  direction: GradientDirection.Right,
+                  colors: [['#722ED1', 0], ['#B37FEB', 1]]
+                })
+              Column({ space: 8 }) {
+                Text('社团招新进行中')
+                  .fontSize(this.fsMid)
+                  .fontWeight(700)
+                  .fontColor('#FFFFFF')
+                Text('30+社团等你加入')
+                  .fontSize(this.fsSmall)
+                  .fontColor('#FFFFFFCC')
+              }
+              .alignItems(HorizontalAlign.Start)
+              .padding({ left: 20 })
+            }
+            .width('100%')
+            .height(120)
           }
           .autoPlay(true)
           .interval(3000)
@@ -203,7 +257,7 @@ export struct HomeTab {
         .width('100%')
         .height(120)
 
-        // 4. 九宫格快捷入口 — 3×3 带分类色彩标识
+        // 4. 快捷入口 — 3×4 带分类色彩标识
         Column() {
           // 标题：蓝色小圆点 + 快捷入口
           Row() {
@@ -222,27 +276,27 @@ export struct HomeTab {
 
           ForEach([0, 1, 2] as number[], (rowIdx: number) => {
             Row() {
-              ForEach([0, 1, 2] as number[], (colIdx: number) => {
+              ForEach([0, 1, 2, 3] as number[], (colIdx: number) => {
                 Column({ space: 8 }) {
                   Stack() {
                     Circle()
                       .width(56)
                       .height(56)
-                      .fill(this.getEntryBgColor(rowIdx * 3 + colIdx))
-                    if (this.getEntryImage(rowIdx * 3 + colIdx)) {
-                      Image(this.getEntryImage(rowIdx * 3 + colIdx)!)
+                      .fill(this.getEntryBgColor(rowIdx * 4 + colIdx))
+                    if (this.getEntryImage(rowIdx * 4 + colIdx)) {
+                      Image(this.getEntryImage(rowIdx * 4 + colIdx)!)
                         .width(28)
                         .height(28)
-                    } else if (this.getEntrySymbol(rowIdx * 3 + colIdx)) {
-                      SymbolGlyph(this.getEntrySymbol(rowIdx * 3 + colIdx)!)
+                    } else if (this.getEntrySymbol(rowIdx * 4 + colIdx)) {
+                      SymbolGlyph(this.getEntrySymbol(rowIdx * 4 + colIdx)!)
                         .fontSize(28)
-                        .fontColor([this.getEntryColor(rowIdx * 3 + colIdx)])
+                        .fontColor([this.getEntryColor(rowIdx * 4 + colIdx)])
                     } else {
-                      Text(this.getEntryIcon(rowIdx * 3 + colIdx))
+                      Text(this.getEntryIcon(rowIdx * 4 + colIdx))
                         .fontSize(28)
                     }
                   }
-                  Text(this.getEntryName(rowIdx * 3 + colIdx))
+                  Text(this.getEntryName(rowIdx * 4 + colIdx))
                     .fontSize(this.fsSmall)
                     .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
                     .maxLines(1)
@@ -252,7 +306,7 @@ export struct HomeTab {
                 .padding({ top: 4, bottom: 4 })
                 .onClick(() => {
                   if (this.onQuickEntryClick) {
-                    this.onQuickEntryClick(this.quickEntries[rowIdx * 3 + colIdx]);
+                    this.onQuickEntryClick(this.quickEntries[rowIdx * 4 + colIdx]);
                   }
                 })
               }, (colIdx: number) => colIdx.toString())
@@ -336,7 +390,82 @@ export struct HomeTab {
         .border({ width: { top: 3 }, color: $r('app.color.text_secondary') })
         .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
 
-        // 6. 天气提醒卡片（蓝色顶部色条 + 蓝色圆点标题）
+        // 6. 今日课程卡片（蓝色顶部色条 + 蓝色圆点标题 + 课程列表）
+        Column() {
+          Row() {
+            Circle()
+              .width(6)
+              .height(6)
+              .fill($r('app.color.primary'))
+            Text('今日课程')
+              .fontSize(this.fsMid)
+              .fontWeight(600)
+              .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
+              .margin({ left: 6 })
+          }
+          .width('100%')
+          .margin({ bottom: 8 })
+
+          Row() {
+            Column({ space: 8 }) {
+              Row() {
+                Text('高级人工智能')
+                  .fontSize(this.fsBody)
+                  .fontWeight(600)
+                  .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
+                  .maxLines(1)
+                  .textOverflow({ overflow: TextOverflow.Ellipsis })
+                  .layoutWeight(1)
+                Text('正在上课')
+                  .fontSize(20)
+                  .fontColor('#FFFFFF')
+                  .padding({ left: 8, right: 8, top: 2, bottom: 2 })
+                  .backgroundColor($r('app.color.warm_orange'))
+                  .borderRadius(4)
+              }
+              .width('100%')
+              Text('8:00-9:30 · 信软楼302')
+                .fontSize(this.fsSmall)
+                .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
+                .maxLines(1)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+            }
+            .alignItems(HorizontalAlign.Start)
+            .layoutWeight(1)
+          }
+          .width('100%')
+          .padding({ top: 4, bottom: 8 })
+
+          Divider().color($r('app.color.divider_light'))
+
+          Row() {
+            Column({ space: 4 }) {
+              Text('数据结构实践')
+                .fontSize(this.fsBody)
+                .fontWeight(600)
+                .fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
+                .maxLines(1)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+              Text('10:00-11:30 · 实验楼404')
+                .fontSize(this.fsSmall)
+                .fontColor(this.isDarkMode ? '#A0A0A0' : '#86909C')
+                .maxLines(1)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+            }
+            .alignItems(HorizontalAlign.Start)
+            .layoutWeight(1)
+          }
+          .width('100%')
+          .padding({ top: 8, bottom: 4 })
+        }
+        .width('100%')
+        .padding(16)
+        .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
+        .borderRadius(8)
+        .border({ width: { top: 3 }, color: $r('app.color.primary') })
+        .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
+
+        // 7. 天气提醒卡片（蓝色顶部色条 + 蓝色圆点标题）
         Column() {
           Row() {
             Circle()
