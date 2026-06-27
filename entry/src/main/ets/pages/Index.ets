@@ -232,10 +232,10 @@ struct Index {
   buildTabBar(title: string, index: number, symbol: Resource) {
     Column({ space: 2 }) {
       SymbolGlyph(symbol)
-        .fontSize(22)
+        .fontSize(28)
         .fontColor(this.currentTab === index ? ['#1677FF'] : [this.isDarkMode ? '#A0A0A0' : '#86909C'])
       Text(title)
-        .fontSize(18)
+        .fontSize(22)
         .fontColor(this.currentTab === index ? '#1677FF' : (this.isDarkMode ? '#A0A0A0' : '#86909C'))
         .maxLines(1)
         .textOverflow({ overflow: TextOverflow.Clip })

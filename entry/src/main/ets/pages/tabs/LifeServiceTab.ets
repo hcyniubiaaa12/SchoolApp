@@ -39,6 +39,8 @@ export struct LifeServiceTab {
   @State currentEntry: number = 0;
   @State lostFoundList: LostFoundRow[] = [];
   @State foodList: FoodRow[] = [];
+  @State filteredFoodList: FoodRow[] = [];
+  @State foodSearchText: string = '';
   @State songList: SongItem[] = [];
   @State currentSongIndex: number = 0;
   @State isPlaying: boolean = false;
@@ -69,6 +71,7 @@ export struct LifeServiceTab {
   private onRefresh(): void {
     this.loadLostFound();
     this.loadFood();
+    this.foodSearchText = '';
   }
 
   /** 删除确认 */
@@ -139,8 +142,27 @@ export struct LifeServiceTab {
     FoodDao.queryAll(this.uiContext).then((data: FoodRow[] | null) => {
       if (data) {
         this.foodList = data;
+        this.filteredFoodList = data;
       }
     });
+  }
+
+  private doFoodSearch(): void {
+    if (this.foodSearchText.trim() === '') {
+      this.filteredFoodList = this.foodList;
+      return;
+    }
+    const keyword: string = this.foodSearchText.trim().toLowerCase();
+    const result: FoodRow[] = [];
+    for (let i = 0; i < this.foodList.length; i++) {
+      const f: FoodRow = this.foodList[i];
+      if (f.name.toLowerCase().includes(keyword) ||
+          f.canteen.toLowerCase().includes(keyword) ||
+          f.signatureDish.toLowerCase().includes(keyword)) {
+        result.push(f);
+      }
+    }
+    this.filteredFoodList = result;
   }
 
   private loadSongs(): void {
@@ -428,7 +450,32 @@ export struct LifeServiceTab {
   @Builder
   buildFoodContent() {
     Column({ space: 12 }) {
-      if (this.foodList.length === 0) {
+      // 美食搜索栏
+      Row() {
+        TextInput({ placeholder: '搜索美食名称/食堂...', text: this.foodSearchText })
+          .height(44)
+          .fontSize(this.fsSmall)
+          .placeholderColor('#86909C')
+          .borderRadius(24)
+          .backgroundColor(this.isDarkMode ? '#1A1A2E' : '#F5F7FA')
+          .layoutWeight(1)
+          .onChange((value: string) => {
+            this.foodSearchText = value;
+          })
+        Button('搜索')
+          .height(40)
+          .fontSize(this.fsSmall)
+          .fontColor('#FFFFFF')
+          .backgroundColor($r('app.color.primary'))
+          .borderRadius(20)
+          .margin({ left: 12 })
+          .onClick(() => {
+            this.doFoodSearch();
+          })
+      }
+      .width('100%')
+
+      if (this.filteredFoodList.length === 0) {
         Row() {
           Text('暂无美食信息')
             .fontSize(this.fsSmall)
@@ -438,7 +485,7 @@ export struct LifeServiceTab {
         .height(100)
         .justifyContent(FlexAlign.Center)
       } else {
-        ForEach(this.foodList, (food: FoodRow) => {
+        ForEach(this.filteredFoodList, (food: FoodRow) => {
           Row() {
             // 美食图占位（橙色背景）
             Stack() {
