@@ -1,41 +1,44 @@
-// Start.ets - 启动页（StartAbility内）
-import { common, Want } from '@kit.AbilityKit';
+// Start.ets - 启动页（每次打开APP都显示，内部判断下一步去向）
+// 首次启动 → 引导页；已登录 → 首页；未登录 → 登录页
+import { common } from '@kit.AbilityKit';
+import { preferences } from '@kit.ArkData';
 import promptAction from '@ohos.promptAction';
 import { PreferencesUtil } from '../common/utils/PreferencesUtil';
+
+const PREF_NAME: string = 'school_app_prefs';
+const KEY_IS_LOGGED_IN: string = 'is_logged_in';
 
 @Entry
 @Component
 struct Start {
   @State progress: number = 0;
   @State dotIndex: number = 0;
-  @State isFirstLaunch: boolean = false;
+  private wasFirstLaunch: boolean = false;
   private timer: number = -1;
   private dotTimer: number = -1;
   private context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
 
   async aboutToAppear() {
     try {
-      const isFirstLaunch = await PreferencesUtil.isFirstLaunch(this.context as Context);
-      this.isFirstLaunch = isFirstLaunch;
-      if (isFirstLaunch) {
+      // 判断是否首次启动
+      this.wasFirstLaunch = await PreferencesUtil.isFirstLaunch(this.context as Context);
+      if (this.wasFirstLaunch) {
         promptAction.showToast({ message: '欢迎使用' });
         await PreferencesUtil.markFirstLaunchComplete(this.context as Context);
-        this.isFirstLaunch = false;
       }
     } catch (err) {
       console.error('Failed to handle first launch: ' + JSON.stringify(err));
     }
 
+    // 动画循环：进度条
     this.timer = setInterval(() => {
       this.progress += 1;
       if (this.progress >= 100) {
-        clearInterval(this.timer);
-        this.timer = -1;
-        this.navigateToGuide();
+        this.afterSplash();
       }
     }, 30);
 
-    // 3个蓝色圆点循环动画
+    // 3个白色圆点循环动画
     this.dotTimer = setInterval(() => {
       this.dotIndex = (this.dotIndex + 1) % 3;
     }, 400);
@@ -50,18 +53,42 @@ struct Start {
     }
   }
 
-  private navigateToGuide(): void {
-    // Ability内页面跳转，使用eventHub通知Ability加载引导页
-    this.context.eventHub.emit('navigateToGuide');
+  // 启动动画结束后统一跳转
+  private afterSplash(): void {
+    if (this.timer !== -1) {
+      clearInterval(this.timer);
+      this.timer = -1;
+    }
+    if (this.dotTimer !== -1) {
+      clearInterval(this.dotTimer);
+      this.dotTimer = -1;
+    }
+
+    if (this.wasFirstLaunch) {
+      // 首次启动 → 引导页
+      this.context.eventHub.emit('navigateToGuide');
+    } else {
+      // 非首次 → 根据登录状态跳转
+      this.navigateByLoginStatus();
+    }
   }
 
-  private async resetFirstLaunch(): Promise<void> {
+  // 检查登录状态并跳转
+  private async navigateByLoginStatus(): Promise<void> {
     try {
-      await PreferencesUtil.resetFirstLaunch(this.context as Context);
-      this.isFirstLaunch = true;
-      promptAction.showToast({ message: '首次启动标记已重置' });
+      const pref = await preferences.getPreferences(this.context as Context, { name: PREF_NAME });
+      const isLoggedIn = (await pref.get(KEY_IS_LOGGED_IN, false)) as boolean;
+      if (isLoggedIn) {
+        // 已登录 → 首页
+        this.context.eventHub.emit('navigateToIndex');
+      } else {
+        // 未登录 → 登录页
+        this.context.eventHub.emit('navigateToLogin');
+      }
     } catch (err) {
-      console.error('Failed to reset first launch: ' + JSON.stringify(err));
+      // 出错时默认跳登录页
+      console.error('Failed to check login status: ' + JSON.stringify(err));
+      this.context.eventHub.emit('navigateToLogin');
     }
   }
 
@@ -134,18 +161,6 @@ struct Start {
         Text('校园助手开发团队')
           .fontSize(22)
           .fontColor('#FFFFFFCC')
-
-        // 调试按钮（仅开发用）
-        Button('重置首次启动标记')
-          .width(180)
-          .height(32)
-          .fontSize(12)
-          .fontColor('#FFFFFFCC')
-          .backgroundColor('#FFFFFF26')
-          .borderRadius(16)
-          .onClick(() => {
-            this.resetFirstLaunch();
-          })
       }
       .width('100%')
       .alignItems(HorizontalAlign.Center)
@@ -158,15 +173,7 @@ struct Start {
       colors: [['#1677FF', 0], ['#4096FF', 1]]
     })
     .onClick(() => {
-      if (this.timer !== -1) {
-        clearInterval(this.timer);
-        this.timer = -1;
-      }
-      if (this.dotTimer !== -1) {
-        clearInterval(this.dotTimer);
-        this.dotTimer = -1;
-      }
-      this.navigateToGuide();
+      this.afterSplash();
     })
   }
 }

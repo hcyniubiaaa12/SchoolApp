@@ -6,7 +6,8 @@ import { TransientTaskUtil } from '../common/utils/TransientTaskUtil';
 
 const DOMAIN = 0x0000;
 const PREF_NAME = 'school_app_prefs';
-const KEY_FIRST_LAUNCH = 'is_first_launch';
+// 注意：必须与 StorageKeys.KEY_FIRST_LAUNCH 一致，否则首次启动标记永不生效
+const KEY_FIRST_LAUNCH = 'is_first_launch_lab';
 const KEY_IS_LOGGED_IN = 'is_logged_in';
 
 export default class StartAbility extends UIAbility {
@@ -55,46 +56,15 @@ export default class StartAbility extends UIAbility {
       return;
     }
 
-    // 根据是否是首次登录决定加载哪个页面或跳转到其他Ability
-    if (this.isFirstLaunch) {
-      // 首次启动：加载启动页，启动页会引导到引导页
-      hilog.info(DOMAIN, 'testTag', 'First launch, loading Start page');
-      windowStage.loadContent('pages/Start', (err) => {
-        if (err.code) {
-          hilog.error(DOMAIN, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err));
-          return;
-        }
-        hilog.info(DOMAIN, 'testTag', 'Succeeded in loading the content.');
-      });
-    } else if (!this.isLoggedIn) {
-      // 非首次但未登录：直接加载登录页
-      hilog.info(DOMAIN, 'testTag', 'Not logged in, loading Login page');
-      console.log('>>> [StartAbility] 未登录，加载 Login 页面');
-      windowStage.loadContent('pages/Login', (err) => {
-        if (err.code) {
-          hilog.error(DOMAIN, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err));
-          return;
-        }
-        hilog.info(DOMAIN, 'testTag', 'Succeeded in loading the content.');
-      });
-    } else {
-      // 已登录：直接加载首页，不再跳 MainAbility（消除跨 Ability 时序问题）
-      hilog.info(DOMAIN, 'testTag', 'Already logged in, loading Index directly');
-      console.log('>>> [StartAbility] 已登录，直接加载 Index 页面');
-      const savedUserId = this.getSavedUserId();
-      const savedUsername = this.getSavedUsername();
-      console.log('>>> [StartAbility] 用户参数 - userId: ' + savedUserId + ', username: ' + savedUsername);
-      // 设置 AppStorage 后加载 Index（替代原来跳 MainAbility 的逻辑）
-      AppStorage.setOrCreate('userId', savedUserId);
-      AppStorage.setOrCreate('username', savedUsername);
-      windowStage.loadContent('pages/Index', (err) => {
-        if (err.code) {
-          hilog.error(DOMAIN, 'testTag', 'Failed to load Index. Cause: %{public}s', JSON.stringify(err));
-          return;
-        }
-        hilog.info(DOMAIN, 'testTag', 'Succeeded in loading Index from StartAbility.');
-      });
-    }
+    // 每次启动都先显示启动页（splash），由启动页内部判断下一步去向
+    hilog.info(DOMAIN, 'testTag', 'Loading Start page');
+    windowStage.loadContent('pages/Start', (err) => {
+      if (err.code) {
+        hilog.error(DOMAIN, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err));
+        return;
+      }
+      hilog.info(DOMAIN, 'testTag', 'Succeeded in loading the content.');
+    });
   }
 
   onWindowStageDestroy(): void {
@@ -146,6 +116,11 @@ export default class StartAbility extends UIAbility {
       this.loadPage('pages/Guide');
     });
 
+    // 导航到启动页（引导页第1页侧滑返回）
+    this.context.eventHub.on('navigateToStart', () => {
+      this.loadPage('pages/Start');
+    });
+
     // 导航到登录页
     this.context.eventHub.on('navigateToLogin', () => {
       this.loadPage('pages/Login');
@@ -154,6 +129,15 @@ export default class StartAbility extends UIAbility {
     // 导航到注册页
     this.context.eventHub.on('navigateToRegist', () => {
       this.loadPage('pages/Regist');
+    });
+
+    // 导航到首页（已登录用户，设置用户信息后加载）
+    this.context.eventHub.on('navigateToIndex', () => {
+      const savedUserId = this.getSavedUserId();
+      const savedUsername = this.getSavedUsername();
+      AppStorage.setOrCreate('userId', savedUserId);
+      AppStorage.setOrCreate('username', savedUsername);
+      this.loadPage('pages/Index');
     });
 
     // 标记首次启动完成
