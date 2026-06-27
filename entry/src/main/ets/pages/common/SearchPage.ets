@@ -89,92 +89,101 @@ struct SearchPage {
       .alignItems(VerticalAlign.Center)
 
       if (!this.hasSearched) {
-        // 搜索前：热门搜索推荐
+        // 搜索前：热门搜索推荐，整体贴近搜索栏展示
         Column({ space: 12 }) {
           Text('热门搜索')
             .fontSize(28)
             .fontWeight(700)
             .fontColor($r('app.color.text_primary'))
             .width('100%')
+            .maxLines(1)
+            .textOverflow({ overflow: TextOverflow.Ellipsis })
 
-          Row({ space: 12 }) {
-            this.buildHotTag('期末考试')
-            this.buildHotTag('课程表')
-            this.buildHotTag('图书馆')
-          }
-          Row({ space: 12 }) {
-            this.buildHotTag('校园美食')
-            this.buildHotTag('失物招领')
-            this.buildHotTag('成绩查询')
-          }
-        }
-        .width('100%')
-        .padding(20)
-        .layoutWeight(1)
-      } else {
-        // 搜索结果列表（统计+卡片都在 Scroll 内，间距固定 12，紧贴搜索栏）
-        Scroll() {
-          Column({ space: 12 }) {
-            Text('找到 ' + this.results.length.toString() + ' 个结果')
-              .fontSize(24)
-              .fontColor($r('app.color.text_secondary'))
-              .width('100%')
-
-            if (this.results.length === 0) {
-              Column({ space: 16 }) {
-                SymbolGlyph($r('sys.symbol.questionmark_circle'))
-                  .fontSize(64)
-                Text('未找到相关内容')
-                  .fontSize(26)
-                  .fontColor($r('app.color.text_secondary'))
-              }
-              .width('100%')
-              .height(200)
-              .justifyContent(FlexAlign.Center)
-              .alignItems(HorizontalAlign.Center)
-            } else {
-              ForEach(this.results, (item: SearchResultItem) => {
-                Column({ space: 4 }) {
-                  Row({ space: 8 }) {
-                    Text(item.title)
-                      .fontSize(26)
-                      .fontWeight(600)
-                      .fontColor($r('app.color.text_primary'))
-                      .layoutWeight(1)
-                      .maxLines(1)
-                      .textOverflow({ overflow: TextOverflow.Ellipsis })
-
-                    Text(item.type)
-                      .fontSize(20)
-                      .fontColor(this.getTypeColor(item.type))
-                      .padding({ left: 8, right: 8, top: 2, bottom: 2 })
-                      .backgroundColor(this.getTypeBgColor(item.type))
-                      .borderRadius(4)
-                  }
-                  .width('100%')
-
-                  Text(item.subTitle)
-                    .fontSize(22)
-                    .fontColor($r('app.color.text_secondary'))
-                    .maxLines(1)
-                    .textOverflow({ overflow: TextOverflow.Ellipsis })
-                }
-                .width('100%')
-                .padding(16)
-                .backgroundColor($r('app.color.card_white'))
-                .borderRadius(8)
-                .border({ width: { top: 3 }, color: this.getTypeColor(item.type) })
-                .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
-                .alignItems(HorizontalAlign.Start)
-              }, (item: SearchResultItem, index: number) => item.title + index.toString())
+          Scroll() {
+            Row({ space: 12 }) {
+              this.buildHotTag('期末考试')
+              this.buildHotTag('课程表')
+              this.buildHotTag('图书馆')
             }
           }
           .width('100%')
-          .padding({ left: 20, right: 20, top: 12, bottom: 24 })
-          .alignItems(HorizontalAlign.Start)
+          .scrollable(ScrollDirection.Horizontal)
+          .scrollBar(BarState.Off)
+
+          Scroll() {
+            Row({ space: 12 }) {
+              this.buildHotTag('校园美食')
+              this.buildHotTag('失物招领')
+              this.buildHotTag('成绩查询')
+            }
+          }
+          .width('100%')
+          .scrollable(ScrollDirection.Horizontal)
+          .scrollBar(BarState.Off)
         }
-        .layoutWeight(1)
-        .scrollBar(BarState.Auto)
+        .width('100%')
+        .padding({ left: 20, right: 20, top: 20, bottom: 20 })
+        .alignItems(HorizontalAlign.Start)
+      } else {
+        // 搜索结果列表：统计文字与结果卡片连续排列，避免单条结果被剩余区域拉低
+        Column({ space: 12 }) {
+          Text('找到 ' + this.results.length.toString() + ' 个结果')
+            .fontSize(24)
+            .fontColor($r('app.color.text_secondary'))
+            .width('100%')
+
+          if (this.results.length === 0) {
+            Column({ space: 16 }) {
+              SymbolGlyph($r('sys.symbol.questionmark_circle'))
+                .fontSize(64)
+              Text('未找到相关内容')
+                .fontSize(26)
+                .fontColor($r('app.color.text_secondary'))
+            }
+            .width('100%')
+            .height(200)
+            .justifyContent(FlexAlign.Center)
+            .alignItems(HorizontalAlign.Center)
+          } else {
+            ForEach(this.results, (item: SearchResultItem) => {
+              Column({ space: 4 }) {
+                Row({ space: 8 }) {
+                  Text(item.title)
+                    .fontSize(26)
+                    .fontWeight(600)
+                    .fontColor($r('app.color.text_primary'))
+                    .layoutWeight(1)
+                    .maxLines(1)
+                    .textOverflow({ overflow: TextOverflow.Ellipsis })
+
+                  Text(item.type)
+                    .fontSize(20)
+                    .fontColor(this.getTypeColor(item.type))
+                    .padding({ left: 8, right: 8, top: 2, bottom: 2 })
+                    .backgroundColor(this.getTypeBgColor(item.type))
+                    .borderRadius(4)
+                }
+                .width('100%')
+
+                Text(item.subTitle)
+                  .fontSize(22)
+                  .fontColor($r('app.color.text_secondary'))
+                  .maxLines(1)
+                  .textOverflow({ overflow: TextOverflow.Ellipsis })
+              }
+              .width('100%')
+              .padding(16)
+              .backgroundColor($r('app.color.card_white'))
+              .borderRadius(8)
+              .border({ width: { top: 3 }, color: this.getTypeColor(item.type) })
+              .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
+              .alignItems(HorizontalAlign.Start)
+            }, (item: SearchResultItem, index: number) => item.title + index.toString())
+          }
+        }
+        .width('100%')
+        .padding({ left: 20, right: 20, top: 20, bottom: 24 })
+        .alignItems(HorizontalAlign.Start)
       }
     }
     .width('100%')
@@ -211,7 +220,9 @@ struct SearchPage {
       .padding({ left: 16, right: 16, top: 6, bottom: 6 })
       .backgroundColor($r('app.color.card_white'))
       .borderRadius(20)
-      .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
+      .shadow({ radius: 4, color: $r('app.color.shadow'), offsetX: 0, offsetY: 1 })
+      .maxLines(1)
+      .textOverflow({ overflow: TextOverflow.Ellipsis })
       .onClick(() => {
         this.searchText = tag;
         this.doSearch();
