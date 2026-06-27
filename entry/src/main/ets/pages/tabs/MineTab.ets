@@ -267,7 +267,11 @@ export struct MineTab {
                     .fontSize(this.fsSmall)
                     .fontColor(this.darkSecondary)
                     .onClick(() => {
-                      if (item.name === '通知设置') {
+                      if (item.name === '字体大小') {
+                        if (this.onSettingClick) {
+                          this.onSettingClick();
+                        }
+                      } else if (item.name === '通知设置') {
                         promptAction.showToast({ message: '通知设置页开发中' });
                       }
                     })
