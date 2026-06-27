@@ -217,7 +217,7 @@ export struct CampusInfoTab {
     .height('100%')
   }
 
-  // ===== 校园公告列表 =====
+  // ===== 校园公告列表（灰色顶部色条 + 蓝色图标背景） =====
   @Builder
   buildAnnouncementList() {
     Scroll() {
@@ -227,12 +227,12 @@ export struct CampusInfoTab {
         } else {
           ForEach(this.announcements, (item: AnnouncementItem) => {
             Row() {
-              // 缩略图 80x80
+              // 缩略图 80x80（蓝色背景）
               Stack() {
                 Circle()
                   .width(64)
                   .height(64)
-                  .fill($r('app.color.primary_light'))
+                  .fill($r('app.color.card_bg_blue'))
                 SymbolGlyph($r('sys.symbol.bell'))
                   .fontSize(this.fsSmall)
               }
@@ -275,7 +275,8 @@ export struct CampusInfoTab {
             .padding(16)
             .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
             .borderRadius(8)
-            .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
+            .border({ width: { top: 3 }, color: $r('app.color.text_secondary') })
+            .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
             .alignItems(VerticalAlign.Center)
             .onClick(() => {
               this.showDetail(item);
@@ -290,7 +291,7 @@ export struct CampusInfoTab {
     .scrollBar(BarState.Auto)
   }
 
-  // ===== 校园资讯列表 =====
+  // ===== 校园资讯列表（灰色顶部色条 + 蓝色图标背景） =====
   @Builder
   buildNewsList() {
     Scroll() {
@@ -304,7 +305,7 @@ export struct CampusInfoTab {
                 Circle()
                   .width(64)
                   .height(64)
-                  .fill($r('app.color.primary_light'))
+                  .fill($r('app.color.card_bg_blue'))
                 SymbolGlyph($r('sys.symbol.doc_text'))
                   .fontSize(this.fsSmall)
               }
@@ -337,7 +338,8 @@ export struct CampusInfoTab {
             .padding(16)
             .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
             .borderRadius(8)
-            .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
+            .border({ width: { top: 3 }, color: $r('app.color.text_secondary') })
+            .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
             .alignItems(VerticalAlign.Center)
             .onClick(() => {
               router.pushUrl({ url: 'pages/campus/NewsDetailPage', params: { newsId: item.id } }).catch((err: Error) => { console.error('[CampusInfo] 跳转资讯详情失败: ' + err.message); });
@@ -352,7 +354,7 @@ export struct CampusInfoTab {
     .scrollBar(BarState.Auto)
   }
 
-  // ===== 社团活动 =====
+  // ===== 社团活动（橙色顶部色条 + 橙色标签背景） =====
   @Builder
   buildActivityList() {
     Scroll() {
@@ -372,7 +374,7 @@ export struct CampusInfoTab {
                 .fontSize(20)
                 .fontColor($r('app.color.warm_orange'))
                 .padding({ left: 8, right: 8, top: 2, bottom: 2 })
-                .backgroundColor('#FFF3E0')
+                .backgroundColor($r('app.color.card_bg_orange'))
                 .borderRadius(4)
             }
             .width('100%')
@@ -402,7 +404,8 @@ export struct CampusInfoTab {
           .padding(16)
           .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
           .borderRadius(8)
-          .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
+          .border({ width: { top: 3 }, color: $r('app.color.warm_orange') })
+          .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
           .alignItems(HorizontalAlign.Start)
         }, (item: ActivityItem) => item.id)
       }
@@ -413,7 +416,7 @@ export struct CampusInfoTab {
     .scrollBar(BarState.Auto)
   }
 
-  // ===== 学术讲座 =====
+  // ===== 学术讲座（蓝色顶部色条） =====
   @Builder
   buildLectureList() {
     Scroll() {
@@ -468,7 +471,8 @@ export struct CampusInfoTab {
           .padding(16)
           .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
           .borderRadius(8)
-          .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
+          .border({ width: { top: 3 }, color: $r('app.color.primary') })
+          .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
           .alignItems(HorizontalAlign.Start)
         }, (item: LectureItem) => item.id)
       }
@@ -522,7 +526,7 @@ export struct CampusInfoTab {
         .aspectRatio(1.8)
         .padding(12)
 
-        // 选中的建筑详情
+        // 选中的建筑详情（蓝色顶部色条）
         if (this.selectedBuilding >= 0 && this.selectedBuilding < this.buildings.length) {
           Column({ space: 8 }) {
             Text(this.buildings[this.selectedBuilding].name)
@@ -539,7 +543,8 @@ export struct CampusInfoTab {
           .padding(16)
           .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
           .borderRadius(8)
-          .shadow({ radius: 4, color: '#1A000000', offsetX: 0, offsetY: 1 })
+          .border({ width: { top: 3 }, color: $r('app.color.primary') })
+          .shadow({ radius: 8, color: $r('app.color.shadow'), offsetX: 0, offsetY: 2 })
           .alignItems(HorizontalAlign.Start)
         }
 
@@ -685,7 +690,7 @@ export struct CampusInfoTab {
           }
           .width('100%')
 
-          Divider().color($r('app.color.border'))
+          Divider().color($r('app.color.divider_light'))
 
           Text(this.selectedAnnouncement!.title)
             .fontSize(32)
@@ -712,7 +717,7 @@ export struct CampusInfoTab {
             .backgroundColor('#FFF3E0')
             .borderRadius(4)
 
-          Divider().color($r('app.color.border'))
+          Divider().color($r('app.color.divider_light'))
 
           Text(this.selectedAnnouncement!.content)
             .fontSize(this.fsBody)
