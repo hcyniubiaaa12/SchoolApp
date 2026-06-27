@@ -8,12 +8,10 @@
 
 ## 必读规则文档
 
-`.claude/` 已加入 `.gitignore`，以下文档为本地开发参考文档，不提交到 Git：
+以下文档定义了产品功能、样式权衡与当前差距，开发新功能或改动 UI 前应先对照：
 
 - `.claude/rules/校园助手APP-开发规范与功能清单.md`：产品功能、样式、页面跳转、数据存储规范
 - `.claude/rules/项目现状与规范差距分析.md`：当前代码与需求规范的差距、可复用能力、优先级建议
-
-开发新功能或改动 UI 前，先对照以上两个文档。
 
 ## 技术栈与 API 风格
 
@@ -56,7 +54,9 @@
   - 边框色：`#E5E6EB`
   - 大标题 32sp / 中标题 28sp / 正文 26sp / 辅助文字 24sp
   - 圆角 8px，页面左右边距 20px，元素间距 16px，模块间距 24px
-- 当前代码大量使用硬编码样式。新增代码应尽量向设计规范靠拢，不继续扩大 `#007DFF`、`#333333`、`#666666` 等旧样式的使用范围。
+- 当前代码已全面使用 `$r('app.color.xxx')` 和 `$r('app.float.xxx')` 资源引用。新增代码应继续使用资源引用，不引入新的硬编码色值/字号。
+- 卡片统一使用「签名设计」：`border({ width: { top: 3 }, color: $r('app.color.*') })` 顶部 3px 分类色条 + 6px 圆点标题。分类：蓝=学术/公告，橙=生活/失物，绿=完成/高分，灰=信息/设置。
+- 符号图标优先使用 `SymbolGlyph($r('sys.symbol.*'))` 系统符号，无法映射时回退 emoji。
 
 ## 数据存储约定
 
@@ -91,7 +91,7 @@
 
 - 页面 UI 图片统一放在 `entry/src/main/resources/base/media`。
 - AppScope 只保留应用级图标资源：`AppScope/resources/base/media/layered_image.json`、`background.png`、`foreground.png`，用于 `AppScope/app.json5` 的应用图标引用。
-- `ic_code.png` 实际是六边形/蜂窝图标，不是眼睛图标，不能继续作为密码显隐图标的语义来源；后续应替换或新增真实眼睛图标。
+- `ic_code.png` 已由 SymbolGlyph(eye/eye_slash) 替换（Login/Regist 密码显隐按钮），不再使用此图片作为眼睛图标。
 - `ic_book.png` 可复用于图书馆/学习资料入口。
 - `ic_star.png` 可复用于美食评分。
 
