@@ -174,9 +174,46 @@ export struct LifeServiceTab {
     if (!this.uiContext) {
       return;
     }
+    // 乐观更新：先切换 UI 状态，无需等待 DB 写入
+    const newList: FoodRow[] = [];
+    for (let i = 0; i < this.foodList.length; i++) {
+      const food: FoodRow = this.foodList[i];
+      if (food.id === foodId) {
+        newList.push({
+          id: food.id,
+          name: food.name,
+          canteen: food.canteen,
+          imagePath: food.imagePath,
+          rating: food.rating,
+          signatureDish: food.signatureDish,
+          tags: food.tags,
+          isFavorited: food.isFavorited === 0 ? 1 : 0
+        });
+      } else {
+        newList.push(food);
+      }
+    }
+    this.foodList = newList;
+
     FoodDao.toggleFavorite(this.uiContext, foodId).then(() => {
       this.loadFood();
     });
+  }
+
+  /**
+   * 判断美食是否已收藏。
+   * 注意：必须用「辅助方法读 @State foodList + 属性表达式三元」驱动爱心图标，
+   * 不能写成 `if (food.isFavorited)` 结构化条件——后者读的是 ForEach 循环项的
+   * 普通对象属性（未被 @State 观察），ForEach 复用同 key 项时不会重新求值，
+   * 会导致点击爱心后图标不变色（DB 已写入、收藏页能显示，但卡片爱心不刷新）。
+   */
+  private isFoodFavorited(foodId: string): boolean {
+    for (let i = 0; i < this.foodList.length; i++) {
+      if (this.foodList[i].id === foodId) {
+        return this.foodList[i].isFavorited === 1;
+      }
+    }
+    return false;
   }
 
   // —— 音乐播放 ——
@@ -460,21 +497,12 @@ export struct LifeServiceTab {
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
                   .layoutWeight(1)
 
-                if (food.isFavorited) {
-                  SymbolGlyph($r('sys.symbol.heart_fill'))
-                    .fontSize(this.fsTiny)
-                    .fontColor([$r('app.color.primary')])
-                    .onClick(() => {
-                      this.toggleFoodFavorite(food.id);
-                    })
-                } else {
-                  SymbolGlyph($r('sys.symbol.heart'))
-                    .fontSize(this.fsTiny)
-                    .fontColor([this.isDarkMode ? '#A0A0A0' : '#86909C'])
-                    .onClick(() => {
-                      this.toggleFoodFavorite(food.id);
-                    })
-                }
+                SymbolGlyph(this.isFoodFavorited(food.id) ? $r('sys.symbol.heart_fill') : $r('sys.symbol.heart'))
+                  .fontSize(this.fsTiny)
+                  .fontColor([this.isFoodFavorited(food.id) ? $r('app.color.warm_orange') : (this.isDarkMode ? '#A0A0A0' : '#86909C')])
+                  .onClick(() => {
+                    this.toggleFoodFavorite(food.id);
+                  })
               }
               .width('100%')
 
