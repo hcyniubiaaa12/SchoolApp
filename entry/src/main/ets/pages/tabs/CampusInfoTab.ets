@@ -63,7 +63,7 @@ interface MapBuilding {
 
 @Component
 export struct CampusInfoTab {
-  @Prop @Watch('onDarkChange') isDarkMode: boolean = false;
+  @StorageLink('isDarkMode') @Watch('onDarkChange') isDarkMode: boolean = false;
   @State darkPrimary: string = '#1D2129';
   @State darkSecondary: string = '#86909C';
   @StorageLink('fontScale') @Watch('onFontScaleChange') fontScale: number = 1.0;

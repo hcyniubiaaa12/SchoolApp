@@ -141,7 +141,6 @@ struct Index {
       Tabs({ barPosition: BarPosition.End, index: this.currentTab }) {
         TabContent() {
           HomeTab({
-            isDarkMode: this.isDarkMode,
             username: this.username,
             onSearchClick: () => {
               router.pushUrl({ url: 'pages/common/SearchPage' })
@@ -172,23 +171,22 @@ struct Index {
         .tabBar(this.buildTabBar('首页', 0, $r('sys.symbol.house')))
 
         TabContent() {
-          CampusInfoTab({ isDarkMode: this.isDarkMode })
+          CampusInfoTab({})
         }
         .tabBar(this.buildTabBar('校园信息', 1, $r('sys.symbol.building')))
 
         TabContent() {
-          StudyTab({ uiContext: this.context, refreshSignal: this.courseRefreshSignal, isDarkMode: this.isDarkMode })
+          StudyTab({ uiContext: this.context, refreshSignal: this.courseRefreshSignal })
         }
         .tabBar(this.buildTabBar('学习助手', 2, $r('sys.symbol.book')))
 
         TabContent() {
-          LifeServiceTab({ uiContext: this.context, isDarkMode: this.isDarkMode, refreshSignal: this.lfRefreshSignal })
+          LifeServiceTab({ uiContext: this.context, refreshSignal: this.lfRefreshSignal })
         }
         .tabBar(this.buildTabBar('生活服务', 3, $r('sys.symbol.bag')))
 
         TabContent() {
           MineTab({
-            isDarkMode: this.isDarkMode,
             username: this.username,
             userId: this.userId,
             onProfileEditClick: () => {
