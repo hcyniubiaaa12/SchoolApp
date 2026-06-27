@@ -5,6 +5,7 @@
 import { router } from '@kit.ArkUI';
 import promptAction from '@ohos.promptAction';
 import { JsonStoreUtil } from '../../common/utils/JsonStoreUtil';
+import { TitleBar } from '../../common/components/TitleBar';
 
 interface NewsDetailItem {
   id: string;
@@ -67,18 +68,7 @@ struct NewsDetailPage {
   build() {
     Column() {
       // 导航栏
-      Row() {
-        Image($r('app.media.ic_back'))
-          .width(24).height(24).fillColor($r('app.color.text_primary'))
-          .onClick(() => { router.back(); })
-        Blank()
-        Text('资讯详情')
-          .fontSize(30).fontWeight(600).fontColor($r('app.color.text_primary'))
-        Blank()
-        Row().width(24)
-      }
-      .width('100%').height(56).padding({ left: 16, right: 20 })
-      .backgroundColor($r('app.color.card_white')).alignItems(VerticalAlign.Center)
+      TitleBar({ title: '资讯详情', showBack: true, onBackClick: () => { router.back(); } })
 
       if (this.isLoading) {
         Column() {

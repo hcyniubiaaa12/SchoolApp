@@ -11,6 +11,7 @@ import { router } from '@kit.ArkUI';
 import promptAction from '@ohos.promptAction';
 import { BookDao, BookRow } from '../../common/database/BookDao';
 import { FoodDao, FoodRow } from '../../common/database/FoodDao';
+import { TitleBar } from '../../common/components/TitleBar';
 
 interface FavoriteItem {
   id: string;
@@ -126,19 +127,7 @@ struct FavoritePage {
   build() {
     Column() {
       // 导航栏
-      Row() {
-        Image($r('app.media.ic_back'))
-          .width(24).height(24).fillColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
-          .onClick(() => { router.back(); })
-        Blank()
-        Text('我的收藏')
-          .fontSize(30).fontWeight(600).fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
-          .layoutWeight(1).textAlign(TextAlign.Center)
-        Blank()
-        Row().width(24)
-      }
-      .width('100%').height(56).padding({ left: 16, right: 20 })
-      .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF').alignItems(VerticalAlign.Center)
+      TitleBar({ title: '我的收藏', showBack: true, onBackClick: () => { router.back(); } })
 
       // 分类筛选
       Scroll() {

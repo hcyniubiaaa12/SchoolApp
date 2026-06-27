@@ -22,7 +22,7 @@ interface AnnouncementItem {
 export struct HomeTab {
   @StorageLink('isDarkMode') isDarkMode: boolean = false;
   @StorageLink('fontScale') @Watch('onFontScaleChange') fontScale: number = 1.0;
-  @State fsTitle: number = 30;
+  @State fsTitle: number = 32;
   @State fsMid: number = 28;
   @State fsBody: number = 26;
   @State fsSmall: number = 24;
@@ -31,7 +31,7 @@ export struct HomeTab {
 
   // 字体缩放值变化时更新所有字体大小
   private onFontScaleChange(): void {
-    this.fsTitle = Math.round(30 * this.fontScale);
+    this.fsTitle = Math.round(32 * this.fontScale);
     this.fsMid = Math.round(28 * this.fontScale);
     this.fsBody = Math.round(26 * this.fontScale);
     this.fsSmall = Math.round(24 * this.fontScale);

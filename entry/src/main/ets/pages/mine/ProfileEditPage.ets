@@ -5,6 +5,7 @@
 import { router } from '@kit.ArkUI';
 import promptAction from '@ohos.promptAction';
 import { UserDao } from '../../common/database/UserDao';
+import { TitleBar } from '../../common/components/TitleBar';
 
 @Entry
 @Component
@@ -82,20 +83,7 @@ struct ProfileEditPage {
   build() {
     Column() {
       // 导航栏
-      Row() {
-        Image($r('app.media.ic_back'))
-          .width(24).height(24).fillColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
-          .onClick(() => {
-            router.back();
-          })
-        Blank()
-        Text('个人信息')
-          .fontSize(30).fontWeight(600).fontColor(this.isDarkMode ? '#E8E8E8' : '#1D2129')
-        Blank()
-        Row().width(24)
-      }
-      .width('100%').height(56).padding({ left: 16, right: 20 })
-      .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF').alignItems(VerticalAlign.Center)
+      TitleBar({ title: '个人信息', showBack: true, onBackClick: () => { router.back(); } })
 
       Scroll() {
         Column({ space: 16 }) {

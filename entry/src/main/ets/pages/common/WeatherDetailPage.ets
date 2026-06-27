@@ -4,6 +4,7 @@
  */
 import { router } from '@kit.ArkUI';
 import { WeatherDao, WeatherRow } from '../../common/database/WeatherDao';
+import { TitleBar } from '../../common/components/TitleBar';
 
 @Entry
 @Component
@@ -44,31 +45,7 @@ struct WeatherDetailPage {
   build() {
     Column() {
       // 导航栏
-      Row() {
-        Image($r('app.media.ic_back'))
-          .width(24).height(24).fillColor($r('app.color.text_primary'))
-          .onClick(() => {
-            router.back();
-          })
-
-        Blank()
-
-        Text('天气详情')
-          .fontSize(30)
-          .fontWeight(600)
-          .fontColor($r('app.color.text_primary'))
-          .layoutWeight(1)
-          .textAlign(TextAlign.Center)
-
-        Blank()
-
-        Row().width(24)
-      }
-      .width('100%')
-      .height(56)
-      .padding({ left: 16, right: 20 })
-      .backgroundColor($r('app.color.card_white'))
-      .alignItems(VerticalAlign.Center)
+      TitleBar({ title: '天气详情', showBack: true, onBackClick: () => { router.back(); } })
 
       Scroll() {
         Column({ space: 16 }) {

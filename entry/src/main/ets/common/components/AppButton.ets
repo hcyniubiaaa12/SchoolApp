@@ -1,6 +1,6 @@
 // AppButton.ets - 规范按钮组件（P0 通用组件）
 // 默认高度 48px，小按钮 36px；圆角 8px
-// 激活态: bg #1677FF 白字；未激活态: bg #C6E2FF 文字 #86909C
+// 激活态: bg primary 白字；未激活态: bg button_inactive_bg 文字 button_inactive_text
 
 @Component
 export struct AppButton {
@@ -8,6 +8,7 @@ export struct AppButton {
   @Prop active: boolean = true;
   @Prop type: 'normal' | 'small' = 'normal';
   @Prop width: string = '100%';
+  @Prop bgColor: string = '';
   onClick?: () => void;
 
   build() {
@@ -16,8 +17,8 @@ export struct AppButton {
       .height(this.type === 'small' ? 36 : 48)
       .fontSize(26)
       .fontWeight(FontWeight.Medium)
-      .fontColor(this.active ? Color.White : '#86909C')
-      .backgroundColor(this.active ? '#1677FF' : '#C6E2FF')
+      .fontColor(this.active ? Color.White : $r('app.color.button_inactive_text'))
+      .backgroundColor(this.bgColor !== '' ? this.bgColor : (this.active ? $r('app.color.primary') : $r('app.color.button_inactive_bg')))
       .borderRadius(8)
       .onClick(() => {
         if (this.onClick && this.active) {

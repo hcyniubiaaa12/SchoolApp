@@ -5,6 +5,7 @@
 import { router } from '@kit.ArkUI';
 import promptAction from '@ohos.promptAction';
 import { CourseDao, CourseRow } from '../../common/database/CourseDao';
+import { TitleBar } from '../../common/components/TitleBar';
 
 interface DayOption {
   label: string;
@@ -148,18 +149,7 @@ struct ScheduleEditPage {
   build() {
     Column() {
       // 导航栏
-      Row() {
-        Image($r('app.media.ic_back'))
-          .width(24).height(24).fillColor('#1D2129')
-          .onClick(() => { router.back(); })
-        Blank()
-        Text('编辑课程')
-          .fontSize(30).fontWeight(600).fontColor('#1D2129')
-        Blank()
-        Row().width(24)
-      }
-      .width('100%').height(56).padding({ left: 16, right: 20 })
-      .backgroundColor('#FFFFFF').alignItems(VerticalAlign.Center)
+      TitleBar({ title: '编辑课程', showBack: true, onBackClick: () => { router.back(); } })
 
       if (this.isLoading) {
         Column() {

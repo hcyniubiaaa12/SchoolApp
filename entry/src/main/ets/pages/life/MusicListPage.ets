@@ -5,6 +5,7 @@
 import { router } from '@kit.ArkUI';
 import promptAction from '@ohos.promptAction';
 import { JsonStoreUtil } from '../../common/utils/JsonStoreUtil';
+import { TitleBar } from '../../common/components/TitleBar';
 
 interface SongItem {
   id: string;
@@ -52,19 +53,7 @@ struct MusicListPage {
   build() {
     Column() {
       // 导航栏
-      Row() {
-        Image($r('app.media.ic_back'))
-          .width(24).height(24).fillColor($r('app.color.text_primary'))
-          .onClick(() => { router.back(); })
-        Blank()
-        Text('本地音乐')
-          .fontSize(30).fontWeight(600).fontColor($r('app.color.text_primary'))
-          .layoutWeight(1).textAlign(TextAlign.Center)
-        Blank()
-        Row().width(24)
-      }
-      .width('100%').height(56).padding({ left: 16, right: 20 })
-      .backgroundColor($r('app.color.card_white')).alignItems(VerticalAlign.Center)
+      TitleBar({ title: '本地音乐', showBack: true, onBackClick: () => { router.back(); } })
 
       // 提示信息
       Row({ space: 8 }) {

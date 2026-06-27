@@ -3,6 +3,7 @@
  * 展示校园建筑的详细信息（位置、介绍、图片）
  */
 import { router } from '@kit.ArkUI';
+import { TitleBar } from '../../common/components/TitleBar';
 
 @Entry
 @Component
@@ -19,19 +20,7 @@ struct BuildingDetailPage {
   build() {
     Column() {
       // 导航栏
-      Row() {
-        Image($r('app.media.ic_back'))
-          .width(24).height(24).fillColor($r('app.color.text_primary'))
-          .onClick(() => { router.back(); })
-        Blank()
-        Text(this.buildingName)
-          .fontSize(30).fontWeight(600).fontColor($r('app.color.text_primary'))
-          .layoutWeight(1).textAlign(TextAlign.Center)
-        Blank()
-        Row().width(24)
-      }
-      .width('100%').height(56).padding({ left: 16, right: 20 })
-      .backgroundColor($r('app.color.card_white')).alignItems(VerticalAlign.Center)
+      TitleBar({ title: this.buildingName, showBack: true, onBackClick: () => { router.back(); } })
 
       Scroll() {
         Column({ space: 16 }) {

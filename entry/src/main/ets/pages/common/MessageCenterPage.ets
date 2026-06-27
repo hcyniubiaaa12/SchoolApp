@@ -3,6 +3,7 @@
  * 点击首页铃铛图标进入，展示通知消息列表
  */
 import { router } from '@kit.ArkUI';
+import { TitleBar } from '../../common/components/TitleBar';
 
 interface MessageItem {
   id: string;
@@ -44,23 +45,8 @@ struct MessageCenterPage {
     Column() {
       // 导航栏
       Row() {
-        Image($r('app.media.ic_back'))
-          .width(24).height(24).fillColor($r('app.color.text_primary'))
-          .onClick(() => {
-            router.back();
-          })
-
-        Blank()
-
-        Text('消息中心')
-          .fontSize(30)
-          .fontWeight(600)
-          .fontColor($r('app.color.text_primary'))
+        TitleBar({ title: '消息中心', showBack: true, onBackClick: () => { router.back(); } })
           .layoutWeight(1)
-          .textAlign(TextAlign.Center)
-
-        Blank()
-
         Text('全部已读')
           .fontSize(24)
           .fontColor($r('app.color.primary'))
@@ -68,9 +54,7 @@ struct MessageCenterPage {
             this.markAllRead();
           })
       }
-      .width('100%')
-      .height(56)
-      .padding({ left: 16, right: 20 })
+      .width('100%').height(56).padding({ right: 20 })
       .backgroundColor($r('app.color.card_white'))
       .alignItems(VerticalAlign.Center)
 
