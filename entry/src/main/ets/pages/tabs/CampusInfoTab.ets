@@ -169,7 +169,7 @@ export struct CampusInfoTab {
         .padding({ left: 20, right: 20 })
         .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
 
-        // 分类标签栏（横向滚动）
+        // 分类标签栏（横向滚动，始终显示滚动条提示可滑）
         Scroll() {
           Row({ space: 12 }) {
             ForEach(this.tags, (tag: TagItem, index: number) => {
@@ -184,13 +184,11 @@ export struct CampusInfoTab {
                 })
             }, (tag: TagItem, index: number) => tag.name + index.toString())
           }
-          .width('100%')
-          .padding({ left: 20, right: 20, top: 12, bottom: 12 })
+          .padding({ left: 20, right: 20 })
         }
-        .scrollBar(BarState.Auto)
+        .scrollBar(BarState.On)
         .scrollable(ScrollDirection.Horizontal)
         .backgroundColor(this.isDarkMode ? '#252540' : '#FFFFFF')
-        .padding({ bottom: 8 })
 
         // 内容区
         if (this.currentTagIndex === 0) {

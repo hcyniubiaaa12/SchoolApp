@@ -316,7 +316,7 @@ export struct StudyTab {
           }
           .padding({ left: 20, right: 20 })
         }
-        .scrollBar(BarState.Auto)
+        .scrollBar(BarState.On)
         .scrollable(ScrollDirection.Horizontal)
         .width('100%')
         .padding({ top: 12, bottom: 12 })
